@@ -1,0 +1,57 @@
+{
+  "name": "@solid-primitives/selectors",
+  "version": "0.0.1",
+  "description": "Primitives that support creating selectors.",
+  "author": "Ryan Conceicao <ryanjconceicao@gmail.com>",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/selectors#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/solidjs-community/solid-primitives/issues"
+  },
+  "primitive": {
+    "name": "selectors",
+    "stage": 0,
+    "list": [
+      "createArraySelector"
+    ],
+    "category": "Reactivity"
+  },
+  "keywords": [
+    "solid",
+    "primitives",
+    "selector"
+  ],
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": "./dist/index.cjs"
+  },
+  "typesVersions": {},
+  "scripts": {
+    "dev": "tsx ../../scripts/dev.ts",
+    "build": "tsx ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  }
+}

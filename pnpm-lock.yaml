@@ -820,6 +820,12 @@ importers:
         specifier: ^1.8.7
         version: 1.8.20
 
+  packages/selectors:
+    devDependencies:
+      solid-js:
+        specifier: ^1.7.11
+        version: 1.7.11
+
   packages/set:
     dependencies:
       '@solid-primitives/trigger':
