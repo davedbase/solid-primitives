@@ -668,12 +668,6 @@ importers:
       '@solid-primitives/event-listener':
         specifier: workspace:^
         version: link:../event-listener
-      '@solid-primitives/rootless':
-        specifier: workspace:^
-        version: link:../rootless
-      '@solid-primitives/utils':
-        specifier: workspace:^
-        version: link:../utils
     devDependencies:
       solid-js:
         specifier: ^1.8.7

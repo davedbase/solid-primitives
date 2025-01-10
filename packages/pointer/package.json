@@ -13,10 +13,7 @@
     "name": "pointer",
     "stage": 2,
     "list": [
-      "createPointerListeners",
-      "createPerPointerListeners",
-      "createPointerPosition",
-      "createPointerList"
+      "createPointers"
     ],
     "category": "Inputs"
   },
@@ -58,9 +55,7 @@
     "test:ssr": "pnpm run vitest --mode ssr"
   },
   "dependencies": {
-    "@solid-primitives/event-listener": "workspace:^",
-    "@solid-primitives/rootless": "workspace:^",
-    "@solid-primitives/utils": "workspace:^"
+    "@solid-primitives/event-listener": "workspace:^"
   },
   "peerDependencies": {
     "solid-js": "^1.6.12"
