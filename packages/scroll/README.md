@@ -124,7 +124,6 @@ Get an `{ x: number, y: number }` object of element/window scroll position.
 
 _PRs Welcome :)_
 
-- `createScrollTo` - A primitive to support scroll to a target
 - `createHashScroll` - A primitive to support scrolling based on a hashtag change
 
 ## Changelog

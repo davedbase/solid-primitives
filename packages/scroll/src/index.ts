@@ -106,3 +106,53 @@ export function createScrollPosition(
 export const useWindowScrollPosition = /*#__PURE__*/ createHydratableSingletonRoot(() =>
   createScrollPosition(isServer ? () => undefined : window),
 );
+
+export type ScrollToOptions = {
+  left?: number;
+  top?: number;
+  behavior?: ScrollBehavior;
+};
+
+/**
+ * Returns a function to scrolling the specified target element or window.
+ *
+ * @param target - element/window to scroll. Can be a reactive signal.
+ * @returns a function that takes scroll options or x and y coordinates to scroll the target.
+ *
+ * @example
+ * // Using with default window target
+ * const scrollTo = createScrollTo();
+ * scrollTo({ top: 100, behavior: 'smooth' });
+ *
+ * // Using with a specific element
+ * const [element, setElement] = createSignal(document.getElementById('myElement'));
+ * const elementScrollTo = createScrollTo(element);
+ * elementScrollTo({ left: 50, behavior: 'smooth' });
+ *
+ * // Using with x and y coordinates
+ * scrollTo(100, 200);
+ */
+export function createScrollTo(
+  target: Accessor<Element | Window | undefined> | Element | Window = window,
+) {
+  return (options: ScrollToOptions | number, y?: number) => {
+    const currentTarget = typeof target === "function" ? target() : target;
+
+    if (!currentTarget || isServer) return;
+
+    if (typeof options === "number") {
+      options = {
+        left: options,
+        top: y,
+      };
+    }
+
+    const { left, top, behavior = "auto" } = options;
+
+    if (currentTarget instanceof Window) {
+      currentTarget.scrollTo({ left, top, behavior });
+    } else {
+      currentTarget.scrollTo({ left, top, behavior });
+    }
+  };
+}
