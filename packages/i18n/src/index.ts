@@ -1,4 +1,4 @@
-export type BaseRecordDict = { readonly [K: string | number]: unknown };
+export type BaseRecordDict = Readonly<Record<string, unknown>>;
 export type BaseArrayDict = readonly unknown[];
 export type BaseDict = BaseRecordDict | BaseArrayDict;
 
@@ -25,7 +25,7 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
  * Flatten a nested dictionary into a flat dictionary.
  *
  * @example
- * ```ts
+ * ```typescript
  * type Dict = {
  *   a: {
  *     foo: string;
@@ -41,26 +41,27 @@ type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
  *     b: { bar: number }
  *   },
  *   "a.foo": string;
- *   "a.b": { bar: number} ,
+ *   "a.b": { bar: number }
  *   "a.b.bar": number;
  * }
  * ```
  */
-export type Flatten<T extends BaseDict, P = {}> = number extends T
+export type Flatten<Dict extends BaseDict, P = {}> = number extends Dict
   ? /* catch any */ BaseRecordDict
-  : T extends (infer V)[]
+  : Dict extends (infer V)[]
     ? /* array */ { readonly [K in JoinPath<P, number>]?: V } & (V extends BaseDict
-        ? Partial<Flatten<V, JoinPath<P, number>>>
-        : {})
+    ? Partial<Flatten<V, JoinPath<P, number>>>
+    : {})
     : /* record */ UnionToIntersection<
-        { [K in keyof T]: T[K] extends BaseDict ? Flatten<T[K], JoinPath<P, K>> : never }[keyof T]
-      > & { readonly [K in keyof T as JoinPath<P, K>]: T[K] };
+    { [K in keyof Dict]: Dict[K] extends BaseDict ? Flatten<Dict[K], JoinPath<P, K>> : never }[keyof Dict]
+  > & { readonly [K in keyof Dict as JoinPath<P, K>]: Dict[K] };
 
-function visitDict(flat_dict: Record<string, unknown>, dict: BaseDict, path: string): void {
+function flattenInternal(flat_dict: Record<string, unknown>, dict: BaseDict, scope?: string): void {
+  const prefix = scope ? `${scope}.` : "";
   for (const [key, value] of Object.entries(dict)) {
-    const key_path = `${path}.${key}`;
+    const key_path = `${prefix}${key}`;
     flat_dict[key_path] = value;
-    isDict(value) && visitDict(flat_dict, value, key_path);
+    isDict(value) && flattenInternal(flat_dict, value, key_path);
   }
 }
 
@@ -70,7 +71,7 @@ function visitDict(flat_dict: Record<string, unknown>, dict: BaseDict, path: str
  * This way each nested property is available as a flat key.
  *
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   a: {
  *     foo: "foo",
@@ -91,16 +92,14 @@ function visitDict(flat_dict: Record<string, unknown>, dict: BaseDict, path: str
  * }
  * ```
  */
-export function flatten<T extends BaseDict>(dict: T): Flatten<T> {
+export function flatten<Dict extends BaseDict>(dict: Dict): Flatten<Dict> {
   const flat_dict: Record<string, unknown> = { ...dict };
-  for (const [key, value] of Object.entries(dict)) {
-    isDict(value) && visitDict(flat_dict, value, key);
-  }
-  return flat_dict as Flatten<T>;
+  flattenInternal(flat_dict, dict)
+  return flat_dict as Flatten<Dict>;
 }
 
-export type Prefixed<T extends BaseRecordDict, P extends string> = {
-  readonly [K in keyof T as `${P}.${K & (string | number)}`]: T[K];
+export type Prefixed<Dict extends BaseRecordDict, P extends string> = {
+  readonly [K in keyof Dict as `${P}.${K & (string | number)}`]: Dict[K];
 };
 
 /**
@@ -109,7 +108,7 @@ export type Prefixed<T extends BaseRecordDict, P extends string> = {
  * Useful for namespacing a dictionary when combining multiple dictionaries.
  *
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   hello: "hello",
  *   goodbye: "goodbye",
@@ -125,10 +124,10 @@ export type Prefixed<T extends BaseRecordDict, P extends string> = {
  * }
  * ```
  */
-export const prefix: <T extends BaseRecordDict, P extends string>(
-  dict: T,
+export const prefix: <Dict extends BaseRecordDict, P extends string>(
+  dict: Dict,
   prefix: P,
-) => Prefixed<T, P> = (dict: BaseRecordDict, prefix: string): any => {
+) => Prefixed<Dict, P> = (dict: BaseRecordDict, prefix: string): any => {
   prefix += ".";
   const result: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(dict)) {
@@ -137,20 +136,21 @@ export const prefix: <T extends BaseRecordDict, P extends string>(
   return result;
 };
 
-export type BaseTemplateArgs = Record<string, string | number | boolean>;
+export type BaseTemplateArgs<Args = string | number | boolean> = Record<string, Args>;
 
 /**
  * A string branded with arguments needed to resolve the template.
  */
-export type Template<T extends BaseTemplateArgs> = string & { __template_args: T };
+export type Template<T extends BaseTemplateArgs> = string & { _template_args: T };
 
 export type TemplateArgs<T extends Template<any>> = T extends Template<infer R> ? R : never;
 
 /**
  * Identity function that returns the same string branded as {@link Template} with the arguments needed to resolve the template.
+ * Keep in mind that you may only use arguments of a type that is supported by your template resolver
  *
  * @example
- * ```ts
+ * ```typescript
  * const template = i18n.template<{ name: string }>("hello {{ name }}!");
  *
  * // same as
@@ -159,72 +159,73 @@ export type TemplateArgs<T extends Template<any>> = T extends Template<infer R> 
  */
 export const template = <T extends BaseTemplateArgs>(source: string): Template<T> => source as any;
 
+
 /**
  * Resolve a {@link Template} with the provided {@link TemplateArgs}.
  */
-export type TemplateResolver<O = string> = <T extends string>(
-  template: T,
-  ...args: ResolveArgs<T, O>
-) => O;
+export type TemplateResolver<Out = string, Args = string | number | boolean> = <Dict extends string>(
+  template: Dict,
+  ...args: ResolveArgs<Dict, Args>
+) => Out;
 
 /**
  * Simple template resolver that replaces `{{ key }}` with the value of `args.key`.
  *
  * @example
- * ```ts
+ * ```typescript
  * resolveTemplate("hello {{ name }}!", { name: "John" });
  * // => "hello John!"
  * ```
  */
-export const resolveTemplate: TemplateResolver = (string: string, args?: BaseTemplateArgs) => {
-  if (args)
-    for (const [key, value] of Object.entries(args))
-      string = string.replace(new RegExp(`{{\\s*${key}\\s*}}`, "g"), value as string);
-  return string;
+export const resolveTemplate: TemplateResolver = (value: string, args?: BaseTemplateArgs) => {
+  if (typeof value == "string" && args)
+    for (const [key, argValue] of Object.entries(args))
+      value = value.replace(new RegExp(`{{\\s*${key}\\s*}}`, "g"), argValue as string);
+  return value;
 };
 
 /**
  * Template resolver that does nothing. It's used as a fallback when no template resolver is provided.
  */
-export const identityResolveTemplate = (v => v) as TemplateResolver;
+export const identityResolveTemplate = (v => v) as TemplateResolver<any, any>;
 
-export type Resolved<T, O> = T extends (...args: any[]) => infer R ? R : T extends O ? O : T;
+export type Resolved<Value, Out> = Value extends (...args: any[]) => infer R ? R : Value extends string ? Out : Value;
 
-export type ResolveArgs<T, O> = T extends (...args: infer A) => any
+export type ResolveArgs<Value, Args = string | number | boolean> = Value extends (...args: infer A) => any
   ? A
-  : T extends Template<infer R>
-    ? [args: R]
-    : T extends O
-      ? [args?: BaseTemplateArgs]
-      : [];
+  : Value extends Template<infer R>
+    ? (R extends BaseTemplateArgs<Args> ? [args: R] : [`Translator resolver doesn't fully support the argument types used in this template`])
+    : Value extends BaseRecordDict ?
+      [] :
+      [args?: BaseTemplateArgs<Args>];
 
-export type Resolver<T, O> = (...args: ResolveArgs<T, O>) => Resolved<T, O>;
-export type NullableResolver<T, O> = (...args: ResolveArgs<T, O>) => Resolved<T, O> | undefined;
+export type Resolver<Value, Out, Args> = (...args: ResolveArgs<Value, Args>) => Resolved<Value, Out>;
+export type NullableResolver<T, Out, Args> = (...args: ResolveArgs<T, Args>) => Resolved<T, Out> | undefined;
 
-export type Translator<T extends BaseRecordDict, O = string> = <K extends keyof T>(
+export type Translator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean> = <K extends keyof Dict>(
   path: K,
-  ...args: ResolveArgs<T[K], O>
-) => Resolved<T[K], O>;
+  ...args: ResolveArgs<Dict[K], Args>
+) => Resolved<Dict[K], Out>;
 
-export type NullableTranslator<T extends BaseRecordDict, O = string> = <K extends keyof T>(
+export type NullableTranslator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean> = <K extends keyof Dict>(
   path: K,
-  ...args: ResolveArgs<T[K], O>
-) => Resolved<T[K], O> | undefined;
+  ...args: ResolveArgs<Dict[K], Args>
+) => Resolved<Dict[K], Out> | undefined;
 
 /**
  * Create a translator function that will resolve the path in the dictionary and return the value.
  *
- * If the value is a function it will call it with the provided arguments.
+ * If the value is a function, it will call it with the provided arguments.
  *
- * If the value is a string it will resolve the template using {@link resolveTemplate} with the provided arguments.
+ * If the value is a string, it will resolve the template using {@link resolveTemplate} with the provided arguments.
  *
- * Otherwise it will return the value as is.
+ * Otherwise, it will return the value as is.
  *
  * @param dict A function that returns the dictionary to use for translation. Will be called on each translation.
  * @param resolveTemplate A function that will resolve the template. Defaults to {@link identityResolveTemplate}.
  *
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   hello: "hello {{ name }}!",
  *   goodbye: (name: string) => `goodbye ${name}!`,
@@ -241,47 +242,57 @@ export type NullableTranslator<T extends BaseRecordDict, O = string> = <K extend
  * t("food.meat") // => "meat"
  * ```
  */
-export function translator<T extends BaseRecordDict, O = string>(
-  dict: () => T,
-  resolveTemplate?: TemplateResolver<O>,
-): Translator<T, O>;
-export function translator<T extends BaseRecordDict, O = string>(
-  dict: () => T | undefined,
-  resolveTemplate?: TemplateResolver<O>,
-): NullableTranslator<T, O>;
-export function translator<T extends BaseRecordDict>(
-  dict: () => T | undefined,
-  resolveTemplate: TemplateResolver = identityResolveTemplate,
-): any {
-  return (path: string, ...args: any[]) => {
-    if (path[0] === ".") path = path.slice(1);
-
+export function translator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean>(
+  dict: () => Dict,
+  resolveTemplate?: TemplateResolver<Out, Args>,
+): Translator<Dict, Out, Args>;
+export function translator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean>(
+  dict: () => Dict | undefined,
+  resolveTemplate?: TemplateResolver<Out, Args>,
+): NullableTranslator<Dict, Out, Args>;
+export function translator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean>(
+  dict: () => Dict | undefined,
+  resolveTemplate: TemplateResolver<Out, Args> = identityResolveTemplate,
+): Translator<Dict, Out, Args> {
+  return (path, ...args) => {
     const value = dict()?.[path];
-
     switch (typeof value) {
       case "function":
         return value(...args);
       case "string":
-        return resolveTemplate(value, args[0]);
+        // @ts-expect-error: The types don't work out well, because of the template resolution,
+        // but it shouldn't matter, because in the implementation we don't care about that
+        return resolveTemplate(value, args[0])
       default:
         return value;
     }
   };
 }
 
-export type Scopes<T extends string> = {
-  [K in T]: K extends `${infer S}.${infer R}` ? S | `${S}.${Scopes<R>}` : never;
-}[T];
+type InternalSplit<S extends string, D extends string> =
+  S extends `${infer T}${D}${infer U}` ?
+    "" | `${D}${T}${InternalSplit<U, D>}`
+    : "";
 
-export type Scoped<T extends BaseRecordDict, S extends Scopes<keyof T & string>> = {
-  readonly [K in keyof T as K extends `${S}.${infer R}` ? R : never]: T[K];
-};
+
+type Split<S extends string, D extends string> =
+  S extends `${infer T}${D}${infer U}` ?
+    `${T}${InternalSplit<U, D>}`
+    : "";
+
+export type Scopes<T extends BaseRecordDict> = "" | undefined | null | Split<Extract<keyof T, string>, ".">
+
+// this type does not work with a union type as Scope,
+// it only works with a single string
+export type Scoped<Dict extends BaseRecordDict, Scope extends Scopes<Dict>> =
+    "" | undefined | null extends Scope ? Dict :
+  { readonly [P in keyof Dict as P extends `${Scope}.${infer Rest}` ? Rest : never]: Dict[P] }
 
 /**
  * Scopes the provided {@link Translator} to the given {@link scope}.
  *
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   greetings: {
  *     hello: "hello {{ name }}!",
@@ -300,31 +311,32 @@ export type Scoped<T extends BaseRecordDict, S extends Scopes<keyof T & string>>
  * greetings("goodbye", "John") // => undefined
  * ```
  */
-export function scopedTranslator<T extends BaseRecordDict, O, S extends Scopes<keyof T & string>>(
-  translator: Translator<T, O>,
-  scope: S,
-): Translator<Scoped<T, S>, O>;
-export function scopedTranslator<T extends BaseRecordDict, O, S extends Scopes<keyof T & string>>(
-  translator: NullableTranslator<T, O>,
-  scope: S,
-): NullableTranslator<Scoped<T, S>, O>;
-export function scopedTranslator<O>(
-  translator: Translator<BaseRecordDict, O>,
-  scope: string,
-): Translator<Scoped<BaseRecordDict, never>, O> {
-  return (path, ...args) => translator(`${scope}.${path}`, ...args);
+export function scopedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translator: Translator<Dict, Out, Args>,
+  scope: Scope,
+): Translator<Scoped<Dict, Scope>, Out, Args>;
+export function scopedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translator: NullableTranslator<Dict, Out, Args>,
+  scope: Scope,
+): NullableTranslator<Scoped<Dict, Scope>, Out, Args>;
+export function scopedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translator: Translator<Dict, Out, Args>,
+  scope: Scope,
+): Translator<Scoped<Dict, Scope>, Out, Args> {
+  // @ts-expect-error: Caused due to the scope not supporting union types
+  return ((path, ...args) => translator(`${scope}.${path}` as keyof Dict, ...args));
 }
 
-export type ChainedTranslator<T extends BaseRecordDict, O = string> = {
-  readonly [K in keyof T]: T[K] extends BaseRecordDict
-    ? ChainedTranslator<T[K], O>
-    : Resolver<T[K], O>;
+export type ChainedTranslator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean> = {
+  readonly [K in keyof Dict]: Dict[K] extends BaseRecordDict
+    ? ChainedTranslator<Dict[K], Out, Args>
+    : Resolver<Dict[K], Out, Args>;
 };
 
-export type NullableChainedTranslator<T extends BaseRecordDict, O = string> = {
-  readonly [K in keyof T]: T[K] extends BaseRecordDict
-    ? NullableChainedTranslator<T[K], O>
-    : NullableResolver<T[K], O>;
+export type NullableChainedTranslator<Dict extends BaseRecordDict, Out = string, Args = string | number | boolean> = {
+  readonly [K in keyof Dict]: Dict[K] extends BaseRecordDict
+    ? NullableChainedTranslator<Dict[K], Out, Args>
+    : NullableResolver<Dict[K], Out, Args>;
 };
 
 /**
@@ -333,8 +345,9 @@ export type NullableChainedTranslator<T extends BaseRecordDict, O = string> = {
  * @param init_dict The initial dictionary used for getting the structure of nested objects.
  * @param translate {@link Translator} function that will resolve the path in the dictionary and return the value.
  *
+ * @param scope The initial path to use for the chained translator.
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   greetings: {
  *     hello: "hello {{ name }}!",
@@ -353,34 +366,30 @@ export type NullableChainedTranslator<T extends BaseRecordDict, O = string> = {
  * chained.goodbye("John") // => "goodbye John!"
  * ```
  */
-export function chainedTranslator<T extends BaseRecordDict, O>(
-  init_dict: T,
-  translate: Translator<T, O>,
-  path?: string,
-): ChainedTranslator<T, O>;
-export function chainedTranslator<T extends BaseRecordDict, O>(
-  init_dict: T,
-  translate: NullableTranslator<T, O>,
-  path?: string,
-): NullableChainedTranslator<T, O>;
-export function chainedTranslator<T extends BaseRecordDict, O>(
-  init_dict: T,
-  translate: Translator<T, O>,
-  path: string = "",
-): any {
-  const result: any = { ...init_dict };
+export function chainedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  init_dict: Dict,
+  translate: Translator<Dict, Out, Args>,
+  scope?: Scope,
+): ChainedTranslator<Scoped<Dict, Scope>, Out, Args>;
+export function chainedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  init_dict: Dict,
+  translate: NullableTranslator<Dict, Out, Args>,
+  scope?: Scope,
+): NullableChainedTranslator<Scoped<Dict, Scope>, Out, Args>;
+export function chainedTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  init_dict: Dict,
+  translate: Translator<Dict, Out, Args>,
+  scope?: Scope,
+): ChainedTranslator<Scoped<Dict, Scope>, Out, Args> {
+  const result: any = {};
+  const prefix = scope ? `${scope}.` : "";
 
   for (const [key, value] of Object.entries(init_dict)) {
-    const key_path = `${path}.${key}`;
+    const key_path = `${prefix}${key}`;
 
-    result[key] = isRecordDict(value)
-      ? chainedTranslator(value, translate, key_path)
-      : (...args: any[]) =>
-          translate(
-            key_path,
-            // @ts-expect-error
-            ...args,
-          );
+    result[key] = isRecordDict(value) ?
+      chainedTranslator(value, translate, key_path as Scopes<typeof value>) :
+      (...args: ResolveArgs<Dict[string], Args>) => translate(key_path as keyof Dict, ...args);
   }
 
   return result;
@@ -391,8 +400,9 @@ export function chainedTranslator<T extends BaseRecordDict, O>(
  *
  * @param translate {@link Translator} function that will resolve the path in the dictionary and return the value.
  *
+ * @param scope The initial path to use for the chained translator.
  * @example
- * ```ts
+ * ```typescript
  * const dict = {
  *   greetings: {
  *     hello: "hello {{ name }}!",
@@ -411,42 +421,46 @@ export function chainedTranslator<T extends BaseRecordDict, O>(
  * proxy.goodbye("John") // => "goodbye John!"
  * ```
  */
-export function proxyTranslator<T extends BaseRecordDict, O>(
-  translate: Translator<T, O>,
-  path?: string,
-): ChainedTranslator<T, O>;
-export function proxyTranslator<T extends BaseRecordDict, O>(
-  translate: NullableTranslator<T, O>,
-  path?: string,
-): NullableChainedTranslator<T, O>;
-export function proxyTranslator<T extends BaseRecordDict, O>(
-  translate: Translator<T, O>,
-  path: string = "",
-): any {
-  return new Proxy(translate.bind(void 0, path), new Traps(translate, path));
+export function proxyTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translate: Translator<Dict, Out, Args>,
+  scope?: Scope,
+): ChainedTranslator<Scoped<Dict, Scope>, Out, Args>;
+export function proxyTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translate: NullableTranslator<Dict, Out, Args>,
+  scope?: Scope,
+): NullableChainedTranslator<Scoped<Dict, Scope>, Out, Args>;
+export function proxyTranslator<Dict extends BaseRecordDict, Out, Args, Scope extends Scopes<Dict>>(
+  translate: Translator<Dict, Out, Args>,
+  scope?: Scope,
+): ChainedTranslator<Scoped<Dict, Scope>, Out, Args> {
+  return new Proxy(translate.bind(void 0, scope ?? ""), new Traps(translate, scope));
 }
 
-class Traps<O> {
-  constructor(
-    private readonly translate: Translator<BaseRecordDict, O>,
-    private readonly path: string,
-  ) {}
+class Traps<Dict extends BaseRecordDict, Out, Args> {
+  private readonly prefix: string;
 
-  get(target: any, prop: PropertyKey): any {
-    if (typeof prop !== "string") return Reflect.get(target, prop);
-    return (proxyTranslator as any)(this.translate, `${this.path}.${prop}`);
+  constructor(
+    private readonly translate: Translator<Dict, Out, Args>,
+    scope: Scopes<Dict>,
+  ) {
+    this.prefix = scope ? `${scope}.` : "";
   }
 
-  has(target: any, prop: PropertyKey): boolean {
+  get(target: Translator<Dict, Out, Args>, prop: PropertyKey): any {
+    if (typeof prop !== "string") return Reflect.get(target, prop);
+    return (proxyTranslator as any)(this.translate, `${this.prefix}${prop}`);
+  }
+
+  has(target: Translator<Dict, Out, Args>, prop: PropertyKey): boolean {
     if (typeof prop !== "string") return Reflect.has(target, prop);
-    return (proxyTranslator as any)(this.translate, `${this.path}.${prop}`) !== undefined;
+    return (proxyTranslator as any)(this.translate, `${this.prefix}${prop}`) !== undefined;
   }
 
   getOwnPropertyDescriptor(target: any, prop: PropertyKey): PropertyDescriptor | undefined {
     if (typeof prop !== "string") return Reflect.getOwnPropertyDescriptor(target, prop);
     return {
       enumerable: true,
-      get: () => (proxyTranslator as any)(this.translate, `${this.path}.${prop}`),
+      get: () => (proxyTranslator as any)(this.translate, `${this.prefix}${prop}`),
     };
   }
 }
