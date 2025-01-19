@@ -1,5 +1,5 @@
 import type { Accessor, Setter, Signal } from "solid-js";
-import { createUniqueId, untrack } from "solid-js";
+import { onMount, createUniqueId, untrack } from "solid-js";
 import { isServer, isDev } from "solid-js/web";
 import type { SetStoreFunction, Store } from "solid-js/store";
 import { reconcile } from "solid-js/store";
@@ -59,10 +59,16 @@ export type PersistenceSyncAPI = [
 ];
 
 export type PersistenceOptions<T, O extends Record<string, any> | undefined> = {
+  /** The name of the item in storage, `createUniqueId` is used to generate it otherwise, which means that it is bound to the component scope then */
   name?: string;
+  /** A function that turns the value into a string for the storage. `JSON.stringify` is used as default. You can use seroval or your own custom serializer. */
   serialize?: (data: T) => string;
+  /** A function that turns the string from the storage back into the value. `JSON.parse` is used as default. You can use seroval or your own custom deserializer. */
   deserialize?: (data: string) => T;
+  /** Add one of the existing Sync APIs to sync storages over boundaries or provide your own */
   sync?: PersistenceSyncAPI;
+  /** If you experience hydration mismatch issues, set this to true to defer initial loading from store until after onMount */
+  deferInit?: boolean;
 } & (undefined extends O
   ? { storage?: SyncStorage | AsyncStorage }
   : {
@@ -77,9 +83,9 @@ export type SignalType<S extends SignalInput> =
 
 export type PersistedState<S extends SignalInput> =
   S extends Signal<infer T>
-    ? [get: Accessor<T>, set: Setter<T>, init: Promise<string> | string | null]
+    ? [get: Accessor<T>, set: Setter<T>, init: Promise<string | null> | string | null]
     : S extends [Store<infer T>, SetStoreFunction<infer T>]
-      ? [get: Store<T>, set: SetStoreFunction<T>, init: Promise<string> | string | null]
+      ? [get: Store<T>, set: SetStoreFunction<T>, init: Promise<string | null> | string | null]
       : never;
 
 /**
@@ -92,6 +98,7 @@ export type PersistedState<S extends SignalInput> =
  *    name: "solid-data",      // optional
  *    serialize: (value: string) => value, // optional
  *    deserialize: (data: string) => data, // optional
+ *    isHydrated, // optional, use @solid-primitives/lifecycle to avoid hydration mismatch
  *  };
  *  ```
  *  Can be used with `createSignal` or `createStore`. The initial value from the storage will overwrite the initial
@@ -126,7 +133,6 @@ export function makePersisted<
   const storageOptions = (options as unknown as { storageOptions: O }).storageOptions;
   const serialize: (data: T) => string = options.serialize || JSON.stringify.bind(JSON);
   const deserialize: (data: string) => T = options.deserialize || JSON.parse.bind(JSON);
-  const init = storage.getItem(name, storageOptions);
   const set =
     typeof signal[0] === "function"
       ? (data: string) => {
@@ -147,10 +153,19 @@ export function makePersisted<
             if (isDev) console.warn(e);
           }
         };
-  let unchanged = true;
 
-  if (init instanceof Promise) init.then(data => unchanged && data && set(data));
-  else if (init) set(init);
+  let unchanged = true;
+  let init: string | Promise<string | null> | null = null;
+  const initialize = () => {
+    init = storage.getItem(name, storageOptions);
+    if (init instanceof Promise) init.then(data => unchanged && data && set(data));
+    else if (init) set(init);
+  };
+  if (options.deferInit) {
+    onMount(initialize);
+  } else {
+    initialize();
+  }
 
   if (typeof options.sync?.[0] === "function") {
     const get: () => T =
