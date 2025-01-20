@@ -164,9 +164,6 @@ temp/
 
 tsup.config.bundled*.mjs
 
-# turbo
-.turbo
-
 # vite
 vite.config.ts.js
 vitest.config.ts.timestamp-*.mjs

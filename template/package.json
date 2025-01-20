@@ -31,7 +31,6 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "browser": {},
@@ -40,16 +39,11 @@
     "import": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "require": {
-      "types": "./dist/index.d.cts",
-      "default": "./dist/index.cjs"
     }
   },
   "typesVersions": {},
   "scripts": {
     "dev": "tsx ../../scripts/dev.ts",
-    "build": "tsx ../../scripts/build.ts",
     "vitest": "vitest -c ../../configs/vitest.config.ts",
     "test": "pnpm run vitest",
     "test:ssr": "pnpm run vitest --mode ssr"

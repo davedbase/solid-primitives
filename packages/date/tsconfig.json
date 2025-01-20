@@ -1,3 +1,22 @@
 {
-  "extends": "../../tsconfig.json"
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../memo"
+    },
+    {
+      "path": "../timer"
+    },
+    {
+      "path": "../utils"
+    }
+  ],
+  "include": [
+    "src"
+  ]
 }

@@ -39,7 +39,7 @@ export const getPackageBundlesize = async (
   if (!fs.existsSync(tempDir)) {
     try {
       await fsp.mkdir(tempDir);
-    } catch (e) {}
+    } catch (_) {}
   }
 
   const tempFilename = `${exportName ? `${packageName}_${exportName}` : packageName}_${randomHash}`;

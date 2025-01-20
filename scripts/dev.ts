@@ -7,7 +7,7 @@ if (package_name == null) {
   throw "this script should be ran from one of the pacakges";
 }
 
-utils.logLine(
+utils.log_info(
   `Starting dev server for the ${package_name} package...\n
 Visit the playground at http://localhost:3000/playground/${package_name} to test your changes.`,
 );

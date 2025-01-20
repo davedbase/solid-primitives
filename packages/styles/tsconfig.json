@@ -1,5 +1,19 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src", "./test", "./dev"],
-  "exclude": ["node_modules", "./dist"]
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../rootless"
+    },
+    {
+      "path": "../utils"
+    }
+  ],
+  "include": [
+    "src"
+  ]
 }

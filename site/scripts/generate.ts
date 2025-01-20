@@ -14,6 +14,7 @@ import { unified } from "unified";
 import { fileURLToPath } from "url";
 import {
   ModuleData,
+  PrimitiveData,
   formatBytes,
   getModulesData,
   getPackageBundlesize,
@@ -75,9 +76,9 @@ const markdownProcessor = unified()
 /**
  * Parse README.md of each package and generate HTML
  */
-async function generateReadme(module: ModuleData) {
+async function generateReadme(module: ModuleData, primitiveData: PrimitiveData) {
   const primitiveCodeElRegex = new RegExp(
-    `<(code)>((?:&#x3C;|<)?(?:${module.primitives.join("|")})>?)<\/(code)>`,
+    `<(code)>((?:&#x3C;|<)?(?:${primitiveData.list.join("|")})>?)<\/(code)>`,
     "g",
   );
   const readmePath = path.join(packagesPath, module.name, "README.md");
@@ -91,8 +92,8 @@ async function generateReadme(module: ModuleData) {
       /<p>(?=[^]*?<img(?=[^>]+?src="https:\/\/assets\.solidjs\.com\/banner[^"]+")[^>]*?>)[^]*?<\/p>/,
       "",
     )
-    // remove turborepo, size, version, stage ect... img banners
-    .replace(/^\[!\[(?:turborepo|size|version|stage|lerna)\].+$/gm, "")
+    // remove size, version, stage ect... img banners
+    .replace(/^\[!\[(?:size|version|stage|lerna)\].+$/gm, "")
     // replace changelog relative url to github repo changelog
     .replace(/(\[CHANGELOG\.md\])(\(\.\/CHANGELOG\.md\))/i, (_, p1, p2) => {
       if (!p2) return _;
@@ -130,12 +131,12 @@ async function generateReadme(module: ModuleData) {
   );
 }
 
-async function generatePrimitiveSizes(module: ModuleData) {
+async function generatePrimitiveSizes(module: ModuleData, primitiveData: PrimitiveData) {
   if (PACKAGE_COLLAPSED_LIST_OF_PRIMITIVES.has(module.name)) {
     return [];
   }
 
-  const sizes = module.primitives.map(async primitive => {
+  const sizes = primitiveData.list.map(async primitive => {
     const result = await getPackageBundlesize(module.name, {
       exportName: primitive,
       peerDependencies: module.peer_deps,
@@ -173,23 +174,27 @@ async function generatePackageSize(module: ModuleData) {
     await fsp.mkdir(packagesDirDist);
   }
 
-  const packages = await getModulesData<PackageListItem>(async module => {
+  const packages = [] as PackageListItem[]
+  
+  for (let module of await getModulesData()) {
+    if (module.primitive == null) continue
+  
     const [readme, primitives, packageSize] = await Promise.all([
-      generateReadme(module),
-      generatePrimitiveSizes(module),
+      generateReadme(module, module.primitive),
+      generatePrimitiveSizes(module, module.primitive),
       generatePackageSize(module),
     ] as const);
-
+  
     const itemData: PackageListItem = { ...module, primitives, packageSize };
-
+  
     const data: PackageData = { ...itemData, readme };
-
+  
     // write data to individual json file
     const outputFilename = path.join(packagesDirDist, `${module.name}.json`);
     await fsp.writeFile(outputFilename, JSON.stringify(data, null, 2));
-
-    return itemData;
-  });
+  
+    packages.push(itemData)
+  }
 
   // gather all module names into one json file
   await fsp.writeFile(packagesDist, JSON.stringify(packages, null, 2));

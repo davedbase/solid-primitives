@@ -1,5 +1,25 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src", "./test", "./dev"],
-  "exclude": ["node_modules", "./dist"]
+  "compilerOptions": {
+    "composite": true,
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../event-listener"
+    },
+    {
+      "path": "../rootless"
+    },
+    {
+      "path": "../static-store"
+    },
+    {
+      "path": "../utils"
+    }
+  ],
+  "include": [
+    "src"
+  ]
 }

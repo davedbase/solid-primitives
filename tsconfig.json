@@ -5,7 +5,6 @@
     "newLine": "LF",
     "lib": ["DOM", "ESNext"],
     "moduleResolution": "NodeNext",
-    "noEmit": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "esModuleInterop": true,

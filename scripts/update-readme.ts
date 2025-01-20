@@ -33,10 +33,12 @@ const rootDependencies: string[] = [
 (async () => {
   const modulesData = await utils.getModulesData();
 
-  for (const { name, category, primitives, stage, workspace_deps } of modulesData) {
+  for (const module of modulesData) {
+    if (module.primitive == null) continue
+
     const packageName = `@solid-primitives/${name}`;
 
-    if (workspace_deps.length === 0) {
+    if (module.workspace_deps.length === 0) {
       rootDependencies.push(packageName);
     }
 
@@ -51,13 +53,13 @@ const rootDependencies: string[] = [
       data.Size = `[![SIZE](${sizeShield}${packageName}?style=for-the-badge&label=)](${bundlephobiaURL}${packageName})`;
       data.NPM = `[![VERSION](${npmShield}${packageName}?style=for-the-badge&label=)](${npmURL}${packageName})`;
     }
-    data.Stage = `[![STAGE](${stageShieldBaseURL}${stage}.json)](${stageShieldLink})`;
-    data.Primitives = primitives
+    data.Stage = `[![STAGE](${stageShieldBaseURL}${module.primitive.stage}.json)](${stageShieldLink})`;
+    data.Primitives = module.primitive.list
       .map(prim => `[${prim}](${githubURL}${name}#${prim.replace(/ /g, "-").toLowerCase()})`)
       .join("<br />");
     // Merge the package into the correct category
-    const cat = categories[category];
-    categories[category] = cat ? [...cat, data] : [data];
+    const cat = categories[module.primitive.category];
+    categories[module.primitive.category] = cat ? [...cat, data] : [data];
   }
 
   const pathToREADME = path.join(utils.ROOT_DIR, "README.md");

@@ -1,0 +1,22 @@
+
+node_modules/
+dist/
+assets
+
+# TypeScript cache
+*.tsbuildinfo
+
+.vscode
+
+# Temporary folders
+tmp/
+temp/
+_temp_*
+
+_generated
+
+.netlify
+.vinxi
+.idea
+
+tsconfig.json

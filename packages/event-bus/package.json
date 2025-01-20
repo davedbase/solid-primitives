@@ -26,7 +26,6 @@
     "dist"
   ],
   "type": "module",
-  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "browser": {},
   "types": "./dist/index.d.ts",
@@ -35,10 +34,6 @@
     "import": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "require": {
-      "types": "./dist/index.d.cts",
-      "default": "./dist/index.cjs"
     }
   },
   "scripts": {

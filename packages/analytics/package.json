@@ -10,7 +10,6 @@
     "url": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/analytics"
   },
   "type": "module",
-  "main": "./dist/index.cjs",
   "module": "./dist/index.js",
   "browser": {},
   "types": "./dist/index.d.ts",
@@ -18,10 +17,6 @@
     "import": {
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
-    },
-    "require": {
-      "types": "./dist/index.d.cts",
-      "default": "./dist/index.cjs"
     }
   },
   "files": [

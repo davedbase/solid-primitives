@@ -1,10 +1,4 @@
-import {
-  checkValidPackageName,
-  formatBytes,
-  getPackageBundlesize,
-  getPackagePkg,
-  logLine,
-} from "./utils/index.js";
+import * as utils from "./utils/index.js";
 
 if (process.argv.length < 3)
   throw new Error(
@@ -13,7 +7,7 @@ if (process.argv.length < 3)
 
 const name = process.argv[2];
 
-if (!name || !checkValidPackageName(name))
+if (!name || !utils.checkValidPackageName(name))
   throw new Error(`Incorrect package name argument: "${name}"`);
 
 class ConsoleTable {
@@ -39,13 +33,13 @@ class ConsoleTable {
     const separator = columnWidths.map(columnWidth => "—".repeat(columnWidth)).join(" + ");
 
     for (const row of this.rows) {
-      logLine(
+      utils.log_info(
         row.length === 0
           ? separator
           : columnWidths
               .map((columnWidth, i) => {
                 if (!row[i]) return " ".repeat(columnWidth);
-                const cellWidth = row[i]!.length;
+                const cellWidth = row[i].length;
                 const padding = " ".repeat(columnWidth - cellWidth);
                 return row[i] + padding;
               })
@@ -57,18 +51,19 @@ class ConsoleTable {
   }
 }
 
-const pkg = getPackagePkg(name);
-if (pkg instanceof Error) throw pkg;
+const module = await utils.getModuleData(name)
+if (module instanceof Error) throw module;
+if (module.primitive == null) throw Error(`Package ${name} doesn't have primitive data in package.json`);
 
-const primitives = (pkg.primitive as any).list as string[];
-const peerDependencies = Object.keys(pkg.peerDependencies);
+const primitives = module.primitive.list
+const peerDependencies = module.peer_deps;
 
-logLine(`Measuring "@solid-primitives/${name}"...\n`);
+utils.log_info(`Measuring "@solid-primitives/${name}"...\n`);
 
 const primitivesSizesPromises = primitives.map(primitive =>
-  getPackageBundlesize(name, { exportName: primitive, peerDependencies }),
+  utils.getPackageBundlesize(name, { exportName: primitive, peerDependencies }),
 );
-const packageSizePromise = getPackageBundlesize(name, { peerDependencies });
+const packageSizePromise = utils.getPackageBundlesize(name, { peerDependencies });
 
 const [primitivesSizes, packageSize] = await Promise.all([
   Promise.all(primitivesSizesPromises),
@@ -83,21 +78,21 @@ table.addSeparator();
 primitivesSizes.forEach((size, i) => {
   table.addRow([
     primitives[i]!,
-    size ? formatBytes(size.min).join(" ") : "N/A",
-    size ? formatBytes(size.gzip).join(" ") : "N/A",
+    size ? utils.formatBytes(size.min).join(" ") : "N/A",
+    size ? utils.formatBytes(size.gzip).join(" ") : "N/A",
   ]);
 });
 table.addSeparator();
 
 table.addRow([
   "Total",
-  packageSize ? formatBytes(packageSize.min).join(" ") : "N/A",
-  packageSize ? formatBytes(packageSize.gzip).join(" ") : "N/A",
+  packageSize ? utils.formatBytes(packageSize.min).join(" ") : "N/A",
+  packageSize ? utils.formatBytes(packageSize.gzip).join(" ") : "N/A",
 ]);
 
 table.log();
 
-logLine(`
+utils.log_info(`
 ${primitivesSizes.every(size => size) ? "✅" : "❌"} All primitives measured successfully.
 ${packageSize ? "✅" : "❌"} Measured the package successfully.
 `);

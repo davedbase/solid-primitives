@@ -12,28 +12,31 @@
   "type": "module",
   "scripts": {
     "dev": "pnpm -dir site run dev",
-    "format": "prettier --cache -w {site,packages,scripts,template}/**/*.{js,ts,json,css,tsx,jsx,md,html} --ignore-path .gitignore",
+    "format": "prettier --cache -w {site,packages,scripts,template}/**/*.{js,ts,json,css,tsx,jsx,md,html}",
     "lint:packages": "eslint --max-warnings 0 \"packages/*/src/**/*\"",
     "lint:tests": "eslint \"packages/*/test/**\" --rule \"no-only-tests/no-only-tests: error\"",
     "lint": "pnpm run \"/^lint:.*/\"",  
     "test:client": "vitest -c ./configs/vitest.config.ts",
     "test:ssr": "pnpm run test:client --mode ssr",
     "test": "pnpm run test:client && pnpm run test:ssr",
-    "build:ci": "turbo run build --filter='./packages/*'",
-    "build": "pnpm run build:ci --concurrency=50%",
+    "build": "tsx ./scripts/build.ts",
     "new-package": "tsx ./scripts/new-package.ts",
     "update-readme": "tsx ./scripts/update-readme.ts",
+    "update-tsconfigs": "tsx ./scripts/update-tsconfigs.ts",
     "measure": "tsx ./scripts/measure.ts",
     "version": "changeset version && pnpm i --no-frozen-lockfile && git add .",
-    "release": "pnpm build && changeset publish"
+    "release": "pnpm build && changeset publish",
+    "postinstall": "pnpm update-tsconfigs"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.8",
+    "@solidjs/start": "^1.0.6",
     "@types/jsdom": "^21.1.7",
     "@types/node": "^22.5.4",
     "@typescript-eslint/eslint-plugin": "^8.5.0",
     "@typescript-eslint/parser": "^8.5.0",
     "esbuild": "^0.19.11",
+    "esbuild-plugin-solid": "^0.6.0",
     "eslint": "^9.10.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-no-only-tests": "^3.3.0",
@@ -46,18 +49,15 @@
     "rehype-slug": "^6.0.0",
     "remark-gfm": "^4.0.0",
     "solid-js": "^1.8.22",
-    "@solidjs/start": "^1.0.6",
-    "tsup": "^8.2.4",
-    "tsup-preset-solid": "^2.2.0",
     "tsx": "^4.19.1",
-    "turbo": "^1.12.5",
-    "vinxi": "^0.4.2",
-    "vite-plugin-solid": "^2.10.2",
     "typescript": "~5.6.2",
-    "valibot": "^0.20.1",
+    "vinxi": "^0.4.2",
     "vite": "5.4.4",
+    "vite-plugin-solid": "^2.10.2",
     "vitest": "^2.1.0"
   },
   "packageManager": "pnpm@9.9.0",
-  "engines": {"node": ">=20.0.0"}
+  "engines": {
+    "node": ">=20.0.0"
+  }
 }

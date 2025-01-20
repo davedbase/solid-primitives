@@ -24,14 +24,6 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Cache turbo build setup
-        uses: actions/cache@v4
-        with:
-          path: node_modules/.cache/turbo
-          key: turbo-${{ github.sha }}
-          restore-keys: |
-            turbo-
-
       - name: Build all packages
         run: pnpm build
 

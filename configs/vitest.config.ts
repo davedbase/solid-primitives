@@ -5,9 +5,9 @@ import * as utils from "../scripts/utils/index.js"
 const package_name = utils.getPackageNameFromCWD()
 
 if (package_name == null) {
-  utils.logLine("Testing ALL packages...")
+  utils.log_info("Testing ALL packages...")
 } else {
-  utils.logLine("Testing "+package_name+" package...")
+  utils.log_info("Testing "+package_name+" package...")
 }
 
 const from_root = package_name == null

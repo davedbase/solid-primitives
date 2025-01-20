@@ -4,8 +4,7 @@
 
 # Solid Primitives
 
-[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)
-[![turborepo](https://img.shields.io/badge/built%20with-turborepo-cc00ff.svg?style=for-the-badge&logo=turborepo)](https://turborepo.org/)<!-- INSERT-NPM-DOWNLOADS-BADGE:START -->
+[![pnpm](https://img.shields.io/badge/maintained%20with-pnpm-cc00ff.svg?style=for-the-badge&logo=pnpm)](https://pnpm.io/)<!-- INSERT-NPM-DOWNLOADS-BADGE:START -->
 [![combined-downloads](https://img.shields.io/endpoint?style=for-the-badge&url=https://combined-npm-downloads.deno.dev/@solid-primitives/utils,@solid-primitives/broadcast-channel,@solid-primitives/context,@solid-primitives/cookies,@solid-primitives/devices,@solid-primitives/event-dispatcher,@solid-primitives/event-props,@solid-primitives/fetch,@solid-primitives/filesystem,@solid-primitives/flux-store,@solid-primitives/i18n,@solid-primitives/idle,@solid-primitives/input-mask,@solid-primitives/keyed,@solid-primitives/lifecycle,@solid-primitives/list,@solid-primitives/marker,@solid-primitives/mutable,@solid-primitives/permission,@solid-primitives/platform,@solid-primitives/resource,@solid-primitives/scheduled,@solid-primitives/script-loader,@solid-primitives/selection,@solid-primitives/share,@solid-primitives/spring,@solid-primitives/state-machine,@solid-primitives/timer,@solid-primitives/transition-group,@solid-primitives/tween,@solid-primitives/websocket,@solid-primitives/workers)](https://dash.deno.com/playground/combined-npm-downloads)
 <!-- INSERT-NPM-DOWNLOADS-BADGE:END -->
 

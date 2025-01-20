@@ -36,37 +36,28 @@
   "private": false,
   "sideEffects": false,
   "type": "module",
-  "main": "./dist/index/index.cjs",
-  "module": "./dist/index/index.js",
-  "types": "./dist/index/index.d.ts",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "browser": {},
   "exports": {
     "@solid-primitives/source": "./src/index.ts",
     ".": {
       "import": {
-        "types": "./dist/index/index.d.ts",
-        "default": "./dist/index/index.js"
-      },
-      "require": {
-        "types": "./dist/index/index.d.cts",
-        "default": "./dist/index/index.cjs"
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
       }
     },
     "./tauri": {
       "import": {
-        "types": "./dist/tauri/index.d.ts",
-        "default": "./dist/tauri/index.js"
-      },
-      "require": {
-        "types": "./dist/tauri/index.d.cts",
-        "default": "./dist/tauri/index.cjs"
+        "types": "./dist/tauri.d.ts",
+        "default": "./dist/tauri.js"
       }
     }
   },
   "typesVersions": {
     "*": {
       "tauri": [
-        "./dist/tauri/index.d.ts"
+        "./dist/tauri.d.ts"
       ]
     }
   },
