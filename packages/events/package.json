@@ -1,0 +1,66 @@
+{
+  "name": "@solid-primitives/events",
+  "version": "0.0.100",
+  "description": "Declarative event composition and state derivation primitives for Solidjs.",
+  "author": "Dev Agrawal <devagrawal09@gmail.com>",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://primitives.solidjs.community/package/events",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/solidjs-community/solid-primitives/issues"
+  },
+  "primitive": {
+    "name": "events",
+    "stage": 0,
+    "list": [
+      "createEvent",
+      "createSubject",
+      "createSubjectStore",
+      "createTopic",
+      "createPartition"
+    ],
+    "category": "Reactivity"
+  },
+  "keywords": [
+    "solid",
+    "primitives"
+  ],
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
+  "exports": {
+    "import": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "require": {
+      "types": "./dist/index.d.cts",
+      "default": "./dist/index.cjs"
+    }
+  },
+  "typesVersions": {},
+  "scripts": {
+    "dev": "tsx ../../scripts/dev.ts",
+    "build": "tsx ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  },
+  "dependencies": {
+    "rxjs": "^7.8.1"
+  }
+}
