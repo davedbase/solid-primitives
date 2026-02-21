@@ -23,10 +23,7 @@ const connections = new Map<string, VoidFunction>();
  * Keeping responses tied to the originating channel makes SharedWorker work
  * correctly (each tab has its own MessagePort).
  */
-function handleMessage(
-  data: SSEWorkerMessage,
-  postBack: (msg: SSEWorkerMessage) => void,
-): void {
+function handleMessage(data: SSEWorkerMessage, postBack: (msg: SSEWorkerMessage) => void): void {
   if (data.type === "connect") {
     const { id, url, withCredentials, events } = data;
 

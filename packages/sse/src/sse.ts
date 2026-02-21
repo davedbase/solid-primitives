@@ -1,10 +1,4 @@
-import {
-  type Accessor,
-  createComputed,
-  createSignal,
-  onCleanup,
-  untrack,
-} from "solid-js";
+import { type Accessor, createComputed, createSignal, onCleanup, untrack } from "solid-js";
 import { isServer } from "solid-js/web";
 import { access, type MaybeAccessor } from "@solid-primitives/utils";
 

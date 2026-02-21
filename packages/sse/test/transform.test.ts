@@ -160,10 +160,7 @@ describe("pipe", () => {
 
   it("composes ndjson with a filter step", () => {
     type Row = { type: string };
-    const ticks = pipe(
-      ndjson<Row>,
-      rows => rows.filter(r => r.type === "tick"),
-    );
+    const ticks = pipe(ndjson<Row>, rows => rows.filter(r => r.type === "tick"));
     expect(ticks('{"type":"tick"}\n{"type":"other"}\n{"type":"tick"}')).toEqual([
       { type: "tick" },
       { type: "tick" },

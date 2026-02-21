@@ -110,34 +110,34 @@ Changing `userId()` will close the existing connection and open a new one to the
 
 ### Options
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `withCredentials` | `boolean` | `false` | Send credentials with the request |
-| `onOpen` | `(e: Event) => void` | — | Called when the connection opens |
-| `onMessage` | `(e: MessageEvent) => void` | — | Called on each unnamed `message` event |
-| `onError` | `(e: Event) => void` | — | Called on error |
-| `events` | `Record<string, (e: MessageEvent) => void>` | — | Handlers for named SSE event types |
-| `initialValue` | `T` | `undefined` | Initial value of the `data` signal |
-| `transform` | `(raw: string) => T` | identity | Parse raw string data, e.g. `JSON.parse` |
-| `reconnect` | `boolean \| SSEReconnectOptions` | `false` | App-level reconnect on terminal errors |
+| Option            | Type                                        | Default     | Description                              |
+| ----------------- | ------------------------------------------- | ----------- | ---------------------------------------- |
+| `withCredentials` | `boolean`                                   | `false`     | Send credentials with the request        |
+| `onOpen`          | `(e: Event) => void`                        | —           | Called when the connection opens         |
+| `onMessage`       | `(e: MessageEvent) => void`                 | —           | Called on each unnamed `message` event   |
+| `onError`         | `(e: Event) => void`                        | —           | Called on error                          |
+| `events`          | `Record<string, (e: MessageEvent) => void>` | —           | Handlers for named SSE event types       |
+| `initialValue`    | `T`                                         | `undefined` | Initial value of the `data` signal       |
+| `transform`       | `(raw: string) => T`                        | identity    | Parse raw string data, e.g. `JSON.parse` |
+| `reconnect`       | `boolean \| SSEReconnectOptions`            | `false`     | App-level reconnect on terminal errors   |
 
 **`SSEReconnectOptions`:**
 
-| Option | Type | Default | Description |
-|---|---|---|---|
-| `retries` | `number` | `Infinity` | Max reconnect attempts |
-| `delay` | `number` | `3000` | Milliseconds between attempts |
+| Option    | Type     | Default    | Description                   |
+| --------- | -------- | ---------- | ----------------------------- |
+| `retries` | `number` | `Infinity` | Max reconnect attempts        |
+| `delay`   | `number` | `3000`     | Milliseconds between attempts |
 
 ### Return value
 
-| Property | Type | Description |
-|---|---|---|
-| `source` | `Accessor<SSESourceHandle \| undefined>` | Underlying source instance; `undefined` on SSR |
-| `data` | `Accessor<T \| undefined>` | Latest message data |
-| `error` | `Accessor<Event \| undefined>` | Latest error event |
-| `readyState` | `Accessor<SSEReadyState>` | `SSEReadyState.CONNECTING` / `.OPEN` / `.CLOSED` |
-| `close` | `VoidFunction` | Close the connection |
-| `reconnect` | `VoidFunction` | Force-close and reopen |
+| Property     | Type                                     | Description                                      |
+| ------------ | ---------------------------------------- | ------------------------------------------------ |
+| `source`     | `Accessor<SSESourceHandle \| undefined>` | Underlying source instance; `undefined` on SSR   |
+| `data`       | `Accessor<T \| undefined>`               | Latest message data                              |
+| `error`      | `Accessor<Event \| undefined>`           | Latest error event                               |
+| `readyState` | `Accessor<SSEReadyState>`                | `SSEReadyState.CONNECTING` / `.OPEN` / `.CLOSED` |
+| `close`      | `VoidFunction`                           | Close the connection                             |
+| `reconnect`  | `VoidFunction`                           | Force-close and reopen                           |
 
 ### `SSEReadyState`
 
@@ -146,9 +146,9 @@ Named constants for the connection state, exported as a plain object so they are
 ```ts
 import { SSEReadyState } from "@solid-primitives/sse";
 
-SSEReadyState.CONNECTING // 0
-SSEReadyState.OPEN       // 1
-SSEReadyState.CLOSED     // 2
+SSEReadyState.CONNECTING; // 0
+SSEReadyState.OPEN; // 1
+SSEReadyState.CLOSED; // 2
 ```
 
 ### A note on reconnection
@@ -159,14 +159,14 @@ SSEReadyState.CLOSED     // 2
 
 Ready-made `transform` functions for the most common SSE data formats. See [TRANSFORMS.md](./TRANSFORMS.md) for full documentation and examples.
 
-| Transformer | Description |
-|---|---|
-| [`json`](./TRANSFORMS.md#json) | Parse data as a single JSON value |
-| [`ndjson`](./TRANSFORMS.md#ndjson) | Parse newline-delimited JSON into an array |
-| [`lines`](./TRANSFORMS.md#lines) | Split data into a `string[]` by newline |
-| [`number`](./TRANSFORMS.md#number) | Parse data as a number via `Number()` |
+| Transformer                                                            | Description                                                     |
+| ---------------------------------------------------------------------- | --------------------------------------------------------------- |
+| [`json`](./TRANSFORMS.md#json)                                         | Parse data as a single JSON value                               |
+| [`ndjson`](./TRANSFORMS.md#ndjson)                                     | Parse newline-delimited JSON into an array                      |
+| [`lines`](./TRANSFORMS.md#lines)                                       | Split data into a `string[]` by newline                         |
+| [`number`](./TRANSFORMS.md#number)                                     | Parse data as a number via `Number()`                           |
 | [`safe(transform, fallback?)`](./TRANSFORMS.md#safetransform-fallback) | Fault-tolerant wrapper — returns `fallback` instead of throwing |
-| [`pipe(a, b)`](./TRANSFORMS.md#pipea-b) | Compose two transforms into one |
+| [`pipe(a, b)`](./TRANSFORMS.md#pipea-b)                                | Compose two transforms into one                                 |
 
 ## Integration with `@solid-primitives/event-bus`
 

@@ -31,10 +31,9 @@ Load it via your bundler's `new URL(…, import.meta.url)` syntax to get a corre
 import { createSSE } from "@solid-primitives/sse";
 import { makeSSEWorker } from "@solid-primitives/sse/worker";
 
-const worker = new Worker(
-  new URL("@solid-primitives/sse/worker-handler", import.meta.url),
-  { type: "module" },
-);
+const worker = new Worker(new URL("@solid-primitives/sse/worker-handler", import.meta.url), {
+  type: "module",
+});
 
 const { data, readyState, error, close, reconnect } = createSSE<{ msg: string }>(
   "https://api.example.com/events",
@@ -56,10 +55,9 @@ A SharedWorker is shared across all tabs on the same origin. Pass `sw.port` (a `
 import { createSSE } from "@solid-primitives/sse";
 import { makeSSEWorker } from "@solid-primitives/sse/worker";
 
-const sw = new SharedWorker(
-  new URL("@solid-primitives/sse/worker-handler", import.meta.url),
-  { type: "module" },
-);
+const sw = new SharedWorker(new URL("@solid-primitives/sse/worker-handler", import.meta.url), {
+  type: "module",
+});
 sw.port.start(); // required to activate a MessagePort
 
 const { data } = createSSE("https://api.example.com/events", {
@@ -93,9 +91,9 @@ type SSEWorkerTarget = {
 
 /** Messages exchanged between the main thread and the Worker */
 type SSEWorkerMessage =
-  | { type: "connect";    id: string; url: string; withCredentials?: boolean; events?: string[] }
+  | { type: "connect"; id: string; url: string; withCredentials?: boolean; events?: string[] }
   | { type: "disconnect"; id: string }
-  | { type: "open";       id: string }
-  | { type: "message";    id: string; data: string; eventType: string }
-  | { type: "error";      id: string; readyState: SSEReadyState };
+  | { type: "open"; id: string }
+  | { type: "message"; id: string; data: string; eventType: string }
+  | { type: "error"; id: string; readyState: SSEReadyState };
 ```

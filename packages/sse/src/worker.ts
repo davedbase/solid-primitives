@@ -18,10 +18,7 @@ export type SSEWorkerMessage =
 export type SSEWorkerTarget = {
   postMessage(data: SSEWorkerMessage): void;
   addEventListener(type: "message", listener: (e: MessageEvent<SSEWorkerMessage>) => void): void;
-  removeEventListener(
-    type: "message",
-    listener: (e: MessageEvent<SSEWorkerMessage>) => void,
-  ): void;
+  removeEventListener(type: "message", listener: (e: MessageEvent<SSEWorkerMessage>) => void): void;
 };
 
 // ─── WorkerEventSource ────────────────────────────────────────────────────────
