@@ -19,7 +19,10 @@
     "list": [
       "makeSSE",
       "createSSE",
-      "makeSSEWorker"
+      "makeSSEWorker",
+      "json",
+      "ndjson",
+      "lines"
     ],
     "category": "Network"
   },
