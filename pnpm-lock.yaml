@@ -862,6 +862,16 @@ importers:
         specifier: ^1.9.7
         version: 1.9.7
 
+  packages/sse:
+    dependencies:
+      '@solid-primitives/utils':
+        specifier: workspace:^
+        version: link:../utils
+    devDependencies:
+      solid-js:
+        specifier: ^1.9.7
+        version: 1.9.7
+
   packages/state-machine:
     devDependencies:
       solid-js:

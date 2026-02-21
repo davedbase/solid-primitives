@@ -1,0 +1,65 @@
+{
+  "name": "@solid-primitives/sse",
+  "version": "0.0.100",
+  "description": "Primitives for Server-Sent Events (SSE) using the browser's EventSource API.",
+  "author": "Solid Primitives Working Group",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://primitives.solidjs.community/package/sse",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/solidjs-community/solid-primitives/issues"
+  },
+  "primitive": {
+    "name": "sse",
+    "stage": 0,
+    "list": [
+      "makeSSE",
+      "createSSE"
+    ],
+    "category": "Network"
+  },
+  "keywords": [
+    "solid",
+    "primitives",
+    "sse",
+    "eventsource",
+    "server-sent-events"
+  ],
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "browser": {},
+  "exports": {
+    "import": {
+      "@solid-primitives/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "typesVersions": {},
+  "scripts": {
+    "dev": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/dev.ts",
+    "build": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "test": "pnpm run vitest",
+    "test:ssr": "pnpm run vitest --mode ssr"
+  },
+  "dependencies": {
+    "@solid-primitives/utils": "workspace:^"
+  },
+  "peerDependencies": {
+    "solid-js": "^1.6.12"
+  },
+  "devDependencies": {
+    "solid-js": "^1.9.7"
+  }
+}
