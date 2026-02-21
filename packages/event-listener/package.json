@@ -2,7 +2,7 @@
   "name": "@solid-primitives/event-listener",
   "version": "2.4.3",
   "description": "SolidJS Primitives to manage creating event listeners.",
-  "author": "David Di Biase <dave@solidjs.com>",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
   "contributors": [
     "Damian Tarnawski <gthetarnav@gmail.com>"
   ],

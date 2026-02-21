@@ -2,7 +2,7 @@
   "name": "@solid-primitives/intersection-observer",
   "version": "2.2.2",
   "description": "Primitives to support using the intersection observer API.",
-  "author": "David Di Biase <dave@solidjs.com>",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
   "contributors": [
     "Damian Tarnawski <gthetarnav@gmail.com>"
   ],

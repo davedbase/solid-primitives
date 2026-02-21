@@ -2,7 +2,7 @@
   "name": "@solid-primitives/sse",
   "version": "0.0.100",
   "description": "Primitives for Server-Sent Events (SSE) using the browser's EventSource API.",
-  "author": "David Di Biase <dave@solidjs.com>",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
   "contributors": [],
   "license": "MIT",
   "homepage": "https://primitives.solidjs.community/package/sse",

@@ -2,7 +2,7 @@
   "name": "@solid-primitives/analytics",
   "version": "0.2.0",
   "description": "Primitive that makes managing analytics a lot easier.",
-  "author": "David Di Biase <dave@solidjs.com>",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/solidjs-community/solid-primitives/tree/main/packages/analytics#readme",
   "repository": {

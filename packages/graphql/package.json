@@ -2,7 +2,7 @@
   "name": "@solid-primitives/graphql",
   "version": "2.2.3",
   "description": "Primitive that generates a client and reactive GraphQL queries",
-  "author": "David Di Biase <dave@solidjs.com>",
+  "author": "David Di Biase <dave.dibiase@gmail.com>",
   "contributors": [
     "Damian Tarnawski <gthetarnav@gmail.com>",
     "Alex Ryapolov"
