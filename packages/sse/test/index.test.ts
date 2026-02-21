@@ -1,7 +1,7 @@
 import "./setup";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { createRoot, createSignal } from "solid-js";
-import { makeSSE, createSSE } from "../src/index.js";
+import { makeSSE, createSSE, SSEReadyState } from "../src/index.js";
 import { MockEventSource } from "./setup.js";
 
 beforeAll(() => vi.useFakeTimers());
@@ -17,14 +17,14 @@ describe("makeSSE", () => {
   it("creates an EventSource in CONNECTING state", () => {
     const [source, cleanup] = makeSSE("https://example.com/events");
     expect(source).toBeInstanceOf(EventSource);
-    expect(source.readyState).toBe(0);
+    expect(source.readyState).toBe(SSEReadyState.CONNECTING);
     cleanup();
   });
 
   it("returns a cleanup that closes the connection", () => {
     const [source, cleanup] = makeSSE("https://example.com/events");
     cleanup();
-    expect(source.readyState).toBe(2);
+    expect(source.readyState).toBe(SSEReadyState.CLOSED);
   });
 
   it("fires onOpen when connection opens", () => {
@@ -75,7 +75,7 @@ describe("createSSE", () => {
   it("starts in CONNECTING state", () =>
     createRoot(dispose => {
       const { readyState } = createSSE("https://example.com/events");
-      expect(readyState()).toBe(0);
+      expect(readyState()).toBe(SSEReadyState.CONNECTING);
       dispose();
     }));
 
@@ -83,7 +83,7 @@ describe("createSSE", () => {
     createRoot(dispose => {
       const { readyState } = createSSE("https://example.com/events");
       vi.advanceTimersByTime(20);
-      expect(readyState()).toBe(1);
+      expect(readyState()).toBe(SSEReadyState.OPEN);
       dispose();
     }));
 
@@ -139,7 +139,7 @@ describe("createSSE", () => {
       });
       vi.advanceTimersByTime(20);
       (source() as unknown as MockEventSource).simulateError();
-      expect(readyState()).toBe(2);
+      expect(readyState()).toBe(SSEReadyState.CLOSED);
       expect(error()).toBeTruthy();
       dispose();
     }));
@@ -194,9 +194,9 @@ describe("createSSE", () => {
     createRoot(dispose => {
       const { readyState, close } = createSSE("https://example.com/events");
       vi.advanceTimersByTime(20);
-      expect(readyState()).toBe(1);
+      expect(readyState()).toBe(SSEReadyState.OPEN);
       close();
-      expect(readyState()).toBe(2);
+      expect(readyState()).toBe(SSEReadyState.CLOSED);
       dispose();
     }));
 
@@ -207,7 +207,7 @@ describe("createSSE", () => {
       const first = source();
       reconnect();
       expect(source()).not.toBe(first);
-      expect(first?.readyState).toBe(2); // old one closed
+      expect(first?.readyState).toBe(SSEReadyState.CLOSED); // old one closed
       dispose();
     }));
 
@@ -219,7 +219,7 @@ describe("createSSE", () => {
       const first = source();
       setUrl("https://example.com/v2/events");
       expect(source()).not.toBe(first);
-      expect(first?.readyState).toBe(2);
+      expect(first?.readyState).toBe(SSEReadyState.CLOSED);
       dispose();
     }));
 

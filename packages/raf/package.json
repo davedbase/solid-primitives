@@ -2,7 +2,7 @@
   "name": "@solid-primitives/raf",
   "version": "2.3.2",
   "description": "Primitive that facilitates RAF functionality",
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [
     "Tito <tito.bouzout@gmail.com>",
     "Damian Tarnawski <gthetarnav@gmail.com>"

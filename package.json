@@ -7,7 +7,7 @@
     "type": "git",
     "url": "git+https://github.com/solidjs-community/solid-primitives.git"
   },
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {

@@ -1,4 +1,4 @@
-type SSEReadyState = 0 | 1 | 2;
+import { SSEReadyState } from "../src/sse.js";
 
 declare global {
   // eslint-disable-next-line no-var
@@ -8,14 +8,14 @@ declare global {
 (global as any).SSEInstances = [] as MockEventSource[];
 
 export class MockEventSource extends EventTarget {
-  static readonly CONNECTING = 0;
-  static readonly OPEN = 1;
-  static readonly CLOSED = 2;
-  readonly CONNECTING = 0;
-  readonly OPEN = 1;
-  readonly CLOSED = 2;
+  static readonly CONNECTING = SSEReadyState.CONNECTING;
+  static readonly OPEN = SSEReadyState.OPEN;
+  static readonly CLOSED = SSEReadyState.CLOSED;
+  readonly CONNECTING = SSEReadyState.CONNECTING;
+  readonly OPEN = SSEReadyState.OPEN;
+  readonly CLOSED = SSEReadyState.CLOSED;
 
-  readyState: SSEReadyState = 0;
+  readyState: SSEReadyState = SSEReadyState.CONNECTING;
   withCredentials: boolean;
   url: string;
 
@@ -26,8 +26,8 @@ export class MockEventSource extends EventTarget {
     SSEInstances.push(this);
 
     setTimeout(() => {
-      if (this.readyState === 0) {
-        this.readyState = 1;
+      if (this.readyState === SSEReadyState.CONNECTING) {
+        this.readyState = SSEReadyState.OPEN;
         this.dispatchEvent(new Event("open"));
       }
     }, 10);
@@ -40,18 +40,18 @@ export class MockEventSource extends EventTarget {
 
   /** Simulate a terminal error — `readyState` goes to `CLOSED`. */
   simulateError() {
-    this.readyState = 2;
+    this.readyState = SSEReadyState.CLOSED;
     this.dispatchEvent(new Event("error"));
   }
 
   /** Simulate a transient error — browser is retrying, `readyState` stays `CONNECTING`. */
   simulateTransientError() {
-    this.readyState = 0;
+    this.readyState = SSEReadyState.CONNECTING;
     this.dispatchEvent(new Event("error"));
   }
 
   close() {
-    this.readyState = 2;
+    this.readyState = SSEReadyState.CLOSED;
     const idx = SSEInstances.indexOf(this);
     if (idx !== -1) SSEInstances.splice(idx, 1);
   }

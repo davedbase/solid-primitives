@@ -2,7 +2,7 @@
   "name": "@solid-primitives/audio",
   "version": "1.4.2",
   "description": "Primitives to manage audio and single sounds.",
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "license": "MIT",
   "homepage": "https://primitives.solidjs.community/package/audio",
   "repository": {

@@ -2,7 +2,7 @@
   "name": "@solid-primitives/media",
   "version": "2.3.3",
   "description": "Primitives for media query and device features",
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [
     {
       "name": "Aditya Agarwal",

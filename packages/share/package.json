@@ -2,7 +2,7 @@
   "name": "@solid-primitives/share",
   "version": "2.2.3",
   "description": "Primitives to help with sharing content on social media and beyond.",
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [
     "Omer Ma<mapinxue@qq.com>",
     "Tom Pichaud <dev.tompichaud@icloud.com>"

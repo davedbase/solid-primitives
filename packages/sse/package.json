@@ -2,7 +2,7 @@
   "name": "@solid-primitives/sse",
   "version": "0.0.100",
   "description": "Primitives for Server-Sent Events (SSE) using the browser's EventSource API.",
-  "author": "Solid Primitives Working Group",
+  "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [],
   "license": "MIT",
   "homepage": "https://primitives.solidjs.community/package/sse",
@@ -18,7 +18,8 @@
     "stage": 0,
     "list": [
       "makeSSE",
-      "createSSE"
+      "createSSE",
+      "makeSSEWorker"
     ],
     "category": "Network"
   },
@@ -27,7 +28,9 @@
     "primitives",
     "sse",
     "eventsource",
-    "server-sent-events"
+    "server-sent-events",
+    "worker",
+    "shared-worker"
   ],
   "private": false,
   "sideEffects": false,
@@ -39,10 +42,25 @@
   "types": "./dist/index.d.ts",
   "browser": {},
   "exports": {
-    "import": {
-      "@solid-primitives/source": "./src/index.ts",
-      "types": "./dist/index.d.ts",
-      "default": "./dist/index.js"
+    ".": {
+      "import": {
+        "@solid-primitives/source": "./src/index.ts",
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      }
+    },
+    "./worker": {
+      "import": {
+        "@solid-primitives/source": "./src/worker.ts",
+        "types": "./dist/worker.d.ts",
+        "default": "./dist/worker.js"
+      }
+    },
+    "./worker-handler": {
+      "import": {
+        "@solid-primitives/source": "./src/worker-handler.ts",
+        "default": "./dist/worker-handler.js"
+      }
     }
   },
   "typesVersions": {},

@@ -8,6 +8,28 @@ import {
 import { isServer } from "solid-js/web";
 import { access, type MaybeAccessor } from "@solid-primitives/utils";
 
+// ─── ReadyState ───────────────────────────────────────────────────────────────
+
+/**
+ * Named constants for the SSE connection state, mirroring the `EventSource`
+ * static properties. Use these instead of bare numbers for readability:
+ *
+ * ```ts
+ * if (readyState() === SSEReadyState.OPEN) { ... }
+ * ```
+ */
+export const SSEReadyState = {
+  /** Connection is being established. */
+  CONNECTING: 0,
+  /** Connection is open and receiving events. */
+  OPEN: 1,
+  /** Connection is closed. */
+  CLOSED: 2,
+} as const;
+
+/** The numeric type of a valid SSE ready-state value (`0 | 1 | 2`). */
+export type SSEReadyState = (typeof SSEReadyState)[keyof typeof SSEReadyState];
+
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 /**
@@ -33,6 +55,25 @@ export type SSEReconnectOptions = {
   delay?: number;
 };
 
+/**
+ * Minimal interface that both `EventSource` and `WorkerEventSource` satisfy.
+ * Used as the type of the `source` signal returned by `createSSE`.
+ */
+export type SSESourceHandle = EventTarget & {
+  readonly readyState: number;
+  close(): void;
+};
+
+/**
+ * Factory function signature for creating an SSE source.
+ * The default factory is `makeSSE`; swap it out with `makeSSEWorker(worker)` to
+ * run the connection inside a Web Worker.
+ */
+export type SSESourceFn = (
+  url: string,
+  options: SSEOptions,
+) => [source: SSESourceHandle, cleanup: VoidFunction];
+
 export type CreateSSEOptions<T> = SSEOptions & {
   /** Initial value of the `data` signal before any message arrives */
   initialValue?: T;
@@ -52,22 +93,28 @@ export type CreateSSEOptions<T> = SSEOptions & {
    * drops. This option handles cases where the browser gives up entirely.
    */
   reconnect?: boolean | SSEReconnectOptions;
+  /**
+   * Custom source factory. Defaults to `makeSSE` (creates a real EventSource).
+   * Swap this out to run SSE in a Worker:
+   *   `source: makeSSEWorker(worker)`
+   */
+  source?: SSESourceFn;
 };
 
 export type SSEReturn<T> = {
-  /** The raw `EventSource` instance. `undefined` on SSR or before first connect. */
-  source: Accessor<EventSource | undefined>;
+  /** The underlying source instance. `undefined` on SSR or before first connect. */
+  source: Accessor<SSESourceHandle | undefined>;
   /** The latest message data, parsed through `transform` if provided. */
   data: Accessor<T | undefined>;
   /** The latest error event, `undefined` when no error has occurred. */
   error: Accessor<Event | undefined>;
   /**
-   * The current connection state:
-   * - `0` CONNECTING
-   * - `1` OPEN
-   * - `2` CLOSED
+   * The current connection state. Use `SSEReadyState` for named comparisons:
+   * - `SSEReadyState.CONNECTING` (0)
+   * - `SSEReadyState.OPEN` (1)
+   * - `SSEReadyState.CLOSED` (2)
    */
-  readyState: Accessor<0 | 1 | 2>;
+  readyState: Accessor<SSEReadyState>;
   /** Close the connection. */
   close: VoidFunction;
   /** Force-close the current connection and open a new one. */
@@ -153,17 +200,17 @@ export const createSSE = <T = string>(
       source: () => undefined,
       data: () => options.initialValue,
       error: () => undefined,
-      readyState: () => 2,
+      readyState: () => SSEReadyState.CLOSED,
       close: () => void 0,
       reconnect: () => void 0,
     };
   }
 
   // ── Reactive state ────────────────────────────────────────────────────────
-  const [source, setSource] = createSignal<EventSource | undefined>(undefined);
+  const [source, setSource] = createSignal<SSESourceHandle | undefined>(undefined);
   const [data, setData] = createSignal<T | undefined>(options.initialValue);
   const [error, setError] = createSignal<Event | undefined>(undefined);
-  const [readyState, setReadyState] = createSignal<0 | 1 | 2>(0);
+  const [readyState, setReadyState] = createSignal<SSEReadyState>(SSEReadyState.CONNECTING);
 
   // ── Reconnect config ──────────────────────────────────────────────────────
   const reconnectConfig: SSEReconnectOptions =
@@ -197,7 +244,7 @@ export const createSSE = <T = string>(
     clearReconnectTimer();
 
     const handleOpen = (e: Event) => {
-      setReadyState(1);
+      setReadyState(SSEReadyState.OPEN);
       setError(undefined);
       options.onOpen?.(e);
     };
@@ -209,20 +256,21 @@ export const createSSE = <T = string>(
     };
 
     const handleError = (e: Event) => {
-      const es = e.target as EventSource;
-      setReadyState(es.readyState as 0 | 1 | 2);
+      const es = e.target as SSESourceHandle;
+      setReadyState(es.readyState as SSEReadyState);
       setError(() => e);
       options.onError?.(e);
 
       // Only app-level reconnect when the browser has given up (CLOSED).
       // When readyState is still CONNECTING the browser is handling retries.
-      if (es.readyState === EventSource.CLOSED && retriesLeft > 0) {
+      if (es.readyState === SSEReadyState.CLOSED && retriesLeft > 0) {
         retriesLeft--;
         reconnectTimer = setTimeout(() => _open(resolvedUrl), reconnectConfig.delay ?? 3000);
       }
     };
 
-    const [es, cleanup] = makeSSE(resolvedUrl, {
+    const sourceFn: SSESourceFn = options.source ?? makeSSE;
+    const [es, cleanup] = sourceFn(resolvedUrl, {
       withCredentials: options.withCredentials,
       onOpen: handleOpen,
       onMessage: handleMessage,
@@ -231,7 +279,7 @@ export const createSSE = <T = string>(
     });
 
     setSource(() => es);
-    setReadyState(es.readyState as 0 | 1 | 2);
+    setReadyState(es.readyState as SSEReadyState);
     currentCleanup = cleanup;
   };
 
@@ -241,7 +289,7 @@ export const createSSE = <T = string>(
     currentCleanup?.();
     currentCleanup = undefined;
     setSource(undefined);
-    setReadyState(2);
+    setReadyState(SSEReadyState.CLOSED);
   };
 
   const manualReconnect = () => {

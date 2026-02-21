@@ -3,7 +3,7 @@
   "version": "1.5.2",
   "description": "Primitives for creating scheduled — throttled or debounced — callbacks.",
   "contributors": [
-    "David Di Biase <dave.dibiase@gmail.com>",
+    "David Di Biase <dave@solidjs.com>",
     "Damian Tarnawski <gthetarnav@gmail.com>",
     "Jonathan Frere <jonathan.frere@esveo.com>"
   ],

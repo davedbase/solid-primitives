@@ -2,7 +2,7 @@
   "name": "@solid-primitives/timer",
   "version": "1.4.3",
   "description": "Primitives to manage timeout and interval",
-  "author": "David Di Biase <dave.dibiase@gmail.com>",
+  "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [
     "Xavier Loh <xavier.loh.yz@gmail.com>",
     "Damian Tarnawski <gthetarnav@gmail.com>"

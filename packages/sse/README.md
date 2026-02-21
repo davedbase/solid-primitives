@@ -67,7 +67,7 @@ type SSEOptions = {
 Reactive SSE primitive. Connects on creation, closes when the owner is disposed, and reacts to URL changes.
 
 ```ts
-import { createSSE } from "@solid-primitives/sse";
+import { createSSE, SSEReadyState } from "@solid-primitives/sse";
 
 const { data, readyState, error, close, reconnect } = createSSE<{ message: string }>(
   "https://api.example.com/events",
@@ -77,12 +77,11 @@ const { data, readyState, error, close, reconnect } = createSSE<{ message: strin
   },
 );
 
-const states = ["Connecting", "Open", "Closed"] as const;
-
 return (
   <div>
-    <p>Status: {states[readyState()]}</p>
-    <p>Latest: {data()?.message ?? "—"}</p>
+    <Show when={readyState() === SSEReadyState.OPEN} fallback={<p>Connecting…</p>}>
+      <p>Latest: {data()?.message ?? "—"}</p>
+    </Show>
     <Show when={error()}>
       <p style="color:red">Connection error</p>
     </Show>
@@ -131,16 +130,28 @@ Changing `userId()` will close the existing connection and open a new one to the
 
 | Property | Type | Description |
 |---|---|---|
-| `source` | `Accessor<EventSource \| undefined>` | Raw `EventSource` instance |
+| `source` | `Accessor<SSESourceHandle \| undefined>` | Underlying source instance; `undefined` on SSR |
 | `data` | `Accessor<T \| undefined>` | Latest message data |
 | `error` | `Accessor<Event \| undefined>` | Latest error event |
-| `readyState` | `Accessor<0 \| 1 \| 2>` | 0 = CONNECTING, 1 = OPEN, 2 = CLOSED |
+| `readyState` | `Accessor<SSEReadyState>` | `SSEReadyState.CONNECTING` / `.OPEN` / `.CLOSED` |
 | `close` | `VoidFunction` | Close the connection |
 | `reconnect` | `VoidFunction` | Force-close and reopen |
 
+### `SSEReadyState`
+
+Named constants for the connection state, exported as a plain object so they are tree-shakeable and work with every bundler:
+
+```ts
+import { SSEReadyState } from "@solid-primitives/sse";
+
+SSEReadyState.CONNECTING // 0
+SSEReadyState.OPEN       // 1
+SSEReadyState.CLOSED     // 2
+```
+
 ### A note on reconnection
 
-`EventSource` has native browser-level reconnection built in. For transient network drops the browser automatically retries (with a 3-second default delay, or as specified by the server via a `retry:` field). The `reconnect` option in `createSSE` is for _application-level_ reconnection — it fires only when `readyState` becomes `CLOSED`, meaning the browser has given up. You generally do not need `reconnect: true` for normal usage.
+`EventSource` has native browser-level reconnection built in. For transient network drops the browser automatically retries. The `reconnect` option in `createSSE` is for _application-level_ reconnection — it fires only when `readyState` becomes `SSEReadyState.CLOSED`, meaning the browser has given up entirely. You generally do not need `reconnect: true` for normal usage.
 
 ## Integration with `@solid-primitives/event-bus`
 
@@ -156,13 +167,12 @@ createSSE("https://api.example.com/events", {
   onMessage: e => bus.emit(e.data),
 });
 
-// Subscribe anywhere in the tree
 bus.listen(msg => console.log("received:", msg));
 ```
 
 ### Multi-channel SSE with `createEventHub`
 
-For streams that use multiple named event types, combine with `createEventHub`:
+For streams that use multiple named event types:
 
 ```ts
 import { createSSE } from "@solid-primitives/sse";
@@ -183,13 +193,7 @@ createSSE("https://api.example.com/stream", {
   },
 });
 
-// Listen to a specific channel
 hub.on("order", event => console.log("New order:", event));
-
-// Or listen to every channel
-hub.listen(({ name, details }) => {
-  console.log(`[${name}]`, details);
-});
 ```
 
 ### Building a reactive message list
@@ -206,6 +210,12 @@ createSSE("https://api.example.com/events", {
 
 return <For each={messages}>{msg => <p>{msg}</p>}</For>;
 ```
+
+## Running SSE in a Worker
+
+For high-frequency streams or performance-sensitive apps you can offload the `EventSource` connection to a Web Worker, keeping network I/O off the main thread. The reactive API (`data`, `readyState`, `reconnect`, …) is identical — only the transport moves.
+
+See [WORKERS.md](./WORKERS.md) for setup instructions, SharedWorker usage, and the full type reference.
 
 ## Changelog
 
