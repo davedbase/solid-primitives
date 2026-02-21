@@ -17,7 +17,7 @@ describe("SSR", () => {
 
   it("exposes initialValue in SSR data stub", () =>
     createRoot(dispose => {
-      const { data } = createSSE<string>("https://example.com/events", {
+      const { data } = createSSE("https://example.com/events", {
         initialValue: "loading",
       });
       expect(data()).toBe("loading");

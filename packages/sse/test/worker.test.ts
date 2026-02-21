@@ -234,7 +234,7 @@ describe("createSSE with worker source", () => {
   it("updates data signal on message", () =>
     createRoot(dispose => {
       const target = new MockWorkerTarget();
-      const { data } = createSSE<string>("https://example.com/events", {
+      const { data } = createSSE("https://example.com/events", {
         source: makeSSEWorker(target),
       });
       const id = (target.sent[0] as Extract<SSEWorkerMessage, { type: "connect" }>).id;

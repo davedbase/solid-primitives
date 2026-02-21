@@ -68,7 +68,7 @@ self.addEventListener("message", (e: MessageEvent<SSEWorkerMessage>) => {
 
 // ── SharedWorker — each connecting tab gets its own MessagePort ───────────────
 self.addEventListener("connect", (e: Event) => {
-  const port = (e as MessageEvent).ports?.[0];
+  const port = (e as MessageEvent).ports[0];
   if (!port) return;
   port.addEventListener("message", (ev: MessageEvent<SSEWorkerMessage>) => {
     handleMessage(ev.data, msg => port.postMessage(msg));

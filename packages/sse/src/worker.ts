@@ -112,10 +112,10 @@ export function makeSSEWorker(target: SSEWorkerTarget): SSESourceFn {
 
     const cleanup = () => {
       source.close();
-      if (options.onOpen) source.removeEventListener("open", options.onOpen!);
+      if (options.onOpen) source.removeEventListener("open", options.onOpen);
       if (options.onMessage)
         source.removeEventListener("message", options.onMessage as EventListener);
-      if (options.onError) source.removeEventListener("error", options.onError!);
+      if (options.onError) source.removeEventListener("error", options.onError);
       if (options.events) {
         for (const [name, handler] of Object.entries(options.events))
           source.removeEventListener(name, handler as EventListener);

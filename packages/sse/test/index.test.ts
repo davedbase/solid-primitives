@@ -89,7 +89,7 @@ describe("createSSE", () => {
 
   it("provides latest message via data signal", () =>
     createRoot(dispose => {
-      const { data, source } = createSSE<string>("https://example.com/events");
+      const { data, source } = createSSE("https://example.com/events");
       expect(data()).toBeUndefined();
       vi.advanceTimersByTime(20);
       (source() as unknown as MockEventSource).simulateMessage("hello");
@@ -110,7 +110,7 @@ describe("createSSE", () => {
 
   it("returns initialValue before any message arrives", () =>
     createRoot(dispose => {
-      const { data } = createSSE<string>("https://example.com/events", {
+      const { data } = createSSE("https://example.com/events", {
         initialValue: "loading",
       });
       expect(data()).toBe("loading");

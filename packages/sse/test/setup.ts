@@ -1,7 +1,6 @@
 import { SSEReadyState } from "../src/sse.js";
 
 declare global {
-  // eslint-disable-next-line no-var
   var SSEInstances: MockEventSource[];
 }
 
