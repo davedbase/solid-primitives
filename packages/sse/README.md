@@ -14,6 +14,7 @@ Primitives for [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web
 - [`makeSSE`](#makesse) — Base non-reactive primitive. Creates an `EventSource` and returns a cleanup function. No Solid lifecycle.
 - [`createSSE`](#createsse) — Reactive primitive. Accepts a reactive URL, integrates with Solid's owner lifecycle, and returns signals for `data`, `error`, and `readyState`.
 - [`makeSSEWorker`](./WORKERS.md) — Runs the SSE connection inside a Web Worker or SharedWorker. See [WORKERS.md](./WORKERS.md).
+- [Built-in transformers](./TRANSFORMS.md) — `json`, `ndjson`, `lines`, `number`, `safe`, `pipe`. See [TRANSFORMS.md](./TRANSFORMS.md).
 
 ## Installation
 
@@ -156,48 +157,16 @@ SSEReadyState.CLOSED     // 2
 
 ## Built-in transformers
 
-Three ready-made `transform` functions are exported for the most common SSE data formats.
+Ready-made `transform` functions for the most common SSE data formats. See [TRANSFORMS.md](./TRANSFORMS.md) for full documentation and examples.
 
-### `json`
-
-Parse the message data as a single JSON value. Equivalent to `JSON.parse` but named for consistency with the other transformers.
-
-```ts
-import { createSSE, json } from "@solid-primitives/sse";
-
-const { data } = createSSE<{ status: string; ts: number }>(url, { transform: json });
-// data() === { status: "ok", ts: 1718000000 }
-```
-
-### `ndjson`
-
-Parse the message data as [newline-delimited JSON](https://ndjson.org/) (NDJSON / JSON Lines). Each non-empty line is parsed as a separate JSON value and the transformer returns an array.
-
-Use this when the server batches multiple objects into one SSE event:
-
-```
-data: {"id":1,"type":"tick"}
-data: {"id":2,"type":"tick"}
-
-```
-
-```ts
-import { createSSE, ndjson } from "@solid-primitives/sse";
-
-const { data } = createSSE<TickEvent[]>(url, { transform: ndjson });
-// data() === [{ id: 1, type: "tick" }, { id: 2, type: "tick" }]
-```
-
-### `lines`
-
-Split the message data into individual lines, returning a `string[]`. Empty lines are filtered out. Useful for multi-line text events that are not JSON.
-
-```ts
-import { createSSE, lines } from "@solid-primitives/sse";
-
-const { data } = createSSE<string[]>(url, { transform: lines });
-// data() === ["line one", "line two"]
-```
+| Transformer | Description |
+|---|---|
+| [`json`](./TRANSFORMS.md#json) | Parse data as a single JSON value |
+| [`ndjson`](./TRANSFORMS.md#ndjson) | Parse newline-delimited JSON into an array |
+| [`lines`](./TRANSFORMS.md#lines) | Split data into a `string[]` by newline |
+| [`number`](./TRANSFORMS.md#number) | Parse data as a number via `Number()` |
+| [`safe(transform, fallback?)`](./TRANSFORMS.md#safetransform-fallback) | Fault-tolerant wrapper — returns `fallback` instead of throwing |
+| [`pipe(a, b)`](./TRANSFORMS.md#pipea-b) | Compose two transforms into one |
 
 ## Integration with `@solid-primitives/event-bus`
 

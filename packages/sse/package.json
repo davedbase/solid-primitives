@@ -22,7 +22,10 @@
       "makeSSEWorker",
       "json",
       "ndjson",
-      "lines"
+      "lines",
+      "number",
+      "safe",
+      "pipe"
     ],
     "category": "Network"
   },

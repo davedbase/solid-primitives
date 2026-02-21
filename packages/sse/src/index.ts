@@ -11,4 +11,4 @@ export {
   type SSEReturn,
 } from "./sse.js";
 
-export { json, ndjson, lines } from "./transform.js";
+export { json, ndjson, lines, number, safe, pipe } from "./transform.js";
