@@ -311,3 +311,89 @@ export function handleDiffArray<T>(
     if (!prev.includes(currEl)) handleAdded(currEl);
   }
 }
+
+// ─── String transforms ────────────────────────────────────────────────────────
+
+/**
+ * Parse a string as a single JSON value.
+ *
+ * ```ts
+ * const { data } = createSSE<{ status: string }>(url, { transform: json });
+ * ```
+ */
+export const json = <T>(raw: string): T => JSON.parse(raw) as T;
+
+/**
+ * Parse a string as newline-delimited JSON (NDJSON / JSON Lines).
+ *
+ * Each non-empty line is parsed as a separate JSON value and returned as an array.
+ *
+ * ```ts
+ * const { data } = createSSE<TickEvent[]>(url, { transform: ndjson });
+ * // data() === [{ id: 1, type: "tick" }, { id: 2, type: "tick" }]
+ * ```
+ */
+export const ndjson = <T>(raw: string): T[] =>
+  raw
+    .split("\n")
+    .filter(line => line !== "")
+    .map(line => JSON.parse(line) as T);
+
+/**
+ * Split a string into individual lines, returning a `string[]`. Empty lines are filtered out.
+ *
+ * ```ts
+ * const { data } = createSSE<string[]>(url, { transform: lines });
+ * // data() === ["line one", "line two"]
+ * ```
+ */
+export const lines = (raw: string): string[] => raw.split("\n").filter(line => line !== "");
+
+/**
+ * Parse a string as a number using `Number()` semantics.
+ *
+ * Note: `""` → `0`, non-numeric strings → `NaN`.
+ *
+ * ```ts
+ * const { data } = createSSE<number>(url, { transform: number });
+ * // data() === 42
+ * ```
+ */
+export const number = (raw: string): number => Number(raw);
+
+/**
+ * Wrap any `(string) => T` transform in a `try/catch`. Returns `fallback`
+ * (default `undefined`) instead of throwing on malformed input.
+ *
+ * ```ts
+ * const { data } = createSSE<MyEvent>(url, { transform: safe(json) });
+ * const { data } = createSSE<number>(url, { transform: safe(number, 0) });
+ * ```
+ */
+export function safe<T>(transform: (raw: string) => T): (raw: string) => T | undefined;
+export function safe<T>(transform: (raw: string) => T, fallback: T): (raw: string) => T;
+export function safe<T>(
+  transform: (raw: string) => T,
+  fallback?: T,
+): (raw: string) => T | undefined {
+  return (raw: string): T | undefined => {
+    try {
+      return transform(raw);
+    } catch {
+      return fallback;
+    }
+  };
+}
+
+/**
+ * Compose two transforms into one: the output of `a` is passed as the input of `b`.
+ *
+ * ```ts
+ * const { data } = createSSE<RawEvent[]>(url, {
+ *   transform: pipe(ndjson<RawEvent>, rows => rows.filter(r => r.type === "tick")),
+ * });
+ * ```
+ */
+export function pipe<A, B>(a: (raw: string) => A, b: (a: A) => B): (raw: string) => B {
+  return (raw: string): B => b(a(raw));
+}
