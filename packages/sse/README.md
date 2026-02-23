@@ -13,7 +13,7 @@ Primitives for [Server-Sent Events](https://developer.mozilla.org/en-US/docs/Web
 - [`makeSSE`](#makesse) — Base non-reactive primitive. Creates an `EventSource` and returns a cleanup function. No Solid lifecycle.
 - [`createSSE`](#createsse) — Reactive primitive. Accepts a reactive URL, integrates with Solid's owner lifecycle, and returns signals for `data`, `error`, and `readyState`.
 - [`makeSSEWorker`](./WORKERS.md) — Runs the SSE connection inside a Web Worker or SharedWorker. See [WORKERS.md](./WORKERS.md).
-- [Built-in transformers](./TRANSFORMS.md) — `json`, `ndjson`, `lines`, `number`, `safe`, `pipe`. See [TRANSFORMS.md](./TRANSFORMS.md).
+- [Built-in transformers](#built-in-transformers) — `json`, `ndjson`, `lines`, `number`, `safe`, `pipe`.
 
 ## Installation
 
@@ -154,19 +154,6 @@ SSEReadyState.CLOSED; // 2
 
 `EventSource` has native browser-level reconnection built in. For transient network drops the browser automatically retries. The `reconnect` option in `createSSE` is for _application-level_ reconnection — it fires only when `readyState` becomes `SSEReadyState.CLOSED`, meaning the browser has given up entirely. You generally do not need `reconnect: true` for normal usage.
 
-## Built-in transformers
-
-Ready-made `transform` functions for the most common SSE data formats. See [TRANSFORMS.md](./TRANSFORMS.md) for full documentation and examples.
-
-| Transformer                                                            | Description                                                     |
-| ---------------------------------------------------------------------- | --------------------------------------------------------------- |
-| [`json`](./TRANSFORMS.md#json)                                         | Parse data as a single JSON value                               |
-| [`ndjson`](./TRANSFORMS.md#ndjson)                                     | Parse newline-delimited JSON into an array                      |
-| [`lines`](./TRANSFORMS.md#lines)                                       | Split data into a `string[]` by newline                         |
-| [`number`](./TRANSFORMS.md#number)                                     | Parse data as a number via `Number()`                           |
-| [`safe(transform, fallback?)`](./TRANSFORMS.md#safetransform-fallback) | Fault-tolerant wrapper — returns `fallback` instead of throwing |
-| [`pipe(a, b)`](./TRANSFORMS.md#pipea-b)                                | Compose two transforms into one                                 |
-
 ## Integration with `@solid-primitives/event-bus`
 
 Because `bus.emit` matches the `(event: MessageEvent) => void` shape of `onMessage`, you can wire them directly:
@@ -230,6 +217,112 @@ return <For each={messages}>{msg => <p>{msg}</p>}</For>;
 For high-frequency streams or performance-sensitive apps you can offload the `EventSource` connection to a Web Worker, keeping network I/O off the main thread. The reactive API (`data`, `readyState`, `reconnect`, …) is identical — only the transport moves.
 
 See [WORKERS.md](./WORKERS.md) for setup instructions, SharedWorker usage, and the full type reference.
+
+## Built-in transformers
+
+Ready-made `transform` functions for the most common SSE data formats. Pass one as the `transform` option to `createSSE`:
+
+```ts
+import { createSSE, json } from "@solid-primitives/sse";
+
+const { data } = createSSE<{ status: string }>(url, { transform: json });
+```
+
+| Transformer                       | Description                                                     |
+| --------------------------------- | --------------------------------------------------------------- |
+| [`json`](#json)                   | Parse data as a single JSON value                               |
+| [`ndjson`](#ndjson)               | Parse newline-delimited JSON into an array                      |
+| [`lines`](#lines)                 | Split data into a `string[]` by newline                         |
+| [`number`](#number)               | Parse data as a number via `Number()`                           |
+| [`safe`](#safetransform-fallback) | Fault-tolerant wrapper — returns `fallback` instead of throwing |
+| [`pipe`](#pipea-b)                | Compose two transforms into one                                 |
+
+### `json`
+
+Parse the message data as a single JSON value. Equivalent to `JSON.parse` but named for consistency with the other transformers.
+
+```ts
+import { createSSE, json } from "@solid-primitives/sse";
+
+const { data } = createSSE<{ status: string; ts: number }>(url, { transform: json });
+// data() === { status: "ok", ts: 1718000000 }
+```
+
+### `ndjson`
+
+Parse the message data as [newline-delimited JSON](https://ndjson.org/) (NDJSON / JSON Lines). Each non-empty line is parsed as a separate JSON value and the transformer returns an array.
+
+Use this when the server batches multiple objects into one SSE event:
+
+```
+data: {"id":1,"type":"tick"}
+data: {"id":2,"type":"tick"}
+
+```
+
+```ts
+import { createSSE, ndjson } from "@solid-primitives/sse";
+
+const { data } = createSSE<TickEvent[]>(url, { transform: ndjson });
+// data() === [{ id: 1, type: "tick" }, { id: 2, type: "tick" }]
+```
+
+### `lines`
+
+Split the message data into individual lines, returning a `string[]`. Empty lines are filtered out. Useful for multi-line text events that are not JSON.
+
+```ts
+import { createSSE, lines } from "@solid-primitives/sse";
+
+const { data } = createSSE<string[]>(url, { transform: lines });
+// data() === ["line one", "line two"]
+```
+
+### `number`
+
+Parse the message data as a number using `Number()` semantics. Handy for streams that emit counters, progress percentages, sensor readings, or prices.
+
+```ts
+import { createSSE, number } from "@solid-primitives/sse";
+
+const { data } = createSSE<number>(url, { transform: number });
+// data() === 42
+```
+
+Note: follows `Number()` coercion — an empty string becomes `0` and non-numeric strings become `NaN`.
+
+### `safe(transform, fallback?)`
+
+Wraps any transform in a `try/catch`. When the inner transform throws, `safe` returns `fallback` instead of propagating the error. This keeps the stream alive across malformed events.
+
+```ts
+import { createSSE, json, number, safe } from "@solid-primitives/sse";
+
+// Returns undefined on a bad event instead of throwing
+const { data } = createSSE<MyEvent>(url, { transform: safe(json) });
+
+// With an explicit fallback value
+const { data } = createSSE<number>(url, { transform: safe(number, 0) });
+```
+
+### `pipe(a, b)`
+
+Composes two transforms into one: the output of `a` is passed as the input of `b`. Useful for building custom transforms from existing primitives without writing anonymous functions.
+
+```ts
+import { createSSE, ndjson, json, safe, pipe } from "@solid-primitives/sse";
+
+// Parse NDJSON then keep only "tick" rows
+type RawEvent = { type: string };
+const { data } = createSSE<RawEvent[]>(url, {
+  transform: pipe(ndjson<RawEvent>, rows => rows.filter(r => r.type === "tick")),
+});
+
+// Safe JSON with a post-processing step
+const { data } = createSSE<string>(url, {
+  transform: pipe(safe(json<{ label: string }>), ev => ev?.label ?? ""),
+});
+```
 
 ## Changelog
 
