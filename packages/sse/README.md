@@ -331,8 +331,6 @@ For typical usage — a handful of events per second — the standard `createSSE
 
 ### Setup
 
-The adapter is in a separate subpath so it adds zero bytes to the main bundle when not used.
-
 ```ts
 import { makeSSEWorker } from "@solid-primitives/sse/worker";
 ```
