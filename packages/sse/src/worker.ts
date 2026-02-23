@@ -1,4 +1,4 @@
-import { SSEReadyState, type SSEOptions, type SSESourceFn } from "./sse.js";
+import { SSEReadyState, type SSEReadyStateValue, type SSEOptions, type SSESourceFn } from "./sse.js";
 
 // ─── Protocol types ───────────────────────────────────────────────────────────
 
@@ -12,7 +12,7 @@ export type SSEWorkerMessage =
   | { type: "disconnect"; id: string }
   | { type: "open"; id: string }
   | { type: "message"; id: string; data: string; eventType: string }
-  | { type: "error"; id: string; readyState: SSEReadyState };
+  | { type: "error"; id: string; readyState: SSEReadyStateValue };
 
 /** A `Worker` or a `SharedWorker.port` — anything with `postMessage` and `addEventListener`. */
 export type SSEWorkerTarget = {
@@ -28,9 +28,9 @@ export type SSEWorkerTarget = {
  * Not exported — consumers use `makeSSEWorker` to obtain instances.
  */
 class WorkerEventSource extends EventTarget {
-  private _readyState: SSEReadyState = SSEReadyState.CONNECTING;
+  private _readyState: SSEReadyStateValue = SSEReadyState.CONNECTING;
 
-  get readyState(): SSEReadyState {
+  get readyState(): SSEReadyStateValue {
     return this._readyState;
   }
 

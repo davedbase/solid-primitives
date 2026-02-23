@@ -22,7 +22,7 @@ export const SSEReadyState = {
 } as const;
 
 /** The numeric type of a valid SSE ready-state value (`0 | 1 | 2`). */
-export type SSEReadyState = (typeof SSEReadyState)[keyof typeof SSEReadyState];
+export type SSEReadyStateValue = (typeof SSEReadyState)[keyof typeof SSEReadyState];
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -108,7 +108,7 @@ export type SSEReturn<T> = {
    * - `SSEReadyState.OPEN` (1)
    * - `SSEReadyState.CLOSED` (2)
    */
-  readyState: Accessor<SSEReadyState>;
+  readyState: Accessor<SSEReadyStateValue>;
   /** Close the connection. */
   close: VoidFunction;
   /** Force-close the current connection and open a new one. */
@@ -204,7 +204,7 @@ export const createSSE = <T = string>(
   const [source, setSource] = createSignal<SSESourceHandle | undefined>(undefined);
   const [data, setData] = createSignal<T | undefined>(options.initialValue);
   const [error, setError] = createSignal<Event | undefined>(undefined);
-  const [readyState, setReadyState] = createSignal<SSEReadyState>(SSEReadyState.CONNECTING);
+  const [readyState, setReadyState] = createSignal<SSEReadyStateValue>(SSEReadyState.CONNECTING);
 
   // ── Reconnect config ──────────────────────────────────────────────────────
   const reconnectConfig: SSEReconnectOptions =
@@ -251,7 +251,7 @@ export const createSSE = <T = string>(
 
     const handleError = (e: Event) => {
       const es = e.target as SSESourceHandle;
-      setReadyState(es.readyState as SSEReadyState);
+      setReadyState(es.readyState as SSEReadyStateValue);
       setError(() => e);
       options.onError?.(e);
 
@@ -273,7 +273,7 @@ export const createSSE = <T = string>(
     });
 
     setSource(() => es);
-    setReadyState(es.readyState as SSEReadyState);
+    setReadyState(es.readyState as SSEReadyStateValue);
     currentCleanup = cleanup;
   };
 

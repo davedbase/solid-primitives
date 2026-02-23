@@ -13,7 +13,7 @@
  *
  * This file has no Solid reactive code — it is safe to run in any Worker context.
  */
-import { makeSSE, SSEReadyState } from "./sse.js";
+import { makeSSE, SSEReadyState, type SSEReadyStateValue } from "./sse.js";
 import type { SSEWorkerMessage } from "./worker.js";
 
 const connections = new Map<string, VoidFunction>();
@@ -36,7 +36,7 @@ function handleMessage(data: SSEWorkerMessage, postBack: (msg: SSEWorkerMessage)
         postBack({
           type: "error",
           id,
-          readyState: (ev.target as EventSource).readyState as SSEReadyState,
+          readyState: (ev.target as EventSource).readyState as SSEReadyStateValue,
         }),
       events: Object.fromEntries(
         (events ?? []).map(name => [

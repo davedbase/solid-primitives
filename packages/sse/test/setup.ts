@@ -1,4 +1,4 @@
-import { SSEReadyState } from "../src/sse.js";
+import { SSEReadyState, type SSEReadyStateValue } from "../src/sse.js";
 
 declare global {
   var SSEInstances: MockEventSource[];
@@ -14,7 +14,7 @@ export class MockEventSource extends EventTarget {
   readonly OPEN = SSEReadyState.OPEN;
   readonly CLOSED = SSEReadyState.CLOSED;
 
-  readyState: SSEReadyState = SSEReadyState.CONNECTING;
+  readyState: SSEReadyStateValue = SSEReadyState.CONNECTING;
   withCredentials: boolean;
   url: string;
 

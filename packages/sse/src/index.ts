@@ -6,7 +6,7 @@ export {
   type SSEReconnectOptions,
   type SSESourceHandle,
   type SSESourceFn,
-  type SSEReadyState,
+  type SSEReadyStateValue,
   type CreateSSEOptions,
   type SSEReturn,
 } from "./sse.js";
