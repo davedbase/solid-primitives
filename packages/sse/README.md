@@ -343,7 +343,11 @@ You also need the companion handler script that runs inside the Worker:
 import "@solid-primitives/sse/worker-handler";
 ```
 
-Load it via your bundler's `new URL(…, import.meta.url)` syntax to get a correctly resolved URL at build time.
+To get the correct URL for the handler at runtime you have a few options depending on your setup:
+
+- **Bundler (Vite, Webpack, Rollup, etc.)** — use `new URL(…, import.meta.url)`. The bundler resolves the specifier to the output asset path at build time. See the [Vite static asset docs](https://vite.dev/guide/assets#importing-asset-as-url) for details; other bundlers work the same way.
+- **Import maps (no bundler)** — add an entry for `@solid-primitives/sse/worker-handler` pointing to the CDN or local path of the file, then use a plain string URL: `new Worker("/path/to/worker-handler.js", { type: "module" })`.
+- **Node / Deno / Bun with a file URL** — `new URL("./node_modules/@solid-primitives/sse/dist/worker-handler.js", import.meta.url)` works if you reference the built output directly.
 
 ### Dedicated Worker
 
