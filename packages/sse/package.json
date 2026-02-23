@@ -19,13 +19,7 @@
     "list": [
       "makeSSE",
       "createSSE",
-      "makeSSEWorker",
-      "json",
-      "ndjson",
-      "lines",
-      "number",
-      "safe",
-      "pipe"
+      "makeSSEWorker"
     ],
     "category": "Network"
   },
