@@ -395,9 +395,10 @@ const { data } = createSSE("https://api.example.com/events", {
 
 `makeSSEWorker(target)` returns an `SSESourceFn`, the same factory interface that `createSSE` uses internally. When `createSSE` opens a connection it calls this factory instead of the default `makeSSE`, which:
 
-1. Creates a `WorkerEventSource` — an `EventTarget` that posts a `connect` message to the Worker and re-dispatches `open` / `message` / `error` events received back from it.
-2. The Worker script (`worker-handler`) receives the `connect` message, creates a real `EventSource` there, and posts events back via `postMessage`.
-3. `createSSE`'s reactive machinery — signals, reconnect timer, URL tracking, `onCleanup` — runs on the main thread as normal; it just talks to a `WorkerEventSource` instead of a real `EventSource`.
+1. Creates a plain `EventTarget` with a `readyState` property and a `close()` method, satisfying the `SSESourceHandle` interface without needing a real `EventSource`.
+2. Posts a `connect` message to the Worker. The Worker script (`worker-handler`) creates a real `EventSource` there and posts `open` / `message` / `error` events back via `postMessage`.
+3. The message listener on the main thread forwards those events to `createSSE`'s callbacks and dispatches them on the `EventTarget` so any direct `addEventListener` calls also work.
+4. `createSSE`'s reactive machinery — signals, reconnect timer, URL tracking, `onCleanup` — runs on the main thread as normal; it just receives events via `postMessage` instead of directly from a real `EventSource`.
 
 ### Type reference
 
