@@ -96,6 +96,25 @@ setUser(p => update(p, "street", "number", 64));
 - **`power`** - `a ** b ** c ** ...`
 - **`clamp`** - clamp a number value between two other values
 
+## String transforms
+
+`(string) => T` transform functions for converting raw string data into typed values. Useful as the `transform` option for SSE, WebSocket, and similar streaming primitives.
+
+```ts
+import { json, ndjson, safe } from "@solid-primitives/utils";
+
+const { data } = createSSE<Event>(url, { transform: json });
+const { data } = createSSE<Event[]>(url, { transform: ndjson });
+const { data } = createSSE<Event>(url, { transform: safe(json) });
+```
+
+- **`json`** - Parse a string as a single JSON value
+- **`ndjson`** - Parse newline-delimited JSON (NDJSON / JSON Lines) into an array
+- **`lines`** - Split a string into a `string[]` by newline, filtering empty lines
+- **`number`** - Parse a string as a number via `Number()`
+- **`safe(transform, fallback?)`** - Wrap any transform in a `try/catch`; returns `fallback` instead of throwing
+- **`pipe(a, b)`** - Compose two transforms into one
+
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md)
