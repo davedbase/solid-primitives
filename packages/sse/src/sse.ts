@@ -304,10 +304,9 @@ export const createSSE = <T = string>(
   // subscription to `url` is established immediately. The `prevUrl` guard
   // prevents a redundant reconnect on the first pass (we already connected).
   if (typeof url === "function") {
-    const urlFn = url as Accessor<string>;
-    let prevUrl = untrack(urlFn);
+    let prevUrl = untrack(url);
     createComputed(() => {
-      const resolvedUrl = urlFn();
+      const resolvedUrl = url();
       if (resolvedUrl !== prevUrl) {
         prevUrl = resolvedUrl;
         untrack(() => {
