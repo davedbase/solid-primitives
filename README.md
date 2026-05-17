@@ -8,15 +8,125 @@
 [![combined-downloads](https://img.shields.io/endpoint?style=for-the-badge&url=https://combined-npm-downloads.deno.dev/@solid-primitives/utils,@solid-primitives/broadcast-channel,@solid-primitives/context,@solid-primitives/cookies,@solid-primitives/devices,@solid-primitives/event-dispatcher,@solid-primitives/event-props,@solid-primitives/fetch,@solid-primitives/filesystem,@solid-primitives/flux-store,@solid-primitives/i18n,@solid-primitives/idle,@solid-primitives/input-mask,@solid-primitives/keyed,@solid-primitives/lifecycle,@solid-primitives/list,@solid-primitives/marker,@solid-primitives/match,@solid-primitives/mutable,@solid-primitives/permission,@solid-primitives/platform,@solid-primitives/resource,@solid-primitives/scheduled,@solid-primitives/script-loader,@solid-primitives/selection,@solid-primitives/share,@solid-primitives/spring,@solid-primitives/state-machine,@solid-primitives/timer,@solid-primitives/transition-group,@solid-primitives/tween,@solid-primitives/websocket,@solid-primitives/workers)](https://dash.deno.com/playground/combined-npm-downloads)
 <!-- INSERT-NPM-DOWNLOADS-BADGE:END -->
 
-A project that strives to develop high-quality, community contributed Solid primitives. All utilities are well tested and continuously maintained. Every contribution to the repository is checked for quality and maintained to the highest degree of excellence. The ultimate goal is to extend Solid's primary and secondary primitives with a set of tertiary primitives.
+A library of high-quality, community-contributed primitives that extend SolidJS into the browser, the network, and beyond. Every package is well tested, tree-shakeable, and maintained to the same standard as Solid itself. The goal is simple: give every Solid application a stable, composable foundation to build on.
 
-While Solid Primitives is not officially maintained by the SolidJS Core Team, it is managed by members of the SolidJS core and ecosystem teams. This separation allows the core library to iterate independently while allowing Solid Primitives to remain in-sync with future plans.
+Solid Primitives is managed by members of the SolidJS core and ecosystem teams. While not an official part of the core library, it is designed to stay in lockstep with Solid's direction — including the shift to Solid 2.0.
 
 ## Philosophy
 
-The goal of Solid Primitives is to wrap client and server side functionality to provide a fully reactive API layer. Ultimately the more rooted our tertiary primitives are, the more they act as foundation within Solid's base ecosystem. With well built and re-used foundations, the smaller (aggregate tree-shaking benefits), more concise (readability) and stable (consistent and managed testing + maintenance) applications can be overall.
+Solid's reactivity model is deliberately minimal at its core: signals, effects, and memos. That minimalism is a feature — it gives the ecosystem room to grow in focused, composable layers. Solid Primitives occupies that third layer, extending the platform without adding ceremony.
 
-## Primitives
+Every primitive here follows three rules:
+
+**Do one thing well.** A primitive that tracks mouse position should track mouse position. Caching, retrying, and debouncing belong elsewhere. Composition beats configuration.
+
+**Respect Solid's ownership model.** Primitives that create reactive state integrate with `onCleanup` and the owner tree. Primitives that don't need reactivity don't pretend to. The distinction between `make*` (no owner required) and `create*` (reactive, owner-aware) reflects this at the naming level.
+
+**Stay close to the platform.** Where the browser already has a good API, wrap it lightly. Where it doesn't, fill the gap with the same care Solid applied to the DOM itself.
+
+## Primitive Categories
+
+Solid 2.0 introduced changes that made the taxonomy of primitives sharper. There are now four distinct classes of primitive, each with its own conventions and composition model.
+
+### Reactive Primitives
+
+The familiar `create*` hooks. These live inside a Solid owner, integrate with `onCleanup`, and return reactive values — signals, memos, stores. They are the backbone of the library.
+
+```ts
+// Tracks the bounding box of a DOM element, updating on resize
+const bounds = createElementBounds(() => ref);
+// bounds.width, bounds.height, bounds.top, bounds.left — all reactive
+
+// Reactive media query
+const isMobile = createMediaQuery("(max-width: 768px)");
+
+// Debounced scheduled callback
+const save = createScheduled(fn => debounce(fn, 500));
+```
+
+### Directives
+
+In Solid 2.0, the `use:` directive syntax was replaced by **ref factories** — plain functions that return `(el: HTMLElement) => void`. No compiler magic, no special registration. Because they are just functions, they compose naturally in ref arrays:
+
+```ts
+<input
+  ref={[
+    props.ref,
+    autofocus,
+    mask("(999) 999-9999"),
+    on("keydown", handleKey, { capture: true }),
+    on("blur", validate, { passive: true }),
+  ]}
+/>
+```
+
+Each directive is a self-contained unit of DOM behaviour. An element can have multiple directives without any of them knowing about the others. This is the primary model for attaching imperative behaviour in Solid 2.0 applications.
+
+```ts
+// Trigger a handler when a click lands outside the element
+<div ref={clickOutside(() => setOpen(false))} />
+
+// Observe visibility — ref factory that wires up IntersectionObserver
+<img ref={visibility(isVisible => setLoaded(isVisible))} />
+
+// Lock scroll on the body while a modal is open
+<dialog ref={preventScroll} />
+```
+
+### Action Helpers
+
+Solid 2.0's `action(fn*)` uses **generator functions** for async mutations — `yield` replaces `await`, giving the runtime control over sequencing, cancellation, and rollback. Action helpers are combinator functions that wrap generators to add cross-cutting behaviour without modifying the action logic itself.
+
+```ts
+import { withRetry, withAbort, withOptimistic, pipe } from "@solid-primitives/action-helpers";
+
+// Abort in-flight if the user types again (switchMap semantics)
+const search = action(withAbort(function*(query: string) {
+  return yield api.search(query);
+}));
+
+// Retry up to 3 times with exponential backoff
+const save = action(withRetry(function*(doc) {
+  yield api.save(doc);
+}, { attempts: 3, backoff: "exponential" }));
+
+// Compose multiple wrappers cleanly
+const upload = action(pipe(
+  withTimeout(30_000),
+  withRetry({ attempts: 3 }),
+  withProgress(setUploadPct),
+)(function*(file) {
+  yield api.upload(file);
+  refresh(fileList);
+}));
+```
+
+Action helpers compose left-to-right. Each wrapper receives a generator and returns a generator — no special types, no framework integration required.
+
+### General Utilities
+
+Non-reactive helpers with no Solid lifecycle dependency. These use the `make*` prefix and always return a cleanup function rather than calling `onCleanup` themselves. They are safe to use outside a Solid owner and form the base layer that reactive primitives are often built on top of.
+
+```ts
+// Set up an event listener — returns a cleanup function
+const cleanup = makeEventListener(window, "resize", onResize);
+
+// Create a WebSocket connection with no reactive overhead
+const [ws, cleanup] = makeWS("wss://api.example.com/ws");
+
+// One-shot geolocation query
+const [getPosition, cleanup] = makeGeolocation();
+const coords = await getPosition();
+cleanup();
+```
+
+## Solid 2.0
+
+Solid 2.0 changes how reactivity, async data, DOM binding, and mutations work — all areas that touch this library directly. For a full breakdown of what changed and how each primitive category is affected, see [SOLID2.md](./SOLID2.md).
+
+Packages that have been migrated to Solid 2.0 are marked in the table below.
+
+## Packages
 
 <!-- INSERT-PRIMITIVES-TABLE:START -->
 |Name|Stage|Primitives|Size|NPM|Solid 2|
