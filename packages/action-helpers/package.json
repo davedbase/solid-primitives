@@ -1,0 +1,73 @@
+{
+  "name": "@solid-primitives/action-helpers",
+  "version": "0.0.100",
+  "description": "Composable generator wrappers for Solid 2.0 actions: retry, timeout, abort, queue, progress, optimistic updates, and more.",
+  "author": "David Di Biase <ddibiase@romamoulding.com>",
+  "contributors": [],
+  "license": "MIT",
+  "homepage": "https://primitives.solidjs.community/package/action-helpers",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/solidjs-community/solid-primitives.git"
+  },
+  "bugs": {
+    "url": "https://github.com/solidjs-community/solid-primitives/issues"
+  },
+  "primitive": {
+    "name": "action-helpers",
+    "stage": 0,
+    "list": [
+      "withRetry",
+      "withTimeout",
+      "withAbort",
+      "sequential",
+      "once",
+      "withProgress",
+      "tryCatch",
+      "withOptimistic",
+      "pipe"
+    ],
+    "category": "Reactivity"
+  },
+  "keywords": [
+    "solid",
+    "primitives",
+    "action",
+    "retry",
+    "timeout",
+    "abort",
+    "optimistic",
+    "generator"
+  ],
+  "private": false,
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "module": "./dist/index.js",
+  "browser": {},
+  "types": "./dist/index.d.ts",
+  "exports": {
+    "import": {
+      "@solid-primitives/source": "./src/index.ts",
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "typesVersions": {},
+  "scripts": {
+    "dev": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/dev.ts",
+    "build": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/build.ts",
+    "vitest": "vitest -c ../../configs/vitest.config.ts",
+    "vitest2": "vitest -c ../../configs/vitest.config.solid2.ts",
+    "test": "pnpm run vitest2",
+    "test:ssr": "pnpm run vitest2 --mode ssr"
+  },
+  "devDependencies": {
+    "solid-js": "2.0.0-beta.13"
+  },
+  "peerDependencies": {
+    "solid-js": "^2.0.0-beta.13"
+  }
+}
