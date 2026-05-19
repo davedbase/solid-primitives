@@ -20,19 +20,19 @@ export const Route = createFileRoute("/")({
     return { content, packages };
   },
   head: () => ({
-    meta: [{ title: "Solid Primitives" }],
+    meta: [{ title: "Solid Primitives 2.0" }],
   }),
 });
 
 const Header: Component = () => {
   return (
-    <div class="mx-auto min-h-[35vh] max-w-[720px] overflow-clip p-4 leading-7 sm:min-h-[50vh] sm:pt-[5vh] md:pt-[10vh]">
+    <div class="mx-auto min-h-[35vh] max-w-[850px] overflow-clip p-4 leading-7 sm:min-h-[50vh] sm:pt-[5vh] md:pt-[10vh]">
       <p class="py-3 sm:text-lg md:text-2xl">
         A project that strives to develop high-quality, community contributed Solid{" "}
-        <strong>Primitives</strong>.
+        <strong>Primitives</strong> (Verison 2).
         {/* All utilities are well tested and continuously maintained. */}
       </p>
-      <div class="relative mb-10 mt-4 text-[14px] sm:text-base md:text-lg">
+      <div class="relative mt-4 mb-10 text-[14px] sm:text-base md:text-lg">
         <ul class="flex gap-4">
           <li>
             <div class="font-semibold text-[#30889c] dark:text-[#44bfdb]">Small</div>
@@ -50,7 +50,7 @@ const Header: Component = () => {
           </li>
         </ul>
         <svg
-          class="-z-1 mask-image-[linear-gradient(to_bottom,transparent,#000_30%)] sm:mask-image-[linear-gradient(to_bottom,transparent,#000_20%)] pointer-events-none absolute -left-6 -right-8 top-[20%] opacity-60 sm:-left-4 sm:-right-4"
+          class="mask-image-[linear-gradient(to_bottom,transparent,#000_30%)] sm:mask-image-[linear-gradient(to_bottom,transparent,#000_20%)] pointer-events-none absolute top-[20%] -right-8 -left-6 -z-1 opacity-60 sm:-right-4 sm:-left-4"
           viewBox="0 0 188.975 179.46"
           // @ts-ignore
           xml:space="preserve"

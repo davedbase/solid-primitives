@@ -64,8 +64,7 @@ export function getScrollPosition(target: Element | Window | undefined): Positio
 export function createScrollPosition(
   target?: Accessor<Element | Window | undefined> | Element | Window,
 ): Readonly<Position> {
-  // Reactive primitives (createMemo via createDerivedStaticStore, plus the scroll
-  // effect below) must be created on both server and client to keep Solid 2.0
+  // Reactive primitives must be created on both server and client to keep Solid 2.0
   // hydration child IDs consistent — all component scopes are transparent and share
   // the root counter. DOM operations are guarded inside the apply phases.
   if (!isServer) {

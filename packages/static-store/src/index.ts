@@ -5,10 +5,8 @@ import {
   createSignal,
   type ComputeFunction,
   getObserver,
-  getOwner,
   type NoInfer,
   onSettled,
-  runWithOwner,
   sharedConfig,
   type Signal,
   type SignalOptions,
@@ -136,22 +134,19 @@ export function createHydratableStaticStore<T extends Record<string, Exclude<unk
 export function createDerivedStaticStore<Next extends Prev & object, Prev = Next>(
   fn: ComputeFunction<undefined | NoInfer<Prev>, Next>,
 ): Next {
-  const o = getOwner(),
-    fnMemo = createMemo(fn as ComputeFunction<undefined | NoInfer<Next>, Next>),
-    store = { ...untrack(fnMemo) },
-    cache: Partial<Record<keyof Next, Accessor<Next[keyof Next]>>> = {};
+  const fnMemo = createMemo(fn as ComputeFunction<undefined | NoInfer<Next>, Next>),
+    store = { ...untrack(fnMemo) };
 
+  // Eagerly create per-key memos so their child IDs are allocated at initialization
+  // time on both server and client. The previous lazy approach created memos on first
+  // reactive access — which happened inside _$className render-effect computes on the
+  // client but not on the server (SSR doesn't run render-effect computes with a live
+  // observer), shifting every subsequent hydration key by +1 per lazily-created memo.
   for (const key in store) {
     const k = key as keyof Next;
+    const keyMemo = createMemo(() => fnMemo()[k]);
     Object.defineProperty(store, k, {
-      get() {
-        let keyMemo = cache[k];
-        if (!keyMemo) {
-          if (!getObserver()) return fnMemo()[k];
-          runWithOwner(o, () => (cache[k] = keyMemo = createMemo(() => fnMemo()[k])));
-        }
-        return keyMemo!();
-      },
+      get: () => keyMemo(),
       enumerable: true,
     });
   }
