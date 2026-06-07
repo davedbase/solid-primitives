@@ -46,18 +46,11 @@ export interface Dropzone<T extends HTMLElement = HTMLElement> {
   clearFiles: () => void;
 }
 
-/**
- * @property `accept` - Comma-separated list of one or more file types, or unique file type specifiers
- * @link `accept` - https://developer.mozilla.org/en-US/docs/Web/HTML/Attributes/accept
- */
 export interface DropzoneOptions {
   onDrop?: UserCallback;
-  onDragStart?: UserCallback;
   onDragEnter?: UserCallback;
-  onDragEnd?: UserCallback;
   onDragLeave?: UserCallback;
   onDragOver?: UserCallback;
-  onDrag?: UserCallback;
 }
 
 export type UploadStatus = "idle" | "uploading" | "success" | "error" | "aborted";

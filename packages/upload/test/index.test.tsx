@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
 import { createRoot, flush } from "solid-js";
-import { createFilePicker, createFileUploader, fileSender, createDropzone, dropzone, fileUploader } from "../src/index.js";
+import { createFilePicker, createDropzone, dropzone, createFileUploader, fileSender, fileUploader } from "../src/index.js";
 import { transformFiles } from "../src/helpers.js";
 import type { UploadFile } from "../src/types.js";
 
@@ -290,12 +290,9 @@ describe("createDropzone", () => {
       const dispose = createRoot(dispose => {
         createDropzone({
           onDrop: vi.fn(),
-          onDragStart: vi.fn(),
           onDragEnter: vi.fn(),
-          onDragEnd: vi.fn(),
           onDragLeave: vi.fn(),
           onDragOver: vi.fn(),
-          onDrag: vi.fn(),
         });
         return dispose;
       });
@@ -305,11 +302,8 @@ describe("createDropzone", () => {
 
   it("isLoading is true while onDrop callback is pending, false after it resolves", async () => {
     let resolve!: () => void;
-    const blocker = new Promise<void>(r => {
-      resolve = r;
-    });
+    const blocker = new Promise<void>(r => { resolve = r; });
 
-    // Capture isLoading via closure — onDrop is passed before the primitive returns
     let getIsLoading!: () => boolean;
     const { ref, dispose } = createRoot(dispose => {
       const dz = createDropzone({ onDrop: () => blocker });
@@ -326,13 +320,13 @@ describe("createDropzone", () => {
       configurable: true,
     });
     div.dispatchEvent(dropEvent);
-    await Promise.resolve(); // flush setIsLoading(true)
+    await Promise.resolve();
 
     expect(getIsLoading()).toBe(true);
 
     resolve();
     await blocker;
-    await Promise.resolve(); // flush setIsLoading(false) from finally
+    await Promise.resolve();
 
     expect(getIsLoading()).toBe(false);
     dispose();
@@ -378,16 +372,13 @@ describe("createDropzone", () => {
     flush();
     expect(isDragging()).toBe(false);
 
-    // Re-assign — el1 listeners should be removed, el2 should become active
     ref(el2);
     expect(removeSpy).toHaveBeenCalled();
 
-    // el1 events no longer affect state
     el1.dispatchEvent(new Event("dragenter"));
     flush();
     expect(isDragging()).toBe(false);
 
-    // el2 events now drive state
     el2.dispatchEvent(new Event("dragenter"));
     flush();
     expect(isDragging()).toBe(true);
@@ -398,18 +389,13 @@ describe("createDropzone", () => {
   it("error() captures a thrown onDrop callback", async () => {
     const boom = new Error("drop failed");
     const { error, ref, dispose } = createRoot(dispose => ({
-      ...createDropzone({
-        onDrop: async () => {
-          throw boom;
-        },
-      }),
+      ...createDropzone({ onDrop: async () => { throw boom; } }),
       dispose,
     }));
 
     const div = document.createElement("div");
     ref(div);
 
-    // jsdom does not implement DragEvent — dispatch a plain Event with stubbed dataTransfer
     const dropEvent = new Event("drop", { bubbles: true, cancelable: true });
     Object.defineProperty(dropEvent, "dataTransfer", {
       value: { files: makeFileList(makeFile()) },

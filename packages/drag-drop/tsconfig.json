@@ -7,7 +7,7 @@
   },
   "references": [
     {
-      "path": "../drag-drop"
+      "path": "../utils"
     }
   ],
   "include": [

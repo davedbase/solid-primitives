@@ -14,11 +14,11 @@
     "stage": 0,
     "list": [
       "createFilePicker",
+      "createDropzone",
+      "dropzone",
       "createFileUploader",
       "fileSender",
-      "fileUploader",
-      "createDropzone",
-      "dropzone"
+      "fileUploader"
     ],
     "category": "Browser APIs",
     "gzip": 1035
@@ -54,7 +54,7 @@
     "test:ssr": "pnpm run vitest --mode ssr"
   },
   "dependencies": {
-    "@solid-primitives/event-listener": "workspace:*"
+    "@solid-primitives/drag-drop": "workspace:*"
   },
   "peerDependencies": {
     "@solidjs/web": "^2.0.0-beta.14",
