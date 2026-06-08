@@ -174,6 +174,32 @@ describe("createWakeLock — request()", () => {
       dispose();
     });
   });
+
+  it("captures error when requesting while the document is hidden", async () => {
+    await createRoot(async dispose => {
+      const wl = createWakeLock();
+      setDocumentVisible(false);
+      await wl.request();
+      flush();
+      expect(wl.error()).toBeInstanceOf(Error);
+      expect(wl.error()!.name).toBe("NotAllowedError");
+      expect(wl.isActive()).toBe(false);
+      dispose();
+    });
+  });
+
+  it("ignores a concurrent request() while one is already in-flight", async () => {
+    await createRoot(async dispose => {
+      const wl = createWakeLock();
+      const p1 = wl.request();
+      const p2 = wl.request(); // in-flight, should be ignored
+      await Promise.all([p1, p2]);
+      flush();
+      expect(wl.isActive()).toBe(true);
+      expect(wl.sentinel()).toBeInstanceOf(MockWakeLockSentinel);
+      dispose();
+    });
+  });
 });
 
 // ── createWakeLock — release ──────────────────────────────────────────────────
@@ -222,6 +248,22 @@ describe("createWakeLock — release()", () => {
     await createRoot(async dispose => {
       const wl = createWakeLock();
       await expect(wl.release()).resolves.toBeUndefined();
+      dispose();
+    });
+  });
+
+  it("clears error() when called after a failed request", async () => {
+    await createRoot(async dispose => {
+      const wl = createWakeLock();
+      setWakeLockDenied(true);
+      await wl.request();
+      flush();
+      expect(wl.error()).not.toBeNull();
+
+      setWakeLockDenied(false);
+      await wl.release();
+      flush();
+      expect(wl.error()).toBeNull();
       dispose();
     });
   });
@@ -325,6 +367,57 @@ describe("createWakeLock — autoReacquire", () => {
       await tick();
       flush();
       expect(wl.isActive()).toBe(false);
+      dispose();
+    });
+  });
+
+  it("sets error when the autoReacquire re-request is denied", async () => {
+    await createRoot(async dispose => {
+      const wl = createWakeLock({ autoReacquire: true });
+      await wl.request();
+      flush();
+
+      const lock = wl.sentinel() as MockWakeLockSentinel;
+      setDocumentVisible(false);
+      await lock.release();
+      await tick();
+      flush();
+
+      setWakeLockDenied(true);
+      setDocumentVisible(true);
+      await tick();
+      flush();
+
+      expect(wl.isActive()).toBe(false);
+      expect(wl.error()).toBeInstanceOf(Error);
+      setWakeLockDenied(false);
+      dispose();
+    });
+  });
+
+  it("re-enables autoReacquire after explicit release() followed by request()", async () => {
+    await createRoot(async dispose => {
+      const wl = createWakeLock({ autoReacquire: true });
+      await wl.request();
+      flush();
+      await wl.release();
+      await tick();
+      flush();
+
+      // Second request resets userReleased — autoReacquire should work again.
+      await wl.request();
+      flush();
+
+      const lock = wl.sentinel() as MockWakeLockSentinel;
+      setDocumentVisible(false);
+      await lock.release();
+      await tick();
+      flush();
+
+      setDocumentVisible(true);
+      await tick();
+      flush();
+      expect(wl.isActive()).toBe(true);
       dispose();
     });
   });

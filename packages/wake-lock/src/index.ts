@@ -1,4 +1,4 @@
-import { createSignal, onCleanup, type Accessor } from "solid-js";
+import { createSignal, createMemo, onCleanup, type Accessor } from "solid-js";
 import { isServer } from "@solidjs/web";
 import { INTERNAL_OPTIONS, noop } from "@solid-primitives/utils";
 
@@ -127,25 +127,25 @@ export function createWakeLock(options: CreateWakeLockOptions = {}): WakeLockRet
   const isSupported = "wakeLock" in navigator;
 
   const [sentinel, setSentinel] = createSignal<WakeLockSentinel | null>(null, INTERNAL_OPTIONS);
-  const [isActive, setIsActive] = createSignal(false, INTERNAL_OPTIONS);
-  const [type, setType] = createSignal<WakeLockType | undefined>(undefined, INTERNAL_OPTIONS);
   const [error, setError] = createSignal<Error | null>(null, INTERNAL_OPTIONS);
+
+  const isActive = createMemo(() => sentinel() !== null);
+  const type = createMemo(() => sentinel()?.type);
 
   let lastRequestedType: WakeLockType = "screen";
   let userReleased = false;
   let wasRequested = false;
+  let requesting = false;
 
   const handleSentinelRelease = () => {
     setSentinel(null);
-    setIsActive(false);
-    setType(undefined);
   };
 
   const request = async (lockType: WakeLockType = "screen"): Promise<void> => {
-    if (!isSupported) return;
+    if (!isSupported || requesting) return;
+    requesting = true;
     try {
       userReleased = false;
-      wasRequested = true;
       lastRequestedType = lockType;
       setError(null);
 
@@ -155,10 +155,8 @@ export function createWakeLock(options: CreateWakeLockOptions = {}): WakeLockRet
 
       const lock = await navigator.wakeLock.request(lockType);
 
+      wasRequested = true;
       setSentinel(lock);
-      setIsActive(true);
-      setType(lockType);
-      // once: true auto-removes the listener after the first fire.
       lock.addEventListener("release", handleSentinelRelease, { once: true });
     } catch (err) {
       if (err instanceof Error) {
@@ -172,11 +170,14 @@ export function createWakeLock(options: CreateWakeLockOptions = {}): WakeLockRet
         if (err != null && typeof (err as any).name === "string") e.name = (err as any).name;
         setError(e);
       }
+    } finally {
+      requesting = false;
     }
   };
 
   const release = async (): Promise<void> => {
     userReleased = true;
+    setError(null);
     const lock = sentinel();
     if (lock && !lock.released) {
       await lock.release();
