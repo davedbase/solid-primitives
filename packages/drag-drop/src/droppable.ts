@@ -17,8 +17,9 @@ import type {
  * Attaches pointer-based drop-zone behaviour to an existing element.
  * Non-reactive — no Solid owner required. Returns a cleanup function.
  *
- * Note: coordination with `makeDraggable` requires that no pointer capture is
- * active on the dragging element, so `pointerenter`/`pointerleave` fire naturally.
+ * Note: coordination with `makeDraggable` requires that the dragging element
+ * has `pointer-events: none` applied during the drag, otherwise
+ * `pointerenter`/`pointerleave` will not reach this element.
  *
  * @example
  * ```ts
@@ -93,11 +94,15 @@ export function createDroppable<T = unknown>(
     ? createMemo((): DragItem | null => (isOver() ? ctx.active() : null))
     : () => null;
 
+  // Single effect tracks both element and disabled — avoids stale element reads.
   if (ctx) {
     createEffect(
-      () => elSignal(),
-      el => {
-        if (!el) return;
+      () => ({ el: elSignal(), disabled: access(options.disabled) }),
+      ({ el, disabled }) => {
+        if (!el || disabled) {
+          ctx._unregisterDroppable(id);
+          return;
+        }
         ctx._registerDroppable(id, el, data as unknown, options.accept);
         return () => ctx._unregisterDroppable(id);
       },
@@ -118,22 +123,6 @@ export function createDroppable<T = unknown>(
       }
     },
   );
-
-  // Reactive disabled: re-register with updated accept when disabled changes
-  if (ctx) {
-    createEffect(
-      () => access(options.disabled),
-      disabled => {
-        const el = elSignal();
-        if (!el) return;
-        if (disabled) {
-          ctx._unregisterDroppable(id);
-        } else {
-          ctx._registerDroppable(id, el, data as unknown, options.accept);
-        }
-      },
-    );
-  }
 
   const ref = (el: HTMLElement) => {
     setElSignal(() => el);

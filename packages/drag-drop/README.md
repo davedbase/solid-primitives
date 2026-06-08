@@ -1,27 +1,27 @@
 <p>
-  <img width="100%" src="https://assets.solidjs.com/banner?type=Primitives&background=tiles&project=drag" alt="Solid Primitives drag">
+  <img width="100%" src="https://assets.solidjs.com/banner?type=Primitives&background=tiles&project=drag-drop" alt="Solid Primitives drag">
 </p>
 
-# @solid-primitives/drag
+# @solid-primitives/drag-drop
 
 [![turborepo](https://img.shields.io/badge/built%20with-turborepo-cc00ff.svg?style=for-the-badge&logo=turborepo)](https://turborepo.org/)
-[![size](https://img.shields.io/bundlephobia/minzip/@solid-primitives/drag?style=for-the-badge&label=size)](https://bundlephobia.com/package/@solid-primitives/drag)
-[![version](https://img.shields.io/npm/v/@solid-primitives/drag?style=for-the-badge)](https://www.npmjs.com/package/@solid-primitives/drag)
+[![size](https://img.shields.io/bundlephobia/minzip/@solid-primitives/drag-drop?style=for-the-badge&label=size)](https://bundlephobia.com/package/@solid-primitives/drag-drop)
+[![version](https://img.shields.io/npm/v/@solid-primitives/drag?style=for-the-badge)](https://www.npmjs.com/package/@solid-primitives/drag-drop)
 [![stage](https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolidjs-community%2Fsolid-primitives%2Fmain%2Fassets%2Fbadges%2Fstage-0.json)](https://github.com/solidjs-community/solid-primitives#contribution-process)
 
 Composable, tree-shakeable drag-and-drop primitives for Solid 2.0.
 
 Two separate drag systems are provided:
 
-- **Pointer-event DnD** (`makeDraggable`, `makeDroppable`, `createDraggable`, `createDroppable`, `createSortable`, `createDragContext`) — for UI elements moved by the user.
-- **Native HTML5 DnD** (`makeNativeDroppable`, `createNativeDroppable`) — for OS file drops and `draggable="true"` elements; designed to compose with `@solid-primitives/upload`'s `createDropzone`.
+- **Pointer-events** (`makeDraggable`, `makeDroppable`, `createDraggable`, `createDroppable`, `createSortable`, `createDragContext`) — for UI elements moved by the user.
+- **Native HTML5 API** (`makeNativeDroppable`, `createNativeDroppable`) — for OS file drops and `draggable="true"` elements; designed to compose with `@solid-primitives/upload`'s `createDropzone`.
 
 ## Installation
 
 ```bash
-npm install @solid-primitives/drag
+npm install @solid-primitives/drag-drop
 # or
-pnpm add @solid-primitives/drag
+pnpm add @solid-primitives/drag-drop
 ```
 
 ## Primitives
@@ -130,22 +130,22 @@ const drop = createNativeDroppable({
 Coordinates draggables and droppables. Provide it as a context via `ctx.Provider`.
 
 ```tsx
-const ctx = createDragContext({
+const DragContext = createDragContext({
   collisionDetection: closestCenter,
   onDragStart: item => console.log("started", item.id),
   onDragEnd: (item, over) => console.log("dropped", item.id, "on", over?.id),
   onDragCancel: item => console.log("cancelled", item.id),
 });
 
-<ctx.Provider>
+<DragContext.Provider>
   <DraggableItem />
   <DropZone />
-</ctx.Provider>
+</DragContext.Provider>
 ```
 
 | Return | Description |
 |---|---|
-| `Provider` | Wrap your DnD tree in this component |
+| `Provider` | Wrap your drag-and-drop tree in this component |
 | `active` | Accessor — the currently dragged `DragItem`, or `null` |
 | `over` | Accessor — the current `DroppableItem` under the draggable, or `null` |
 | `transform` | Accessor — `{ x, y }` delta from drag start, or `null` |
@@ -179,7 +179,7 @@ All four are exported as pure functions — pass any of them as `collisionDetect
 | `pointerWithin` | Topmost droppable containing the pointer (default) |
 
 ```ts
-import { createDragContext, closestCenter } from "@solid-primitives/drag";
+import { createDragContext, closestCenter } from "@solid-primitives/drag-drop";
 
 const ctx = createDragContext({ collisionDetection: closestCenter });
 ```
@@ -187,7 +187,7 @@ const ctx = createDragContext({ collisionDetection: closestCenter });
 You can also write a custom detector:
 
 ```ts
-import type { CollisionDetector } from "@solid-primitives/drag";
+import type { CollisionDetector } from "@solid-primitives/drag-drop";
 
 const myDetector: CollisionDetector = (draggable, droppables, pointer) => {
   // Return the id of the winning droppable, or null
@@ -197,7 +197,7 @@ const myDetector: CollisionDetector = (draggable, droppables, pointer) => {
 
 ## Integration with `@solid-primitives/upload`
 
-`createNativeDroppable` is designed to serve as the drop-zone backend for the upload package's `createDropzone`. Pass the `ref` and `isOver` signal to the upload primitive for a seamless file-upload DnD experience.
+`createNativeDroppable` is designed to serve as the drop-zone backend for the upload package's `createDropzone`. Pass the `ref` and `isOver` signal to the upload primitive for a seamless file-upload drag-and-drop experience.
 
 ```tsx
 const drop = createNativeDroppable({

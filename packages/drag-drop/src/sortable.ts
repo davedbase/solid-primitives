@@ -1,4 +1,3 @@
-import { createMemo } from "solid-js";
 import { isServer } from "@solidjs/web";
 import { noop } from "@solid-primitives/utils";
 import { createDraggable } from "./draggable.js";
@@ -48,10 +47,6 @@ export function createSortable<T = unknown>(
   const draggable = createDraggable(id, data);
   const droppable = createDroppable(id, data);
 
-  // True when another item is being dragged over this element.
-  // Self-hover is excluded by the context's collision detection filter.
-  const isActiveDropzone = createMemo(() => droppable.isOver());
-
   const ref = (el: HTMLElement) => {
     draggable.ref(el);
     droppable.ref(el);
@@ -63,7 +58,7 @@ export function createSortable<T = unknown>(
     transform: draggable.transform,
     isOver: droppable.isOver,
     active: droppable.active,
-    isActiveDropzone,
+    isActiveDropzone: droppable.isOver,
     id,
   };
 }

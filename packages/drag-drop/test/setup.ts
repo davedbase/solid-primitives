@@ -37,3 +37,20 @@ class DragEventShim extends MouseEvent {
 (globalThis as any).PointerEvent = PointerEventShim;
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 (globalThis as any).DragEvent = DragEventShim;
+
+// jsdom doesn't implement pointer capture — shim as no-ops.
+if (!HTMLElement.prototype.setPointerCapture) {
+  HTMLElement.prototype.setPointerCapture = () => {};
+  HTMLElement.prototype.releasePointerCapture = () => {};
+  HTMLElement.prototype.hasPointerCapture = () => false;
+}
+
+// Make requestAnimationFrame synchronous in jsdom so pointermove tests don't need to advance frames.
+// The context code uses `rafPending` (not the return value) as the dedup guard, so this is safe.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).requestAnimationFrame = (cb: FrameRequestCallback): number => {
+  cb(performance.now());
+  return 0;
+};
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).cancelAnimationFrame = (_id: number): void => {};

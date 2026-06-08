@@ -9,6 +9,11 @@ import type { CreateDraggableOptions, DraggableReturn, MakeDraggableOptions, Tra
  * Attaches pointer-based drag behaviour to an existing element.
  * Non-reactive — no Solid owner required. Returns a cleanup function.
  *
+ * Note: `pointerenter`/`pointerleave` on drop targets won't fire reliably
+ * while the dragged element is under the pointer unless you set
+ * `pointer-events: none` on it during the drag. The context-based
+ * `createDroppable` uses rect collision and is not affected.
+ *
  * @example
  * ```ts
  * const cleanup = makeDraggable(el, {
@@ -121,6 +126,7 @@ export function createDraggable<T = unknown>(
           if (access(options.disabled)) return;
           if (event.button !== 0) return;
           event.preventDefault();
+          el.setPointerCapture(event.pointerId);
           startX = event.clientX;
           startY = event.clientY;
           setIsDragging(true);
@@ -138,24 +144,21 @@ export function createDraggable<T = unknown>(
     );
   }
 
-  // Context mode: attach pointerdown + register
+  // Context mode: attach pointerdown listener only (registration handled by droppables).
   if (ctx) {
     createEffect(
       () => elSignal(),
       el => {
         if (!el) return;
-        ctx._registerDraggable(id, el, data as unknown);
         const onPointerDown = (event: PointerEvent) => {
           if (access(options.disabled)) return;
           if (event.button !== 0) return;
           event.preventDefault();
+          el.setPointerCapture(event.pointerId);
           ctx._startDrag(id, el, data as unknown, event);
         };
         el.addEventListener("pointerdown", onPointerDown);
-        return () => {
-          el.removeEventListener("pointerdown", onPointerDown);
-          ctx._unregisterDraggable(id);
-        };
+        return () => el.removeEventListener("pointerdown", onPointerDown);
       },
     );
   }
