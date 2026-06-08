@@ -103,7 +103,7 @@ export function createDroppable<T = unknown>(
           ctx._unregisterDroppable(id);
           return;
         }
-        ctx._registerDroppable(id, el, data as unknown, options.accept);
+        ctx._registerDroppable(id, el, data, options.accept);
         return () => ctx._unregisterDroppable(id);
       },
     );

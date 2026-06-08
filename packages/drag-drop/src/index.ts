@@ -1,6 +1,7 @@
 export type {
   Transform,
   Point,
+  Rect,
   DragItem,
   DroppableItem,
   DragRect,

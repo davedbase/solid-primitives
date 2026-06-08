@@ -155,7 +155,7 @@ export function createDraggable<T = unknown>(
           if (event.button !== 0) return;
           event.preventDefault();
           el.setPointerCapture(event.pointerId);
-          ctx._startDrag(id, el, data as unknown, event);
+          ctx._startDrag(id, el, data, event);
         };
         el.addEventListener("pointerdown", onPointerDown);
         return () => el.removeEventListener("pointerdown", onPointerDown);

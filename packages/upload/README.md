@@ -223,7 +223,7 @@ If `onError` is omitted, a rejection from `userCallback` propagates as an unhand
 
 ## `createDropzone`
 
-A reactive drag-and-drop zone. Attach it to any element via the `ref` callback and respond to the full set of drag lifecycle events.
+A reactive drag-and-drop zone. Attach it to any element via the `ref` callback and respond to drag lifecycle events. Implemented on top of `createNativeDroppable` from `@solid-primitives/drag-drop` — the depth-counter logic, `isOver` tracking, and element cleanup are all handled by the underlying primitive.
 
 ```tsx
 import { createDropzone, createFileUploader, fileSender } from "@solid-primitives/upload";
@@ -270,14 +270,11 @@ const { ref, files, isDragging, error } = createDropzone({
 | Callback      | Fires when…                                              |
 | ------------- | -------------------------------------------------------- |
 | `onDrop`      | Files are dropped; `isLoading` is `true` while it awaits |
-| `onDragStart` | A drag operation begins                                  |
 | `onDragEnter` | A dragged item enters the element                        |
-| `onDragEnd`   | A drag operation ends                                    |
 | `onDragLeave` | A dragged item leaves the element                        |
 | `onDragOver`  | An item is dragged continuously over the element         |
-| `onDrag`      | Any drag event fires on the element                      |
 
-All callbacks have signature `(files: UploadFile[]) => void | Promise<void>`. `isLoading` tracks only the `onDrop` callback — drag-movement events are fire-and-forget.
+All callbacks have signature `(files: UploadFile[]) => void | Promise<void>`. `isLoading` tracks only the `onDrop` callback — drag-movement callbacks are fire-and-forget.
 
 ## `dropzone`
 
@@ -287,11 +284,10 @@ A ref callback factory variant of `createDropzone`. Returns a single value that 
 import { dropzone, createFileUploader, fileSender } from "@solid-primitives/upload";
 
 const { upload, progress, status } = createFileUploader(fileSender("/api/upload"));
+const dz = dropzone({ onDrop: files => upload(files) });
 
 <div
-  ref={dropzone({
-    onDrop: files => upload(files)
-  })}
+  ref={dz}
   style={{
     background: dz.isDragging() ? "lightblue" : "lightgray",
     padding: "2rem",

@@ -101,7 +101,7 @@ export function createDragContext(options: DragContextOptions = {}): DragContext
         height: dragStartHeight,
         x: dragStartLeft + tx,
         y: dragStartTop + ty,
-      } as unknown as DOMRect,
+      },
     };
 
     const winnerId = collide(draggableRect, cachedRects, { x: pendingX, y: pendingY });

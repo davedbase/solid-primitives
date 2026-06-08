@@ -6,15 +6,15 @@
 
 [![turborepo](https://img.shields.io/badge/built%20with-turborepo-cc00ff.svg?style=for-the-badge&logo=turborepo)](https://turborepo.org/)
 [![size](https://img.shields.io/bundlephobia/minzip/@solid-primitives/drag-drop?style=for-the-badge&label=size)](https://bundlephobia.com/package/@solid-primitives/drag-drop)
-[![version](https://img.shields.io/npm/v/@solid-primitives/drag?style=for-the-badge)](https://www.npmjs.com/package/@solid-primitives/drag-drop)
+[![version](https://img.shields.io/npm/v/@solid-primitives/drag-drop?style=for-the-badge)](https://www.npmjs.com/package/@solid-primitives/drag-drop)
 [![stage](https://img.shields.io/endpoint?style=for-the-badge&url=https%3A%2F%2Fraw.githubusercontent.com%2Fsolidjs-community%2Fsolid-primitives%2Fmain%2Fassets%2Fbadges%2Fstage-0.json)](https://github.com/solidjs-community/solid-primitives#contribution-process)
 
-Composable, tree-shakeable drag-and-drop primitives for Solid 2.0.
+Composable, tree-shakeable drag-and-drop primitives.
 
 Two separate drag systems are provided:
 
 - **Pointer-events** (`makeDraggable`, `makeDroppable`, `createDraggable`, `createDroppable`, `createSortable`, `createDragContext`) — for UI elements moved by the user.
-- **Native HTML5 API** (`makeNativeDroppable`, `createNativeDroppable`) — for OS file drops and `draggable="true"` elements; designed to compose with `@solid-primitives/upload`'s `createDropzone`.
+- **Native HTML5 API** (`makeNativeDroppable`, `createNativeDroppable`) — for OS file drops and `draggable="true"` elements; used internally by `@solid-primitives/upload`'s `createDropzone`.
 
 ## Installation
 
@@ -30,11 +30,19 @@ pnpm add @solid-primitives/drag-drop
 
 Non-reactive base. Attaches pointer listeners to an element. No Solid owner required.
 
+> **Note:** When pairing with `makeDroppable`, apply `pointer-events: none` to the dragged element during the drag so that `pointerenter`/`pointerleave` can reach the underlying drop targets. The context-based `createDroppable` uses rect collision and is not affected.
+
 ```ts
 const cleanup = makeDraggable(el, {
-  onStart: e => console.log("start", e.clientX),
+  onStart: e => {
+    el.style.pointerEvents = "none"; // required for makeDroppable coordination
+    console.log("start", e.clientX);
+  },
   onMove: delta => (el.style.transform = `translate(${delta.x}px,${delta.y}px)`),
-  onEnd: () => (el.style.transform = ""),
+  onEnd: () => {
+    el.style.pointerEvents = "";
+    el.style.transform = "";
+  },
 });
 // later
 cleanup();
@@ -43,6 +51,8 @@ cleanup();
 ### `makeDroppable`
 
 Non-reactive base. Marks an element as a drop target for pointer-event drags.
+
+> **Note:** Requires `pointer-events: none` on the dragged element during the drag — otherwise the dragged element intercepts `pointerenter`/`pointerleave` before they reach this element.
 
 ```ts
 const cleanup = makeDroppable(el, {
@@ -67,6 +77,8 @@ const cleanup = makeNativeDroppable(el, {
 ### `createDraggable`
 
 Reactive draggable. Attach via `ref`. Works standalone or inside a `createDragContext` provider.
+
+Uses `setPointerCapture` internally so the drag is never stuck if the pointer leaves the viewport.
 
 ```tsx
 const drag = createDraggable("card-1", myData, {
@@ -129,18 +141,20 @@ const drop = createNativeDroppable({
 
 Coordinates draggables and droppables. Provide it as a context via `ctx.Provider`.
 
+Droppable rects are snapshotted once at drag start — `getBoundingClientRect` is never called during `pointermove`. Collision checks run at display rate (rAF-throttled) and only write reactive state when the hovered zone actually changes.
+
 ```tsx
-const DragContext = createDragContext({
+const ctx = createDragContext({
   collisionDetection: closestCenter,
   onDragStart: item => console.log("started", item.id),
   onDragEnd: (item, over) => console.log("dropped", item.id, "on", over?.id),
   onDragCancel: item => console.log("cancelled", item.id),
 });
 
-<DragContext.Provider>
+<ctx.Provider>
   <DraggableItem />
   <DropZone />
-</DragContext.Provider>
+</ctx.Provider>
 ```
 
 | Return | Description |
@@ -174,7 +188,7 @@ All four are exported as pure functions — pass any of them as `collisionDetect
 | Strategy | Description |
 |---|---|
 | `closestCenter` | Nearest droppable by center-to-center distance |
-| `closestCorners` | Nearest droppable by minimum corner distance |
+| `closestCorners` | Nearest droppable by minimum corner-to-pointer distance |
 | `rectIntersection` | Droppable with largest overlap area |
 | `pointerWithin` | Topmost droppable containing the pointer (default) |
 
@@ -197,15 +211,29 @@ const myDetector: CollisionDetector = (draggable, droppables, pointer) => {
 
 ## Integration with `@solid-primitives/upload`
 
-`createNativeDroppable` is designed to serve as the drop-zone backend for the upload package's `createDropzone`. Pass the `ref` and `isOver` signal to the upload primitive for a seamless file-upload drag-and-drop experience.
+`@solid-primitives/upload`'s `createDropzone` uses `createNativeDroppable` from this package under the hood. No manual wiring is needed — just use `createDropzone` from the upload package directly:
 
 ```tsx
-const drop = createNativeDroppable({
-  accept: e => e.dataTransfer?.types.includes("Files") ?? false,
+import { createDropzone } from "@solid-primitives/upload";
+
+const { ref, files, isDragging } = createDropzone({
+  onDrop: async files => await upload(files),
 });
 
-// Pass to createDropzone from @solid-primitives/upload
-const dropzone = createDropzone(drop);
+<div ref={ref} class={isDragging() ? "ring-2" : ""}>
+  Drop files here
+</div>
+```
+
+If you need lower-level control (custom accept filter, access to the raw `DragEvent`, etc.), use `createNativeDroppable` directly:
+
+```tsx
+import { createNativeDroppable } from "@solid-primitives/drag-drop";
+
+const drop = createNativeDroppable({
+  accept: e => e.dataTransfer?.types.includes("Files") ?? false,
+  onDrop: e => processFiles(e.dataTransfer!.files),
+});
 ```
 
 ## Changelog

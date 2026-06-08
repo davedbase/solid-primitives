@@ -15,8 +15,18 @@ export type DroppableItem<T = unknown> = {
   element: HTMLElement;
 };
 
-export type DragRect = { id: string | number; rect: DOMRect };
-export type DroppableRect = { id: string | number; rect: DOMRect };
+export type Rect = {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  width: number;
+  height: number;
+  x: number;
+  y: number;
+};
+export type DragRect = { id: string | number; rect: Rect };
+export type DroppableRect = { id: string | number; rect: Rect };
 
 export type CollisionDetector = (
   draggable: DragRect,
