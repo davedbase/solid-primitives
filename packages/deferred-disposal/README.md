@@ -245,6 +245,10 @@ createEffect(
 function createDeferredDisposal(): DeferredDisposal;
 ```
 
+## Credits
+
+Original primitive concept by [@okikio](https://github.com/okikio).
+
 ## Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md).
