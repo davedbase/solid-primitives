@@ -4,7 +4,11 @@ import { INTERNAL_OPTIONS, isServer } from "@solid-primitives/utils";
 export interface DisposalHold {
   readonly label?: string;
   release(): void;
+  /** Synchronous disposal — releases the hold. Enables `using hold = removal.hold()`. */
   [Symbol.dispose](): void;
+  /** Async disposal — releases the hold and returns a resolved Promise.
+   *  Enables `await using hold = removal.hold()` and `AsyncDisposableStack.use(hold)`. */
+  [Symbol.asyncDispose](): Promise<void>;
 }
 
 export interface DeferredDisposal {
@@ -89,6 +93,10 @@ export function createDeferredDisposal(): DeferredDisposal {
       },
       [Symbol.dispose]() {
         this.release();
+      },
+      [Symbol.asyncDispose]() {
+        this.release();
+        return Promise.resolve();
       },
     };
   }
