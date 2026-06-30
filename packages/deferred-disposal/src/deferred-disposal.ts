@@ -68,9 +68,12 @@ export function createDeferredDisposal(): DeferredDisposal {
   // Async memo — Solid treats this as pending while any work promise is unresolved.
   // Integrates with resolve(), isPending(), and <Loading> boundaries.
   // In SSR there is no async reactivity, so fall back to an always-resolved accessor.
-  const allSettled: Accessor<Promise<void>> = isServer
-    ? () => Promise.resolve()
-    : createMemo(() => Promise.all(work()).then(() => {}));
+  // Cast required: createMemo infers `void | Promise<void>` for async memos in Solid 2.0.
+  const allSettled = (
+    isServer
+      ? () => Promise.resolve()
+      : createMemo(() => Promise.all(work()).then(() => {}))
+  ) as Accessor<Promise<void>>;
 
   onCleanup(() => setIsDisposing(true));
 

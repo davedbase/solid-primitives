@@ -1,5 +1,5 @@
 <div>
-  <img width="1280" alt="@solid-primitives/deferred-disposal" src="https://primitives.solidjs.community/assets/logo.png">
+  <img width="100%" src="https://assets.solidjs.com/banner?type=Primitives&background=tiles&project=Deferred%20Disposal" alt="Solid Primitives Deferred Disposal">
 </div>
 
 # @solid-primitives/deferred-disposal
