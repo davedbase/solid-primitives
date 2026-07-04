@@ -124,6 +124,42 @@ const SecondExample = () => {
 };
 ```
 
+### `createPresence` with a store
+
+`createPresence`'s first argument must be an `Accessor` — a function. Reading a store property directly (`store.panelOpen`) passes its current value once and won't update reactively; wrap the access in a function (`() => store.panelOpen`) so `createPresence` can subscribe to changes:
+
+```tsx
+const ThirdExample = () => {
+  const [store, setStore] = createStore({ panelOpen: true });
+
+  // ✅ wrapped in an accessor
+  const { isVisible, isMounted } = createPresence(() => store.panelOpen, {
+    transitionDuration: 500,
+  });
+
+  // ❌ createPresence(store.panelOpen, { transitionDuration: 500 })
+  //    — this is a boolean, not an Accessor<boolean>, and won't type-check
+
+  return (
+    <div>
+      <button onclick={() => setStore("panelOpen", open => !open)}>
+        {store.panelOpen ? "Hide" : "Show"} panel
+      </button>
+      <Show when={isMounted()}>
+        <div
+          style={{
+            transition: "all .5s ease",
+            opacity: isVisible() ? "1" : "0",
+          }}
+        >
+          I am the panel!
+        </div>
+      </Show>
+    </div>
+  );
+};
+```
+
 ### `createPresence` options API
 
 ```ts
