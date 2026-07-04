@@ -7,9 +7,14 @@ import {
   useKeyDownSequence,
 } from "../src/index.js";
 
-const dispatchKeyEvent = (key: string, type: "keydown" | "keyup") => {
+const dispatchKeyEvent = (
+  key: string,
+  type: "keydown" | "keyup",
+  extra: Partial<KeyboardEvent> = {},
+) => {
   let ev = new Event(type) as any;
   ev.key = key;
+  Object.assign(ev, extra);
   window.dispatchEvent(ev);
 };
 
@@ -33,6 +38,27 @@ describe("useKeyDownList", () => {
 
       dispatchKeyEvent("Alt", "keyup");
       dispatchKeyEvent("q", "keyup");
+      expect(captured).toEqual([]);
+
+      dispose();
+    }));
+
+  // https://github.com/solidjs-community/solid-primitives/issues/269
+  // macOS never fires `keyup` for other keys held down together with Meta —
+  // only Meta's own keyup arrives — so releasing Meta must clear the whole
+  // list, or the other key's stale state corrupts the next press.
+  test("clears all keys when Meta is released (macOS suppresses keyup for keys held with Meta)", () =>
+    createRoot(dispose => {
+      let captured: any;
+      const [keys] = useKeyDownList();
+      createComputed(() => (captured = keys()));
+
+      dispatchKeyEvent("Meta", "keydown", { metaKey: true });
+      dispatchKeyEvent("k", "keydown", { metaKey: true });
+      expect(captured).toEqual(["META", "K"]);
+
+      // macOS quirk: only Meta's keyup fires; "k" never gets its own keyup
+      dispatchKeyEvent("Meta", "keyup");
       expect(captured).toEqual([]);
 
       dispose();
