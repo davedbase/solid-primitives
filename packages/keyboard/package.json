@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/keyboard",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "A library of reactive promitives helping handling user's keyboard input.",
   "author": "Damian Tarnwski <gthetarnav@gmail.com>",
   "contributors": [],
