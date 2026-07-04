@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/resize-observer",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Reactive primitives for observing resizing of HTML elements.",
   "author": "Moshe Udimar",
   "contributors": [

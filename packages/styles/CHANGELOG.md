@@ -1,5 +1,13 @@
 # @solid-primitives/styles
 
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies [59c9702]
+  - @solid-primitives/utils@6.4.1
+  - @solid-primitives/rootless@1.5.4
+
 ## 0.1.3
 
 ### Patch Changes

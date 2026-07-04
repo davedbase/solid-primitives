@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/gestures",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Directives to react to gestures",
   "author": "Moshe Uminer",
   "license": "MIT",

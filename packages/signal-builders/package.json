@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/signal-builders",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "A collection of chainable and composable reactive signal calculations, aka Signal Builders.",
   "author": "Your Name <you@youremail.com>",
   "license": "MIT",

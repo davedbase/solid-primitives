@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/deep",
-  "version": "0.3.6",
+  "version": "0.3.7",
   "description": "Primitives for tracking and observing nested reactive objects in Solid.",
   "author": "Samuel Burbano <me@iosamuel.dev>",
   "contributors": [

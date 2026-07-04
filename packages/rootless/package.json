@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/rootless",
-  "version": "1.5.3",
+  "version": "1.5.4",
   "description": "A collection of helpers that aim to simplify using reactive primitives outside of reactive roots, and managing disposal of reactive roots.",
   "author": "Damian Tarnawski @thetarnav <gthetarnav@gmail.com>",
   "license": "MIT",

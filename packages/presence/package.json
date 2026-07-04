@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/presence",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Utility to animate the presence of an element based on the existence of data or lack thereof.",
   "author": "Ethan Standel <ethan@standel.io>",
   "license": "MIT",

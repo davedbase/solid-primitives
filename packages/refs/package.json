@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/refs",
-  "version": "1.1.3",
+  "version": "1.1.4",
   "description": "Library of primitives, components and directives for SolidJS that help managing references to JSX elements.",
   "author": "Damian Tarnawski @thetarnav <gthetarnav@gmail.com>",
   "license": "MIT",
