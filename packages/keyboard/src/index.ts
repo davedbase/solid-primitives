@@ -134,7 +134,15 @@ export const useKeyDownList = /*#__PURE__*/ createSingletonRoot<Accessor<string[
   makeEventListener(window, "keyup", e => {
     if (typeof e.key !== "string") return;
     const key = e.key.toUpperCase();
-    setPressedKeys(prev => prev.filter(_key => _key !== key));
+    // macOS never fires keyup for other keys held down together with Meta —
+    // only Meta's own keyup arrives — so its release must clear everything,
+    // or the other keys' stale state corrupts the next press.
+    // See https://github.com/solidjs-community/solid-primitives/issues/269
+    if (key === "META") {
+      reset();
+    } else {
+      setPressedKeys(prev => prev.filter(_key => _key !== key));
+    }
   });
 
   makeEventListener(window, "blur", reset);
