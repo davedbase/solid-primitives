@@ -77,7 +77,7 @@ export const makeClipboard = (): [
  * Creates a new reactive primitive for managing the clipboard.
  *
  * @param data - Data signal to write to the clipboard.
- * @param deferInitial - Sets the value of the clipboard from the signal. defaults to false.
+ * @param deferInitial - When false, also writes the initial signal value on mount. Defaults to true (skip first write).
  * @return Returns a resource representing the clipboard elements and children.
  *
  * @example
@@ -130,7 +130,7 @@ export const createClipboard = (
   navigator.clipboard.addEventListener("clipboardchange", refetch);
   onCleanup(() => navigator.clipboard.removeEventListener("clipboardchange", refetch));
   if (data) {
-    createEffect(on(data, () => writeClipboard(data()), { defer: deferInitial || true }));
+    createEffect(on(data, () => writeClipboard(data()), { defer: deferInitial !== false }));
   }
 
   return [clipboard, refetch, writeClipboard];
