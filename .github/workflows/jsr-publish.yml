@@ -24,6 +24,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      - name: Verify JSR/Deno toolchain is present
+        run: |
+          if [ ! -f deno.jsonc ] || [ ! -f deno.lock ]; then
+            echo "::error::deno.jsonc/deno.lock not found on this ref ('${{ github.ref_name }}'). This workflow publishes the JSR (2.0) workspace and must be run against the branch that has the Deno/JSR tooling (e.g. 'next'), not '${{ github.ref_name }}'. Re-run with 'Use workflow from' set to the correct branch." >&2
+            exit 1
+          fi
+
       - uses: pnpm/action-setup@v6
 
       - name: Setup Node.js environment
