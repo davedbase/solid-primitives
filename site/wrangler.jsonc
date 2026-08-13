@@ -1,6 +1,6 @@
 {
   // Read by Nitro's cloudflare-module preset at build time (see vite.config.ts) and merged
   // into the generated .output/server/wrangler.json. Rename to match your Cloudflare project.
-  "name": "solid-primitives",
+  "name": "solid-primitives-site",
   "compatibility_date": "2026-08-09",
 }
