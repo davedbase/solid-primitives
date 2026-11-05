@@ -14,4 +14,5 @@ src/routes/*.mdx
 !src/routes/security.mdx
 !src/routes/contributors.mdx
 !src/routes/migration.mdx
+!src/routes/repl.mdx
 src/generated/

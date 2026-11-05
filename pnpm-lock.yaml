@@ -1530,7 +1530,7 @@ importers:
         version: 5.3.0
       '@kobalte/solidbase':
         specifier: ^3.0.0
-        version: 3.0.0(@solidjs/vite-plugin@3.0.0-next.56(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@tauri-apps/plugin-store@2.5.0)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+        version: 3.0.0(@solidjs/vite-plugin@3.0.0-next.56(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@tauri-apps/plugin-store@2.5.0)(solid-js@2.0.0-rc.21)(solid-repl@1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21))(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       '@solidjs/meta':
         specifier: 1.0.0-next.2
         version: 1.0.0-next.2(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
@@ -1543,6 +1543,9 @@ importers:
       solid-js:
         specifier: 'catalog:'
         version: 2.0.0-rc.21
+      solid-repl:
+        specifier: ^1.0.1
+        version: 1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
       vite:
         specifier: ^8.3.5
         version: 8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
@@ -1835,6 +1838,39 @@ packages:
   '@cloudflare/kv-asset-handler@0.4.2':
     resolution: {integrity: sha512-SIOD2DxrRRwQ+jgzlXCqoEFiKOFqaPjhnNTGKXSRLvp1HiOvapLaFG2kEr9dYQTYe8rKrd9uvDUzmAITeNyaHQ==}
     engines: {node: '>=18.0.0'}
+
+  '@codemirror/autocomplete@6.20.4':
+    resolution: {integrity: sha512-yF8RhOf2SXlg00+qtupzLhrglcas61boqaONiNcbPIebHCpJocpqTBA6dyrtUrQO47hqyTdeob/3XnYilT7TaQ==}
+
+  '@codemirror/commands@6.11.1':
+    resolution: {integrity: sha512-O/4hG3SC1YwcmQ0d2UVNDs+AsaNWd1iHVxbTeEBuqH+6bExAiPK3iS/BvpY6rZGURALv4ZD3sIgcCmRvw3ehBg==}
+
+  '@codemirror/lang-javascript@6.2.5':
+    resolution: {integrity: sha512-zD4e5mS+50htS7F+TYjBPsiIFGanfVqg4HyUz6WNFikgOPf2BgKlx+TQedI1w6n/IqRBVBbBWmGFdLB/7uxO4A==}
+
+  '@codemirror/lang-json@6.0.2':
+    resolution: {integrity: sha512-x2OtO+AvwEHrEwR0FyyPtfDUiloG3rnVTSZV1W8UteaLL8/MajQd8DpvUb2YVzC+/T18aSDv0H9mu+xw0EStoQ==}
+
+  '@codemirror/language@6.13.1':
+    resolution: {integrity: sha512-zfvU2r3TyylQLMj/te+5CnQ0rSqZi8B1oTCBbQkagcLW4Xc6imab6qN+pEJhsuNOLaJqiRyBXp9UhWA1DhVvDw==}
+
+  '@codemirror/lint@6.9.7':
+    resolution: {integrity: sha512-28/+iWLYxKxsvGYhSYL7zaCZqLz5+FFFDq9tVsvGv9kv8RY4fFAchJ5WX9M3YrrRlTIsECjsXPqeNgnSmNP2dg==}
+
+  '@codemirror/lsp-client@6.3.0':
+    resolution: {integrity: sha512-ZWtzuML77TnI2cXQrdLXb+HfJIldWPAeLZKRqct/Hq4RJUazg8Y0c9VqKyWDUsr1Y9TRefQKBWZ3B/eyVt1/Nw==}
+
+  '@codemirror/search@6.7.2':
+    resolution: {integrity: sha512-gUYkYhT2+n/+VGZ+8EzE5WFkYZUZYm1VOKDudIsNqh42uRVQJ0a6Yss9sdKT3MeOYfuL1N6AZA57oza0Oyr0LA==}
+
+  '@codemirror/state@6.7.6':
+    resolution: {integrity: sha512-kAz+AncRtKuIknedxT1bq4XwXv4UowhbkHU1myPrtVb/jZtImWuV5BXzv5vK6i3kYACsdiZiQKFQQ5Mq7elW8w==}
+
+  '@codemirror/streamparser@6.0.0':
+    resolution: {integrity: sha512-JTFPF6xrfjt0mnfGPgzcLiMwYmvIyNaoizp8BYzv8FE8KrT6GBGDZ190rtt+O7Wke3gG/MFHyiY9YGNeimof4w==}
+
+  '@codemirror/view@6.43.15':
+    resolution: {integrity: sha512-HHsfpqFeHyXLs983pSRe38Xajs0vFWZQ2BuX0m7Ki8w3jZ5iD8cuR3lBz2/5/X53Dhf32SBHKh6rtSTB6tKeGw==}
 
   '@csstools/color-helpers@6.1.2':
     resolution: {integrity: sha512-grhRy3OKmniaAEKXMjua5z/EODX0MSqBGjunw8+j/3HQjOnahs2AGhvEOIYVUWcU6ScApbhLhVrQTX8XqrMrow==}
@@ -3043,6 +3079,21 @@ packages:
       '@solidjs/web': 2.0.0-rc.16
       solid-js: 2.0.0-rc.16
 
+  '@lezer/common@1.5.5':
+    resolution: {integrity: sha512-Pw7PVCndruF1pb3ebCxpSVpkMHSDjwRCLcTRw+RizUKco5QbWylwq2g4lnG/RYN7yTTQDXE9F77MwtkAyphrjg==}
+
+  '@lezer/highlight@1.2.5':
+    resolution: {integrity: sha512-O1GMVKgtf5YspFaRzpmqkVgMtIk2HG9uMAbH6wdAIdNh3TVzCsch/+cRi+6l2//UGDKe6NB9BW3cvuR5ezMQ0w==}
+
+  '@lezer/javascript@1.5.6':
+    resolution: {integrity: sha512-sEvOqpl4vJQca0NugSQK02vQPbc5KrvoojnYGoqqFgFO0MtcYhwGiHKVEB+LuXYJnfyXo4QPA8ztbrEa4Fw5NA==}
+
+  '@lezer/json@1.0.3':
+    resolution: {integrity: sha512-BP9KzdF9Y35PDpv04r0VeSTKDeox5vVr3efE7eBbx3r4s3oNLfunchejZhjArmeieBH+nVOpgIiBJpEAv8ilqQ==}
+
+  '@lezer/lr@1.4.12':
+    resolution: {integrity: sha512-On9HU4oMMiHPMkQDgoTnGahjgG5n/MkN38CgG77sMraKLL+3JBbeQNi1FcCXV9QRqwF9/BUXP3caHyJC1fBOTQ==}
+
   '@manypkg/find-root@1.1.0':
     resolution: {integrity: sha512-mki5uBvhHzO8kYYix/WRy2WX8S3B5wdVSc9D6KcU5lQNglP2yt58/VfLuAK49glRXChosY8ap2oJ1qgma3GUVA==}
 
@@ -3053,6 +3104,9 @@ packages:
     resolution: {integrity: sha512-uwPAhccfFJlsfCxMYTwOdVfOz3xqyj8xYL3zJj8f0pb30tLohnnFPhLuqp4/qoEz8sNxe4SESZedcBojRefIzg==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@marijn/find-cluster-break@1.0.4':
+    resolution: {integrity: sha512-Wy0V7+SGUjnF9/TkiM1hKVDPj7jKXduPNboMVtHTA8dySMURWqfg/JZ9E2Sq8JgSJmkl7k7Qe9FLeMSrSraWmQ==}
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -3913,6 +3967,17 @@ packages:
   '@repeaterjs/repeater@3.1.0':
     resolution: {integrity: sha512-TaoVksZRSx2KWYYpyLQtMQXXeS98VsgZImzW65xmiVgbYhXLk+aEsmzPLirqVuE4/XuUapH2iMtxUzaBNDzdSQ==}
 
+  '@replit/codemirror-vscode-keymap@6.0.2':
+    resolution: {integrity: sha512-j45qTwGxzpsv82lMD/NreGDORFKSctMDVkGRopaP+OrzSzv+pXDQuU3LnFvKpasyjVT0lf+PKG1v2DSCn/vxxg==}
+    peerDependencies:
+      '@codemirror/autocomplete': ^6.0.0
+      '@codemirror/commands': ^6.0.0
+      '@codemirror/language': ^6.0.0
+      '@codemirror/lint': ^6.0.0
+      '@codemirror/search': ^6.0.0
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
+
   '@rolldown/binding-android-arm-eabi@1.2.16':
     resolution: {integrity: sha512-ia3DwAs0OsMGS7+IConptSiyk9pEXkOx/AbJ2n/lAGxH3QkWQus1t8d7gnAT38FCU2sQu8lUbeR6AiZFv4JxaA==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -4343,6 +4408,12 @@ packages:
       '@solidjs/web': ^2.0.0-rc.14
       solid-js: ^2.0.0-rc.14
 
+  '@solid-primitives/media@4.0.0-next.6':
+    resolution: {integrity: sha512-lJiYn2bekbWhPtGQHjlKLOwA4Aq8Uzjfe639WBGrmMq/7Bo48EL4FMr4Gb6P2pVASd/qVqfO4eoFbNid8YaKeQ==}
+    peerDependencies:
+      '@solidjs/web': ^2.0.0-rc.16
+      solid-js: ^2.0.0-rc.16
+
   '@solid-primitives/platform@1.0.0-next.2':
     resolution: {integrity: sha512-LzV2/ZFKU3uMIFMvVhj6iH2Bjf60QnVDCwK3lXbFhZIzBbb002k4ZNhqXVPRMQRkWlpjq1Otxe9p2qBIKfIyXQ==}
     peerDependencies:
@@ -4379,6 +4450,12 @@ packages:
 
   '@solid-primitives/rootless@2.0.0-next.4':
     resolution: {integrity: sha512-fNlwl3lVk5tAC6pRn0+m3U8Avgx+DTJYxi886k9NYZRmdvc6sJF/pW91+b+umQ2A5KxRyu0vNgIyhV780an3hA==}
+    peerDependencies:
+      '@solidjs/web': ^2.0.0-rc.14
+      solid-js: ^2.0.0-rc.14
+
+  '@solid-primitives/scheduled@2.0.0-next.4':
+    resolution: {integrity: sha512-GAzizyNof0t1kMmYJrz06ylN1PLtqdiEg5kOZdiwgpgU9bT4fEPcuRZnrBMLdr0W0CQyVtw4q2vgJpvbx4E8bg==}
     peerDependencies:
       '@solidjs/web': ^2.0.0-rc.14
       solid-js: ^2.0.0-rc.14
@@ -5273,6 +5350,66 @@ packages:
     cpu: [x64]
     os: [win32]
 
+  '@zag-js/anatomy@2.0.0-next.3':
+    resolution: {integrity: sha512-Gv3/V+SAbcfsgjUQDRfDVz1X7VQonyU+IQnYJTE0RsxLnRqQnf/epsG+K3bZw2xwuED4/etxsNZcET3r/v/4Dg==}
+
+  '@zag-js/aria-hidden@2.0.0-next.3':
+    resolution: {integrity: sha512-h0eYN4l1+iEZ/5GjwEYLg4NwHo8igSiHn8HHp3JLu3bgBMf+oU+PQG39BUXaKk26+qt36Pp2CO9MwCqbCstuFA==}
+
+  '@zag-js/collection@2.0.0-next.3':
+    resolution: {integrity: sha512-DqkcRRw31CGKI85CkWC+T78VU50ouvvEBDL1ZqcgCqUYsnVJATmu0ZQ1kP6JDupZHaXRIw4614FBHZy5KxRORw==}
+
+  '@zag-js/combobox@2.0.0-next.3':
+    resolution: {integrity: sha512-njbiGvMQ74fL1Bofgbb6F1RgkoGmfwGyneZD1q/Abi47BkeWRaW3WHGKQv5qrAXlo8JiD0O15uqrQQ/bELWktQ==}
+
+  '@zag-js/core@2.0.0-next.3':
+    resolution: {integrity: sha512-7Ps0Zc5HVNMBeUNBadYbqHWgOCZf4WfLCnRCAiqyIx/Cqe3C6GjpTxhqCCFM35B3k89G+czJ1zdVUkuOtVcQRg==}
+
+  '@zag-js/dialog@2.0.0-next.3':
+    resolution: {integrity: sha512-jQ2jV+Kg2aXwruNmv56wjwlYIpnbbnWbBb0cqEQsqHw/cMWxnzhBH2oJ/hWtiqsvDNpQokMiIf+gKSWZRyk1Og==}
+
+  '@zag-js/dismissable@2.0.0-next.3':
+    resolution: {integrity: sha512-tXJOx39qkEoRGQzHgcbJ9mD+I8NoorsK6WNfFFp0BHuub+yhHR61QJ8/AlUIXCvqN86W6nkQ67YXWSGtleJSoQ==}
+
+  '@zag-js/dom-query@2.0.0-next.3':
+    resolution: {integrity: sha512-bwtBahCat7JivtvxXhqwzwhb0RfcCQ8MHXbOKp5JDi7BP+Dvlib87EQdG22etk0qyvcCm8Nh9Vi0E/r4GtKBvw==}
+
+  '@zag-js/focus-trap@2.0.0-next.3':
+    resolution: {integrity: sha512-aD/hjV5p97su/B51cqSskn1Rmx8Bsn/RciTZL2YwRpHadSiQ8h8lvlLAU6/CLTsD9BCk10KdQPcVyIpigjaUgg==}
+
+  '@zag-js/focus-visible@2.0.0-next.3':
+    resolution: {integrity: sha512-4n7Hfqq2BL9XNQVMtEa7VHzkGrONnXL93d2CP7XjCleSKgAiGoexUZrOuFNGqivDZdn8YZUSxrQpMdevIe8vhA==}
+
+  '@zag-js/interact-outside@2.0.0-next.3':
+    resolution: {integrity: sha512-XAuHvGjECnmHBjGDQjlyu0pf+wtYYLY4Qr9XcFGIQFDoo+WIGRUuTDK4vXe31QPjOyRNrG7AJv0thqyJTlhvog==}
+
+  '@zag-js/live-region@2.0.0-next.3':
+    resolution: {integrity: sha512-Or6GGECstHhJUWG4fS1iGh1u9Z9yWyED73HqTZVW6lyeMUxpO/f/BiCUIhMAXBuxMOe+n2CSM9o2R1r4M/YoRQ==}
+
+  '@zag-js/menu@2.0.0-next.3':
+    resolution: {integrity: sha512-m+F4qXgmJWaNwXYfph2VI78e3kRJpYGzcgHtIZqzXp9CHu5wegt2tuTl+pdsuHp4EQtT1ZhcPBAegz+xb6NwxQ==}
+
+  '@zag-js/popper@2.0.0-next.3':
+    resolution: {integrity: sha512-kmGQBAUhXU3Ym03B2ksdajJXGQdTn/MaEFIxUDXKkRdHrXH3hWUeEZDsFgTYqchsLLT4HX/K6YpnaEFeVUClFw==}
+
+  '@zag-js/rect-utils@2.0.0-next.3':
+    resolution: {integrity: sha512-fVJef8Ia4bIPFJhTywlzUFa46AClJ9E5Dx3l2o7lerEofBXIvsownXpmQTajhE8khUKwyOw2my3B+OP+BgvmnQ==}
+
+  '@zag-js/remove-scroll@2.0.0-next.3':
+    resolution: {integrity: sha512-PaUBLF7tRkc7TRsvbSDPrPeiiUPJg6mveuklXZu88KOHv3xAf40CtE9kFU8Nwk5jLm4A2kPqkB1JLM4Z0vsyqw==}
+
+  '@zag-js/store@2.0.0-next.3':
+    resolution: {integrity: sha512-C1bDJZOUrIgw+/cKA3kY9Jw8NdlnlGZxbIndud3ZvCNmnV+tct4hLLFWrCBJMkGDfRKyWqTQyhTQE1iO9a15hQ==}
+
+  '@zag-js/types@2.0.0-next.3':
+    resolution: {integrity: sha512-EsfhD5EnKC7r9qcUU4LP2J7OEB58kxQR7MxKIUb8VgENfA5hYvOilvw1sY6fQDc3umnjatm1Z1kolh9+wqS/zA==}
+
+  '@zag-js/utils@2.0.0-next.3':
+    resolution: {integrity: sha512-4EtwkQ3xiREYTBAc9P7qmWARHdScG2OXg383ZNDEvIftA1hBnPCP8kADa2P5jll2oAFjnoczS2PUe/jbutlCsw==}
+
+  '@zag-js/vanilla@2.0.0-next.3':
+    resolution: {integrity: sha512-l97wAzQIvB0le91AVcy5AgDZFNH6jGuSYb1yMI0ZjC99JDPsTmJV2lfQsRkQcFFhE4qaMrMRfWU2ZpK0daKPHw==}
+
   abbrev@3.0.1:
     resolution: {integrity: sha512-AO2ac6pjRB3SJmGJo+v5/aK6Omggp6fsLrs6wN9bd35ulu4cCwaAU9+7ZhXjeqHVkaHThLuzH0nZr0YpCDhygg==}
     engines: {node: ^18.17.0 || >=20.5.0}
@@ -5778,6 +5915,9 @@ packages:
     resolution: {integrity: sha512-piICUB6ei4IlTv1+653yq5+KoqfBYmj9bw6LqXoOneTMDXk5nM1qt12mFW1caG3LlJXEKW1Bp0WggEmIfQB34g==}
     engines: {node: '>= 14'}
 
+  crelt@1.0.7:
+    resolution: {integrity: sha512-aK6BbWfhf4U/wCcLHKPJl/xa6VkVstRaPywWtMKGwuOLc/wZTyQYuoxgvZnNsBvv7Kg3YTBQYYBCggcviQczuA==}
+
   croner@10.0.1:
     resolution: {integrity: sha512-ixNtAJndqh173VQ4KodSdJEI6nuioBWI0V1ITNKhZZsO0pEMoDxz539T4FTTbSZ/xIOSuDnzxLVRqBVSvPNE2g==}
     engines: {node: '>=18.0'}
@@ -5971,6 +6111,12 @@ packages:
   direction@2.0.1:
     resolution: {integrity: sha512-9S6m9Sukh1cZNknO1CWAr2QAWsbKLafQiyM5gZ7VgXHeuaoUwffKN4q6NC4A/Mf9iiPlOXQEKW/Mv/mh9/3YFA==}
     hasBin: true
+
+  dockview-core@8.8.3:
+    resolution: {integrity: sha512-B9v+ibiXnZ5qgFJ7VEqMcNxpG0S5Y7Yx7uuGqqSyEFSC3bRZktUoXWo3HCrFp+QTdFmA1dJD1ye/gI4yL3hU2g==}
+
+  dockview@8.8.3:
+    resolution: {integrity: sha512-hTb5X4Z74k0+5wtOlx1gNsx/q5ve1p0JQ6s7Ovl24YhdkaR9AhfWFlq1dQYwXjXIoWm8RFW6aTZMhCTiEv94EA==}
 
   dom-accessibility-api@0.5.16:
     resolution: {integrity: sha512-X7BJ2yElsnOJ30pZF4uIIDfBEVgF4XEBxL9Bxhy6dnrm5hkzqmsWHGTiHqRiITNhMyFLyAiWndIJP7Z1NTteDg==}
@@ -7155,6 +7301,11 @@ packages:
   markdown-table@3.0.4:
     resolution: {integrity: sha512-wiYz4+JrLyb/DqW2hkFJxP7Vd7JuTDm77fvbM8VfEQdmSMqcImWeeRbHwZjBjIFki/VaMK2BhFi7oUUZeM5bqw==}
 
+  marked@15.0.12:
+    resolution: {integrity: sha512-8dD6FusOQSrpv9Z1rdNMdlSgQOIP880DHqnohobOmYLElGEqAL/JvxvuxZO16r4HtjTlfPRDC1hbvxC9dPN2nA==}
+    engines: {node: '>= 18'}
+    hasBin: true
+
   mdast-util-directive@3.1.1:
     resolution: {integrity: sha512-Gqpa3MHorXYEZ0VfbroyvBlVKUfz371V6mIERqOYMcb0W1D3LwmFq1ZW4O2TDrbn+4ZmGLwMWeFRJgYZ+bc5fQ==}
 
@@ -7896,6 +8047,9 @@ packages:
   property-information@7.2.0:
     resolution: {integrity: sha512-IAtzIB6sUiWaJYrX9smp3V46pBGbBeLFRGdh25kg1334VcBlD8HzhPeNIWQH9zhGmo2itIe25EHt9dQP7G5hmg==}
 
+  proxy-compare@3.0.1:
+    resolution: {integrity: sha512-V9plBAt3qjMlS1+nC8771KNf6oJ12gExvaxnNzN/9yVRLdTv/lc+oJlnSzrdYDAvBfTStPCoiaCOTmTs0adv7Q==}
+
   punycode@2.3.1:
     resolution: {integrity: sha512-vYt7UD1U9Wg6138shLtLOvdAu+8DsC/ilFtEVHcH+wydcSpNE20AfSOduf6MkRFahL5FY7X1oU7nKVZFtfq8Fg==}
     engines: {node: '>=6'}
@@ -8330,6 +8484,12 @@ packages:
     peerDependencies:
       solid-js: ^1.3
 
+  solid-repl@1.0.1:
+    resolution: {integrity: sha512-n09+4LWH69ybSxIcyv+uC+Y2oeuAaTj0/EtNadDC3pYqfvJdYLfFLE5zqCjInDV8JatEBsQN/hOcJdJUK+9WwQ==}
+    peerDependencies:
+      '@solidjs/web': ^2.0.0-rc.19
+      solid-js: ^2.0.0-rc.19
+
   solid-transition-group@0.2.3:
     resolution: {integrity: sha512-iB72c9N5Kz9ykRqIXl0lQohOau4t0dhel9kjwFvx81UZJbVwaChMuBuyhiZmK24b8aKEK0w3uFM96ZxzcyZGdg==}
     engines: {node: '>=18.0.0', pnpm: '>=8.6.0'}
@@ -8484,6 +8644,9 @@ packages:
 
   strip-literal@4.0.0:
     resolution: {integrity: sha512-PaqAvfUZKBwc/SLmNZtHmzK+v19Z4O4eS3cKPeGvbIv/U3pnyEq4Tuw3/4v/FwfM8VQaEawsyCcOQ0P+kpwWWw==}
+
+  style-mod@4.1.4:
+    resolution: {integrity: sha512-XXWIQt633/EpAFx8aZDOTjBzrCaGmhvEQlQo6MVPfa2OzO2cWo+4hV9h+6UkHYlXGfy+ODXKUdP7Pthmcu5ATw==}
 
   style-to-js@1.1.21:
     resolution: {integrity: sha512-RjQetxJrrUJLQPHbLku6U/ocGtzyjbJMP9lCNK7Ag0CNh690nSH8woqWH9u16nMjYBAok+i7JO1NP2pOy8IsPQ==}
@@ -9205,6 +9368,9 @@ packages:
   vscode-uri@3.2.0:
     resolution: {integrity: sha512-m2gXo3bn0G1kT9InzMf07fTbqMbGtyckj3bH5ktLO+1Ssv+yiATZ4dhwaQv9UZWxJh6E9IFGnQyjgWVDWVBDrg==}
 
+  w3c-keyname@2.2.8:
+    resolution: {integrity: sha512-dpojBhNsCNN7T82Tm7k26A6G9ML3NkhDsnw9n/eoxSRlVBB4CEtIQ/KTCLI2Fwf3ataSXRhYFkQi3SlnFwPvPQ==}
+
   w3c-xmlserializer@6.0.0:
     resolution: {integrity: sha512-4Nsy8K5Tr6SPDH9jhKJOHf7ChDrc1zufZTVSF7x72hwuEXBqxqk9G6cK+K2NRUtB3iELRJqjXb4JPDMBjMTl2Q==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
@@ -9826,6 +9992,81 @@ snapshots:
       prettier: 2.8.8
 
   '@cloudflare/kv-asset-handler@0.4.2': {}
+
+  '@codemirror/autocomplete@6.20.4':
+    dependencies:
+      '@codemirror/language': 6.13.1
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      '@lezer/common': 1.5.5
+
+  '@codemirror/commands@6.11.1':
+    dependencies:
+      '@codemirror/language': 6.13.1
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      '@lezer/common': 1.5.5
+
+  '@codemirror/lang-javascript@6.2.5':
+    dependencies:
+      '@codemirror/autocomplete': 6.20.4
+      '@codemirror/language': 6.13.1
+      '@codemirror/lint': 6.9.7
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      '@lezer/common': 1.5.5
+      '@lezer/javascript': 1.5.6
+
+  '@codemirror/lang-json@6.0.2':
+    dependencies:
+      '@codemirror/language': 6.13.1
+      '@lezer/json': 1.0.3
+
+  '@codemirror/language@6.13.1':
+    dependencies:
+      '@codemirror/state': 6.7.6
+      '@codemirror/streamparser': 6.0.0
+      '@codemirror/view': 6.43.15
+      '@lezer/common': 1.5.5
+      '@lezer/highlight': 1.2.5
+      '@lezer/lr': 1.4.12
+      style-mod: 4.1.4
+
+  '@codemirror/lint@6.9.7':
+    dependencies:
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      crelt: 1.0.7
+
+  '@codemirror/lsp-client@6.3.0':
+    dependencies:
+      '@codemirror/autocomplete': 6.20.4
+      '@codemirror/language': 6.13.1
+      '@codemirror/lint': 6.9.7
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      '@lezer/highlight': 1.2.5
+      marked: 15.0.12
+      vscode-languageserver-protocol: 3.18.5
+
+  '@codemirror/search@6.7.2':
+    dependencies:
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      crelt: 1.0.7
+
+  '@codemirror/state@6.7.6':
+    dependencies:
+      '@marijn/find-cluster-break': 1.0.4
+
+  '@codemirror/streamparser@6.0.0': {}
+
+  '@codemirror/view@6.43.15':
+    dependencies:
+      '@codemirror/state': 6.7.6
+      crelt: 1.0.7
+      style-mod: 4.1.4
+      w3c-keyname: 2.2.8
 
   '@csstools/color-helpers@6.1.2': {}
 
@@ -11037,7 +11278,7 @@ snapshots:
       '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       solid-js: 2.0.0-rc.21
 
-  '@kobalte/solidbase@3.0.0(@solidjs/vite-plugin@3.0.0-next.56(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@tauri-apps/plugin-store@2.5.0)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))':
+  '@kobalte/solidbase@3.0.0(@solidjs/vite-plugin@3.0.0-next.56(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@tauri-apps/plugin-store@2.5.0)(solid-js@2.0.0-rc.21)(solid-repl@1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21))(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))':
     dependencies:
       '@alloc/quick-lru': 5.3.0
       '@bprogress/core': 1.3.4
@@ -11107,6 +11348,8 @@ snapshots:
       vfile: 6.0.3
       vite: 8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
       yaml: 2.9.1
+    optionalDependencies:
+      solid-repl: 1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
     transitivePeerDependencies:
       - '@nuxt/kit'
       - '@svgr/core'
@@ -11131,6 +11374,28 @@ snapshots:
       '@solid-primitives/utils': 7.0.0-next.7(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
       '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       solid-js: 2.0.0-rc.21
+
+  '@lezer/common@1.5.5': {}
+
+  '@lezer/highlight@1.2.5':
+    dependencies:
+      '@lezer/common': 1.5.5
+
+  '@lezer/javascript@1.5.6':
+    dependencies:
+      '@lezer/common': 1.5.5
+      '@lezer/highlight': 1.2.5
+      '@lezer/lr': 1.4.12
+
+  '@lezer/json@1.0.3':
+    dependencies:
+      '@lezer/common': 1.5.5
+      '@lezer/highlight': 1.2.5
+      '@lezer/lr': 1.4.12
+
+  '@lezer/lr@1.4.12':
+    dependencies:
+      '@lezer/common': 1.5.5
 
   '@manypkg/find-root@1.1.0':
     dependencies:
@@ -11160,6 +11425,8 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  '@marijn/find-cluster-break@1.0.4': {}
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
@@ -11707,6 +11974,16 @@ snapshots:
 
   '@repeaterjs/repeater@3.1.0': {}
 
+  '@replit/codemirror-vscode-keymap@6.0.2(@codemirror/autocomplete@6.20.4)(@codemirror/commands@6.11.1)(@codemirror/language@6.13.1)(@codemirror/lint@6.9.7)(@codemirror/search@6.7.2)(@codemirror/state@6.7.6)(@codemirror/view@6.43.15)':
+    dependencies:
+      '@codemirror/autocomplete': 6.20.4
+      '@codemirror/commands': 6.11.1
+      '@codemirror/language': 6.13.1
+      '@codemirror/lint': 6.9.7
+      '@codemirror/search': 6.7.2
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+
   '@rolldown/binding-android-arm-eabi@1.2.16':
     optional: true
 
@@ -12030,6 +12307,15 @@ snapshots:
       '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       solid-js: 2.0.0-rc.21
 
+  '@solid-primitives/media@4.0.0-next.6(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)':
+    dependencies:
+      '@solid-primitives/event-listener': 3.0.0-next.9(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solid-primitives/rootless': 2.0.0-next.4(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solid-primitives/static-store': 1.0.0-next.5(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solid-primitives/utils': 7.0.0-next.7(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
+      solid-js: 2.0.0-rc.21
+
   '@solid-primitives/platform@1.0.0-next.2(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)':
     dependencies:
       '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
@@ -12076,6 +12362,11 @@ snapshots:
   '@solid-primitives/rootless@2.0.0-next.4(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)':
     dependencies:
       '@solid-primitives/utils': 7.0.0-next.7(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
+      solid-js: 2.0.0-rc.21
+
+  '@solid-primitives/scheduled@2.0.0-next.4(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)':
+    dependencies:
       '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       solid-js: 2.0.0-rc.21
 
@@ -13536,6 +13827,112 @@ snapshots:
   '@yuku-toolchain/win32-x64@0.25.0':
     optional: true
 
+  '@zag-js/anatomy@2.0.0-next.3': {}
+
+  '@zag-js/aria-hidden@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+
+  '@zag-js/collection@2.0.0-next.3':
+    dependencies:
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/combobox@2.0.0-next.3':
+    dependencies:
+      '@zag-js/anatomy': 2.0.0-next.3
+      '@zag-js/collection': 2.0.0-next.3
+      '@zag-js/core': 2.0.0-next.3
+      '@zag-js/dismissable': 2.0.0-next.3
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/focus-visible': 2.0.0-next.3
+      '@zag-js/live-region': 2.0.0-next.3
+      '@zag-js/popper': 2.0.0-next.3
+      '@zag-js/types': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/core@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/dialog@2.0.0-next.3':
+    dependencies:
+      '@zag-js/anatomy': 2.0.0-next.3
+      '@zag-js/aria-hidden': 2.0.0-next.3
+      '@zag-js/core': 2.0.0-next.3
+      '@zag-js/dismissable': 2.0.0-next.3
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/focus-trap': 2.0.0-next.3
+      '@zag-js/remove-scroll': 2.0.0-next.3
+      '@zag-js/types': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/dismissable@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/interact-outside': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/dom-query@2.0.0-next.3':
+    dependencies:
+      '@zag-js/types': 2.0.0-next.3
+
+  '@zag-js/focus-trap@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+
+  '@zag-js/focus-visible@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+
+  '@zag-js/interact-outside@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/live-region@2.0.0-next.3': {}
+
+  '@zag-js/menu@2.0.0-next.3':
+    dependencies:
+      '@zag-js/anatomy': 2.0.0-next.3
+      '@zag-js/core': 2.0.0-next.3
+      '@zag-js/dismissable': 2.0.0-next.3
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/focus-visible': 2.0.0-next.3
+      '@zag-js/popper': 2.0.0-next.3
+      '@zag-js/rect-utils': 2.0.0-next.3
+      '@zag-js/types': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/popper@2.0.0-next.3':
+    dependencies:
+      '@floating-ui/dom': 1.8.0
+      '@zag-js/dom-query': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
+  '@zag-js/rect-utils@2.0.0-next.3': {}
+
+  '@zag-js/remove-scroll@2.0.0-next.3':
+    dependencies:
+      '@zag-js/dom-query': 2.0.0-next.3
+
+  '@zag-js/store@2.0.0-next.3':
+    dependencies:
+      proxy-compare: 3.0.1
+
+  '@zag-js/types@2.0.0-next.3':
+    dependencies:
+      csstype: 3.2.3
+
+  '@zag-js/utils@2.0.0-next.3': {}
+
+  '@zag-js/vanilla@2.0.0-next.3':
+    dependencies:
+      '@zag-js/core': 2.0.0-next.3
+      '@zag-js/store': 2.0.0-next.3
+      '@zag-js/types': 2.0.0-next.3
+      '@zag-js/utils': 2.0.0-next.3
+
   abbrev@3.0.1: {}
 
   abort-controller@3.0.0:
@@ -14050,6 +14447,8 @@ snapshots:
       crc-32: 1.2.2
       readable-stream: 4.8.0
 
+  crelt@1.0.7: {}
+
   croner@10.0.1: {}
 
   cross-fetch@3.2.0:
@@ -14185,6 +14584,12 @@ snapshots:
       path-type: 4.0.0
 
   direction@2.0.1: {}
+
+  dockview-core@8.8.3: {}
+
+  dockview@8.8.3:
+    dependencies:
+      dockview-core: 8.8.3
 
   dom-accessibility-api@0.5.16: {}
 
@@ -15528,6 +15933,8 @@ snapshots:
 
   markdown-table@3.0.4: {}
 
+  marked@15.0.12: {}
+
   mdast-util-directive@3.1.1:
     dependencies:
       '@types/mdast': 4.0.4
@@ -16802,6 +17209,8 @@ snapshots:
 
   property-information@7.2.0: {}
 
+  proxy-compare@3.0.1: {}
+
   punycode@2.3.1: {}
 
   quansync@0.2.11: {}
@@ -17399,6 +17808,33 @@ snapshots:
       '@babel/types': 7.29.8
       solid-js: 2.0.0-rc.21
 
+  solid-repl@1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21):
+    dependencies:
+      '@codemirror/autocomplete': 6.20.4
+      '@codemirror/commands': 6.11.1
+      '@codemirror/lang-javascript': 6.2.5
+      '@codemirror/lang-json': 6.0.2
+      '@codemirror/language': 6.13.1
+      '@codemirror/lint': 6.9.7
+      '@codemirror/lsp-client': 6.3.0
+      '@codemirror/search': 6.7.2
+      '@codemirror/state': 6.7.6
+      '@codemirror/view': 6.43.15
+      '@lezer/highlight': 1.2.5
+      '@replit/codemirror-vscode-keymap': 6.0.2(@codemirror/autocomplete@6.20.4)(@codemirror/commands@6.11.1)(@codemirror/language@6.13.1)(@codemirror/lint@6.9.7)(@codemirror/search@6.7.2)(@codemirror/state@6.7.6)(@codemirror/view@6.43.15)
+      '@solid-primitives/event-listener': 3.0.0-next.9(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solid-primitives/media': 4.0.0-next.6(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solid-primitives/scheduled': 2.0.0-next.4(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21)
+      '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
+      '@zag-js/combobox': 2.0.0-next.3
+      '@zag-js/core': 2.0.0-next.3
+      '@zag-js/dialog': 2.0.0-next.3
+      '@zag-js/menu': 2.0.0-next.3
+      '@zag-js/types': 2.0.0-next.3
+      '@zag-js/vanilla': 2.0.0-next.3
+      dockview: 8.8.3
+      solid-js: 2.0.0-rc.21
+
   solid-transition-group@0.2.3(solid-js@1.9.18):
     dependencies:
       '@solid-primitives/refs': 1.1.4(solid-js@1.9.18)
@@ -17567,6 +18003,8 @@ snapshots:
   strip-literal@4.0.0:
     dependencies:
       js-tokens: 10.0.0
+
+  style-mod@4.1.4: {}
 
   style-to-js@1.1.21:
     dependencies:
@@ -18399,6 +18837,8 @@ snapshots:
   vscode-languageserver-types@3.18.5: {}
 
   vscode-uri@3.2.0: {}
+
+  w3c-keyname@2.2.8: {}
 
   w3c-xmlserializer@6.0.0:
     dependencies:

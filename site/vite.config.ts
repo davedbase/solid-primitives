@@ -11,6 +11,20 @@ export default defineConfig({
   // prerender worker would resolve `@solid-primitives/utils` up the tree to a different copy
   // (the workspace's), so bundle them into the server build.
   ssr: { noExternal: [/^@solid-primitives\//] },
+  // Solid's dev-only subpaths are otherwise discovered lazily at runtime. That makes Vite
+  // re-optimize mid-session and change the dependency hash, so SolidBase's modules end up
+  // loaded twice (two LocaleContexts: "useLocale must be called underneath a
+  // LocaleContextProvider"). Pre-bundle them all up front.
+  optimizeDeps: {
+    include: [
+      "solid-js",
+      "solid-js/attribution",
+      "solid-js/refresh",
+      "@solidjs/web",
+      "@solidjs/web/performance-tracks",
+      "@solidjs/signals",
+    ],
+  },
   plugins: [
     solidBase.plugin({
       title: "Solid Primitives 2",

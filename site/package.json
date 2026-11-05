@@ -17,6 +17,7 @@
     "@solidjs/router": "2.0.0-next.37",
     "@solidjs/web": "catalog:",
     "solid-js": "catalog:",
+    "solid-repl": "^1.0.1",
     "vite": "^8.3.5"
   },
   "devDependencies": {
