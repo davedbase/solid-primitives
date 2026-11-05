@@ -734,6 +734,15 @@ article:has(.pl-hero) > [class*="content_"] {
   font-size: 0.75rem;
   color: color-mix(in hsl, var(--sb-text-color) 55%, transparent);
 }
+.pl-footer-bottom a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+.pl-footer-bottom a:hover,
+.pl-footer-bottom a:focus-visible {
+  color: var(--pl-primary);
+}
 @media screen and (max-width: 48rem) {
   .pl-footer-main {
     grid-template-columns: 1fr 1fr;

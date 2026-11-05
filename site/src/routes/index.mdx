@@ -241,7 +241,13 @@ export function Clock(props: {
         <div class="time">{formatTime(props.left)}</div>
       </div>
       <div class="status">
-        {done() ? "Time's up" : props.running ? "Counting down" : "Ready"}
+        {done()
+          ? "Time's up"
+          : props.running
+            ? "Counting down"
+            : props.left < props.total
+              ? "Paused"
+              : "Ready"}
       </div>
       <div class="actions">
         <button class="primary" onClick={props.onToggle}>
@@ -327,7 +333,7 @@ export function injectStyles() {
     </div>
   </div>
   <div class="pl-footer-bottom">
-    <span>Built with SolidBase</span>
+    <span>Built with <a href="https://solidbase.dev" target="_blank" rel="noopener noreferrer">SolidBase</a></span>
     <span>© Solid Primitive Working Group and contributors</span>
   </div>
 </footer>
