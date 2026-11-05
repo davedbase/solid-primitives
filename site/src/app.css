@@ -665,3 +665,83 @@ article:has(.pl-hero) > [class*="content_"] {
     display: block !important;
   }
 }
+
+/* Homepage footer. The theme hides its own footer on `layout: home` pages (and the flag can't
+   be re-enabled from frontmatter), so the homepage renders this one by hand. */
+.pl-footer {
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 1px solid color-mix(in hsl, var(--sb-decoration-color) 15%, transparent);
+}
+.pl-footer-main {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  gap: 2rem;
+}
+.pl-footer-brand p {
+  max-width: 22rem;
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  color: color-mix(in hsl, var(--sb-text-color) 75%, transparent);
+}
+.pl-footer-logo {
+  height: 1.75rem;
+  width: auto;
+}
+[data-theme*="light"] .pl-footer-logo {
+  content: url("/logo-light.png");
+}
+[data-theme*="dark"] .pl-footer-logo {
+  content: url("/logo-dark.png");
+}
+.pl-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+}
+.pl-footer-heading {
+  margin-bottom: 0.25rem;
+  font-family: var(--sb-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in hsl, var(--sb-text-color) 55%, transparent);
+}
+.pl-footer-col a {
+  color: var(--sb-text-color);
+  text-decoration: none;
+}
+.pl-footer-col a:hover,
+.pl-footer-col a:focus-visible {
+  color: var(--pl-primary);
+}
+.pl-footer-socials {
+  display: flex;
+  gap: 0.75rem;
+}
+.pl-footer-socials a {
+  display: inline-flex;
+  font-size: 1.4rem;
+}
+.pl-footer-bottom {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in hsl, var(--sb-decoration-color) 10%, transparent);
+  font-size: 0.75rem;
+  color: color-mix(in hsl, var(--sb-text-color) 55%, transparent);
+}
+@media screen and (max-width: 48rem) {
+  .pl-footer-main {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pl-footer-brand {
+    grid-column: 1 / -1;
+  }
+  .pl-footer-bottom {
+    flex-direction: column;
+  }
+}

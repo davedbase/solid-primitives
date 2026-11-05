@@ -13,6 +13,8 @@ import IconPhBroadcast from "~icons/ph/broadcast";
 import IconPhFilmStrip from "~icons/ph/film-strip";
 import IconPhPuzzlePiece from "~icons/ph/puzzle-piece";
 import IconPhCompass from "~icons/ph/compass";
+import IconRiGithub from "~icons/ri/github-fill";
+import IconRiDiscord from "~icons/ri/discord-fill";
 import { totalPackages, categoryPrimitiveCounts } from "../generated/counts";
 import { projectStats } from "../generated/stats";
 
@@ -146,3 +148,186 @@ import { projectStats } from "../generated/stats";
     </a>
   </div>
 </div>
+
+<div class="pl-strip pl-try">
+  <div class="pl-strip-header">
+    <span>Try it</span>
+    <span class="pl-strip-note">Edit live · use + to open Clock.tsx and styles.tsx</span>
+  </div>
+</div>
+
+:::repl{layout=horizontal height="34rem"}
+```tsx
+import { render } from "@solidjs/web";
+import { createSignal } from "solid-js";
+import { createTimer } from "@solid-primitives/timer";
+import { Clock } from "./Clock";
+import { injectStyles } from "./styles";
+
+const TOTAL = 30 * 60 * 1000; // 30 minutes
+
+function App() {
+  const [left, setLeft] = createSignal(TOTAL);
+  const [running, setRunning] = createSignal(true); // starts automatically
+
+  // The delay is reactive: `false` switches the timer off. It pauses when
+  // `running` is false, stops itself at zero, and is cleaned up with the
+  // component.
+  createTimer(
+    () => {
+      const next = Math.max(0, left() - 1000);
+      setLeft(next);
+      if (next === 0) setRunning(false);
+    },
+    () => running() && 1000,
+    setInterval,
+  );
+
+  return (
+    <Clock
+      left={left()}
+      total={TOTAL}
+      running={running()}
+      onToggle={() => {
+        if (left() === 0) setLeft(TOTAL);
+        setRunning(r => !r);
+      }}
+      onReset={() => {
+        setRunning(false);
+        setLeft(TOTAL);
+      }}
+    />
+  );
+}
+
+injectStyles();
+render(() => <App />, document.getElementById("app")!);
+```
+
+```tsx title="Clock.tsx"
+// Presentation only: a progress ring, the time left, and two buttons.
+const R = 54;
+const C = 2 * Math.PI * R;
+const pad = (n: number) => String(n).padStart(2, "0");
+
+function formatTime(ms: number) {
+  const secs = Math.ceil(ms / 1000);
+  return `${pad(Math.floor(secs / 60))}:${pad(secs % 60)}`;
+}
+
+export function Clock(props: {
+  left: number;
+  total: number;
+  running: boolean;
+  onToggle: () => void;
+  onReset: () => void;
+}) {
+  const done = () => props.left === 0;
+
+  return (
+    <div class={done() ? "card done" : "card"}>
+      <div class="dial">
+        <svg viewBox="0 0 120 120">
+          <circle class="track" cx="60" cy="60" r={R} />
+          <circle
+            class="bar"
+            cx="60"
+            cy="60"
+            r={R}
+            stroke-dasharray={C}
+            stroke-dashoffset={C * (1 - props.left / props.total)}
+          />
+        </svg>
+        <div class="time">{formatTime(props.left)}</div>
+      </div>
+      <div class="status">
+        {done() ? "Time's up" : props.running ? "Counting down" : "Ready"}
+      </div>
+      <div class="actions">
+        <button class="primary" onClick={props.onToggle}>
+          {done()
+            ? "Restart"
+            : props.running
+              ? "Pause"
+              : props.left < props.total
+                ? "Resume"
+                : "Start"}
+        </button>
+        <button onClick={props.onReset}>Reset</button>
+      </div>
+    </div>
+  );
+}
+```
+
+```tsx title="styles.tsx"
+const css = `
+  :root { --fg: #0f172a; --muted: #64748b; --track: #e2e8f0; --accent: #017ad4; }
+  :root.dark { --fg: #f1f5f9; --muted: #94a3b8; --track: #263244; --accent: #44b8fa; }
+  body { margin: 0; font-family: ui-sans-serif, system-ui, sans-serif; color: var(--fg); }
+  .card { display: grid; justify-items: center; gap: 0.9rem; padding: 1.25rem; }
+  .dial { position: relative; width: 11rem; height: 11rem; }
+  .dial svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+  .dial circle { fill: none; stroke-width: 7; }
+  .track { stroke: var(--track); }
+  .bar { stroke: var(--accent); stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .time { position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 2.4rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .status { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+  .done .bar { stroke: #ef4444; }
+  .done .time { color: #ef4444; animation: pulse 1s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.45; } }
+  .actions { display: flex; gap: 0.5rem; }
+  button { font: inherit; font-size: 0.9rem; font-weight: 600; padding: 0.5rem 1.1rem; cursor: pointer;
+    border-radius: 0.5rem; border: 1px solid var(--track); background: transparent; color: var(--fg); }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+`;
+
+export function injectStyles() {
+  document.head.append(Object.assign(document.createElement("style"), { textContent: css }));
+}
+```
+
+```json title="import_map.json"
+{
+  "imports": {
+    "@solid-primitives/timer": "https://esm.sh/@solid-primitives/timer@next?external=solid-js,@solidjs/web,solid-js/internal&dev"
+  },
+  "pinned": ["@solid-primitives/timer"]
+}
+```
+:::
+
+<footer class="pl-footer">
+  <div class="pl-footer-main">
+    <div class="pl-footer-brand">
+      <img class="pl-footer-logo" src="/logo-light.png" alt="Solid Primitives" />
+      <p>High-quality reactive primitives for building applications in Solid2.</p>
+    </div>
+    <nav class="pl-footer-col" aria-label="Explore">
+      <span class="pl-footer-heading">Explore</span>
+      <a href="/primitives">Primitives</a>
+      <a href="/philosophy">Philosophy</a>
+      <a href="/migration">Migration</a>
+      <a href="/jsr-npm">JSR &amp; NPM</a>
+    </nav>
+    <nav class="pl-footer-col" aria-label="Project">
+      <span class="pl-footer-heading">Project</span>
+      <a href="/contributors">Contributors</a>
+      <a href="/security">Security</a>
+      <a href="https://github.com/solidjs-community/solid-primitives/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+      <a href="https://github.com/solidjs-community/solid-primitives/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>
+    </nav>
+    <div class="pl-footer-col">
+      <span class="pl-footer-heading">Community</span>
+      <div class="pl-footer-socials">
+        <a href="https://github.com/solidjs-community/solid-primitives" target="_blank" rel="noopener noreferrer" aria-label="GitHub"><IconRiGithub /></a>
+        <a href="https://discord.com/invite/solidjs" target="_blank" rel="noopener noreferrer" aria-label="Discord"><IconRiDiscord /></a>
+      </div>
+    </div>
+  </div>
+  <div class="pl-footer-bottom">
+    <span>Built with SolidBase</span>
+    <span>© Solid Primitive Working Group and contributors</span>
+  </div>
+</footer>
