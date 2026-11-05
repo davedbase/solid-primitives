@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/input-mask",
-  "version": "1.0.0-next.4",
+  "version": "1.0.0-next.5",
   "description": "input masking event primitive.",
   "license": "MIT",
   "exports": "./src/index.ts",

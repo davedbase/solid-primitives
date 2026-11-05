@@ -1,5 +1,11 @@
 # @solid-primitives/input-mask
 
+## 1.0.0-next.5
+
+### Patch Changes
+
+- 4ac94b5: input-mask: add story illustrating function-type masks
+
 ## 1.0.0-next.4
 
 ### Patch Changes
