@@ -14,7 +14,7 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       solidPlugin({
-        hot: false,
+        refresh: false,
         solid: {
           generate: testSSR ? "ssr" : "dom",
           omitNestedClosingTags: false,

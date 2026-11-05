@@ -16,7 +16,7 @@ function solidBabelPlugin(testSSR: boolean): Plugin {
       id = id.replace(/\?.*$/, "");
 
       const { transformAsync } = await import("@babel/core");
-      const babelSolid = (await import("babel-preset-solid")).default;
+      const babelSolid = (await import("@solidjs/babel-plugin")).default;
 
       const parserPlugins: string[] = ["jsx"];
       if (/\.[mc]?tsx$/i.test(id)) parserPlugins.push("typescript");
@@ -24,17 +24,15 @@ function solidBabelPlugin(testSSR: boolean): Plugin {
       const result = await transformAsync(source, {
         filename: id,
         sourceFileName: id,
-        presets: [
+        plugins: [
           [
             babelSolid,
             {
               moduleName: "@solidjs/web",
               generate: testSSR ? "ssr" : "dom",
-              omitNestedClosingTags: false,
             },
           ],
         ],
-        plugins: [],
         ast: false,
         sourceMaps: true,
         configFile: false,

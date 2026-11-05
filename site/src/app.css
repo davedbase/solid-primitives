@@ -243,7 +243,7 @@ html[data-theme*="dark"] {
    docs) version-selector — repurpose it via generated content instead of
    wiring up that whole feature for a single static label. */
 [class*="version-selector_"]::after {
-  content: "v2.0-RC1";
+  content: "v2.0-RC2";
   display: inline-flex;
   align-items: center;
   padding: 0.15em 0.55em;

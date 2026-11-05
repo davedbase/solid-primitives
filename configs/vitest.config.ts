@@ -20,11 +20,14 @@ export default defineConfig(({ mode }) => {
   // loads only server.test.ts file
   const testSSR = mode === "test:ssr" || mode === "ssr";
 
+  const conditions = testSSR
+    ? ["@solid-primitives/source", "node"]
+    : ["@solid-primitives/source", "browser", "development"];
+
   return {
     plugins: [
       solidPlugin({
-        // https://github.com/solidjs/solid-refresh/issues/29
-        hot: false,
+        refresh: false,
         // For testing SSR we need to do a SSR JSX transform
         solid: { generate: testSSR ? "ssr" : "dom", omitNestedClosingTags: false, moduleName: "@solidjs/web" },
       }),
@@ -65,9 +68,9 @@ export default defineConfig(({ mode }) => {
       alias: {
         "solid-js/web": "@solidjs/web",
       },
-      conditions: testSSR
-        ? ["@solid-primitives/source", "node"]
-        : ["@solid-primitives/source", "browser", "development"],
+      conditions,
     },
+    // inlined modules are evaluated through vite's SSR pipeline, which has its own conditions
+    ssr: { resolve: { conditions } },
   };
 });

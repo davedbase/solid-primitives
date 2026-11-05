@@ -63,7 +63,7 @@
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-typed-document-node/core": "^3.2.0",
     "graphql": "^16.8.1",
-    "solid-js": "^1.9.7"
+    "solid-js": "^1.9.18"
   },
   "dependencies": {
     "@solid-primitives/utils": "workspace:^"

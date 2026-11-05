@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@solidjs/web": "catalog:",
-    "solid-js": "catalog:",
+    "solid-js": "catalog:peer",
     "solid-transition-group": "^0.2.3"
   },
   "peerDependencies": {

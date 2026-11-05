@@ -84,8 +84,8 @@
     "@solid-primitives/utils": "workspace:^"
   },
   "peerDependencies": {
-    "@tauri-apps/plugin-store": "*",
     "@solidjs/web": "catalog:peer",
+    "@tauri-apps/plugin-store": "*",
     "solid-js": "catalog:peer"
   },
   "peerDependenciesMeta": {
@@ -94,7 +94,7 @@
     }
   },
   "devDependencies": {
-    "solid-js": "catalog:",
-    "@solidjs/web": "catalog:"
+    "@solidjs/web": "catalog:",
+    "solid-js": "catalog:peer"
   }
 }

@@ -62,8 +62,8 @@
   "typesVersions": {},
   "devDependencies": {
     "@babel/core": "catalog:",
+    "@solidjs/babel-plugin": "catalog:",
     "@solidjs/web": "catalog:",
-    "babel-preset-solid": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   }
 }

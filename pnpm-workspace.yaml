@@ -5,54 +5,34 @@ packages:
 overrides:
   react: 19.2.7
   react-dom: 19.2.7
-  # @solidjs/vite-plugin asks for `babel-preset-solid: ^2.0.0-rc.0`, which pnpm happily
-  # satisfies with an older rc already present in the lockfile. Pin it to the same rc.2
-  # the catalog uses so exactly one Solid 2 preset compiles JSX across both vitest
-  # configs. Scoped, so the Solid 1 copies (unplugin-solid, storybook) are untouched.
-  '@solidjs/vite-plugin>babel-preset-solid': 2.0.0-rc.2
-  # @kobalte/solidbase still depends on @solidjs/router ^0.15.3. Without this
-  # override the site app and solidbase get separate router instances, which
-  # breaks SSR. Remove once solidbase depends on router 1.
-  '@solidjs/router': ^1.0.0
 
 allowBuilds:
   '@parcel/watcher': true
   esbuild: true
   sharp: false
 
-# @kobalte/solidbase imports "resolve" and "esbuild" without declaring them,
-# which breaks pnpm installs. esbuild used to be satisfied by a hoisted copy
-# from @solidjs/start's dependencies; start 2 no longer pulls it in.
-# Remove once fixed upstream.
-packageExtensions:
-  '@kobalte/solidbase':
-    dependencies:
-      resolve: ^1.22.8
-      esbuild: ^0.25.0
-
 minimumReleaseAgeExclude:
-  - '@solidjs/signals@2.0.0-rc.16'
-  - '@solidjs/web@2.0.0-rc.16'
-  - solid-js@2.0.0-rc.16
+  - '@solidjs/signals@2.0.0-rc.21'
+  - '@solidjs/web@2.0.0-rc.21'
+  - solid-js@2.0.0-rc.21
   - '@dom-expressions/babel-plugin-jsx@0.50.0-next.44'
-  - babel-preset-solid@2.0.0-rc.0
-  - '@solidjs/vite-plugin@3.0.0-next.50'
+  - '@solidjs/vite-plugin@3.0.0-next.56'
 
 onlyBuiltDependencies:
   - "@parcel/watcher"
   - esbuild
 
 catalog:
-  tsdown: ^0.23.0
+  tsdown: ^0.23.5
   unplugin-solid: ^1.0.0
-  solid-js: 2.0.0-rc.16
-  '@solidjs/web': 2.0.0-rc.16
-  '@solidjs/signals': 2.0.0-rc.16
-  babel-preset-solid: 2.0.0-rc.2
-  '@solidjs/vite-plugin': 3.0.0-next.50
+  solid-js: 2.0.0-rc.21
+  '@solidjs/web': 2.0.0-rc.21
+  '@solidjs/signals': 2.0.0-rc.21
+  '@solidjs/babel-plugin': 2.0.0-rc.21
+  '@solidjs/vite-plugin': 3.0.0-next.56
   '@babel/core': ^7.29.7
 
 catalogs:
   peer:
-    solid-js: ^2.0.0-rc.16
-    '@solidjs/web': ^2.0.0-rc.16
+    solid-js: 2.0.0-rc.21
+    '@solidjs/web': ^2.0.0-rc.21

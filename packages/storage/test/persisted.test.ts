@@ -82,7 +82,7 @@ describe("makePersisted", () => {
       createRoot(() => createOptimistic(() => DataServer.get())),
       {
         storage: mockStorage,
-        name: "test1",
+        name: "test-optimistic",
         action: ([getter, setter]) => function*(next) {
           setter(next);
           yield DataServer.set(next);
@@ -95,7 +95,7 @@ describe("makePersisted", () => {
     flush();
     await setSignal("persisted");
     flush();
-    expect(mockStorage.getItem("test1")).toBe('"persisted"');
+    expect(mockStorage.getItem("test-optimistic")).toBe('"persisted"');
     expect(latest(signal)).toBe("persisted")
   })
 

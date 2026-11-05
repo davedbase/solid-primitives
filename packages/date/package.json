@@ -61,7 +61,7 @@
   "devDependencies": {
     "@solidjs/web": "catalog:",
     "date-fns": "^2.30.0",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   },
   "dependencies": {
     "@solid-primitives/timer": "workspace:^",

@@ -66,6 +66,6 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "solid-js": "^1.9.7"
+    "solid-js": "^1.9.18"
   }
 }

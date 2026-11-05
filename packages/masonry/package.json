@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@solid-primitives/media": "workspace:^",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   },
   "dependencies": {
     "@solid-primitives/utils": "workspace:^"

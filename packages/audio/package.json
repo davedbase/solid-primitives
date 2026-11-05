@@ -54,7 +54,7 @@
   ],
   "devDependencies": {
     "@solidjs/web": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   },
   "dependencies": {
     "@solid-primitives/static-store": "workspace:^",

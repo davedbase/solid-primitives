@@ -1,24 +1,18 @@
-import { defineConfig } from "vite";
-import { nitro } from "nitro/vite";
-import { solidStart } from "@solidjs/start/config";
+import solid from "@solidjs/vite-plugin";
 import { createSolidBase } from "@kobalte/solidbase/config";
 import defaultTheme from "@kobalte/solidbase/default-theme";
+import { defineConfig } from "vite";
 import { sidebar } from "./src/generated/sidebar";
 
-const solidbase = createSolidBase(defaultTheme);
+const solidBase = createSolidBase(defaultTheme);
 
 export default defineConfig({
+  // SolidBase's theme depends on pinned @solid-primitives/*@next releases. Left external, the
+  // prerender worker would resolve `@solid-primitives/utils` up the tree to a different copy
+  // (the workspace's), so bundle them into the server build.
+  ssr: { noExternal: [/^@solid-primitives\//] },
   plugins: [
-    {
-      name: "fix-solidbase",
-      enforce: "pre",
-      resolveId(id, importer) {
-        if (importer?.includes("@kobalte/solidbase") && id.endsWith(".js")) {
-          return this.resolve(id.replace(/\.js$/, ""), importer, { skipSelf: true });
-        }
-      },
-    },
-    solidbase.plugin({
+    solidBase.plugin({
       title: "Solid Primitives 2",
       titleTemplate: ":title | Solid Primitives 2",
       description: "High-quality reactive primitives for building applications in Solid2",
@@ -50,13 +44,7 @@ export default defineConfig({
         },
       },
     }),
-    solidStart(solidbase.startConfig()),
-    nitro({
-      preset: "netlify",
-      prerender: {
-        crawlLinks: true,
-        autoSubfolderIndex: false,
-      },
-    }),
+    // start mode (SSR + static prerender into dist/client) replaces SolidStart + Nitro.
+    solid(solidBase.startConfig()),
   ],
 });

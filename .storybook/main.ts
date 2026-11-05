@@ -39,7 +39,7 @@ const config: StorybookConfig = {
   async viteFinal(config) {
     return mergeConfig({ ...config, plugins: withoutLegacySolidPlugin(config.plugins) }, {
       plugins: [
-        solidPlugin({ hot: false, solid: { moduleName: "@solidjs/web", omitNestedClosingTags: false } }),
+        solidPlugin({ refresh: false, solid: { moduleName: "@solidjs/web", omitNestedClosingTags: false } }),
         // babel-preset-solid <beta.14 generates `addEventListener` but @solidjs/web@beta.14
         // renamed it to `addEvent`. Patch any compiled story that uses the old import.
         {

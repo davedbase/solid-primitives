@@ -1,4 +1,4 @@
 [build]
   base = "/"
-  publish = "site/dist"
+  publish = "site/dist/client"
   command = "pnpm build && pnpm -dir site run deploy"

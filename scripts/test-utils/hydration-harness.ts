@@ -36,7 +36,7 @@
 
 import { transformAsync } from "@babel/core";
 import babelTypescript from "@babel/preset-typescript";
-import babelSolid from "babel-preset-solid";
+import babelSolid from "@solidjs/babel-plugin";
 import { execFileSync } from "node:child_process";
 import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -45,26 +45,17 @@ import { pathToFileURL } from "node:url";
 async function compile(source: string, generate: "ssr" | "dom"): Promise<string> {
   const result = await transformAsync(source, {
     filename: "hydration-app.tsx",
-    // Presets apply last-to-first: typescript strips types before babel-preset-solid sees JSX.
-    presets: [
-      [
-        babelSolid,
-        {
-          moduleName: "@solidjs/web",
-          generate,
-          hydratable: true,
-          omitNestedClosingTags: false,
-        },
-      ],
-      [babelTypescript, { isTSX: true, allExtensions: true }],
-    ],
+    // Plugins run before presets, so the Solid plugin would see TS syntax; the typescript
+    // preset is a sibling visitor pass and strips types in the same traversal.
+    plugins: [[babelSolid, { moduleName: "@solidjs/web", generate, hydratable: true }]],
+    presets: [[babelTypescript, { isTSX: true, allExtensions: true }]],
     ast: false,
     sourceMaps: false,
     configFile: false,
     babelrc: false,
     parserOpts: { plugins: ["jsx", "typescript"] },
   });
-  if (!result?.code) throw new Error("[hydration-harness] babel-preset-solid produced no output");
+  if (!result?.code) throw new Error("[hydration-harness] @solidjs/babel-plugin produced no output");
   return result.code;
 }
 

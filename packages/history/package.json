@@ -68,6 +68,6 @@
   "devDependencies": {
     "@solid-primitives/deep": "workspace:^",
     "@solidjs/web": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   }
 }

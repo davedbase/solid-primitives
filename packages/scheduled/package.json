@@ -68,7 +68,7 @@
     "@solid-primitives/event-listener": "workspace:^",
     "@solid-primitives/timer": "workspace:^",
     "@solidjs/web": "catalog:",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   },
   "peerDependencies": {
     "@solidjs/web": "catalog:peer",

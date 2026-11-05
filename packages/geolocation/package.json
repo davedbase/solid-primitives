@@ -60,7 +60,7 @@
     "@solidjs/web": "catalog:",
     "@types/leaflet": "^1.9.22",
     "leaflet": "^1.9.4",
-    "solid-js": "catalog:"
+    "solid-js": "catalog:peer"
   },
   "dependencies": {
     "@solid-primitives/static-store": "workspace:^",
