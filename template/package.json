@@ -47,13 +47,13 @@
     "outDir": "dist"
   },
   "scripts": {
-    "dev": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/dev.ts",
+    "dev": "node --import=@nothing-but/node-resolve-ts ../../scripts/dev.ts",
     "build": "pnpm -w build",
     "vitest": "vitest -c ../../configs/vitest.config.ts",
     "vitest2": "vitest -c ../../configs/vitest.config.solid2.ts",
     "test": "pnpm run vitest",
     "test:ssr": "pnpm run vitest --mode ssr",
-    "measure": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/measure.ts"
+    "measure": "node --import=@nothing-but/node-resolve-ts ../../scripts/measure.ts"
   },
   "peerDependencies": {
     "solid-js": "^1.6.12"

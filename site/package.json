@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "generate": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/generate.ts",
+    "generate": "node --import=@nothing-but/node-resolve-ts ./scripts/generate.ts",
     "dev": "vite dev",
     "build": "vite build",
     "deploy": "pnpm generate && pnpm build",
@@ -26,6 +26,6 @@
     "@solidjs/vite-plugin": "catalog:"
   },
   "engines": {
-    "node": ">=22.12"
+    "node": ">=22.18.0"
   }
 }

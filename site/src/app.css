@@ -724,6 +724,22 @@ article:has(.pl-hero) > [class*="content_"] {
   display: inline-flex;
   font-size: 1.4rem;
 }
+.pl-footer-note {
+  max-width: 15rem;
+  margin: 0.25rem 0 0;
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: color-mix(in hsl, var(--sb-text-color) 70%, transparent);
+}
+.pl-footer-note strong {
+  color: var(--sb-text-color);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.pl-footer-note a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
 .pl-footer-bottom {
   display: flex;
   justify-content: space-between;

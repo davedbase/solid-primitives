@@ -1,5 +1,6 @@
 ---
 title: REPL Test
+lastUpdated: false
 ---
 
 # REPL Test
@@ -39,11 +40,12 @@ Imports from npm packages, here `@solid-primitives/timer`.
 ```tsx
 import { render } from "@solidjs/web";
 import { createSignal } from "solid-js";
-import { makeTimer } from "@solid-primitives/timer";
+import { createTimer } from "@solid-primitives/timer";
 
 function Ticker() {
   const [ticks, setTicks] = createSignal(0);
-  makeTimer(() => setTicks(t => t + 1), 1000, setInterval);
+  // Cleans itself up when the component is disposed.
+  createTimer(() => setTicks(t => t + 1), 1000, setInterval);
 
   return <p>Ticks: {ticks()}</p>;
 }

@@ -50,7 +50,7 @@
     "entry": "src/**/*.{ts,tsx}"
   },
   "scripts": {
-    "dev": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ../../scripts/dev.ts",
+    "dev": "node --import=@nothing-but/node-resolve-ts ../../scripts/dev.ts",
     "build": "pnpm -w build",
     "vitest": "vitest -c ../../configs/vitest.config.ts",
     "vitest2": "vitest -c ../../configs/vitest.config.solid2.ts",

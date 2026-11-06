@@ -26,12 +26,12 @@
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "build": "tsdown",
-    "new-package": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/new-package.ts",
-    "jsr:sync-versions": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/sync-jsr-versions.ts",
-    "jsr:sync-versions:check": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/sync-jsr-versions.ts --check",
-    "update-readme": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/update-readme.ts",
-    "measure": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/measure.ts",
-    "verify:manifests": "node --import=@nothing-but/node-resolve-ts --experimental-transform-types ./scripts/verify-published-manifests.ts",
+    "new-package": "node --import=@nothing-but/node-resolve-ts ./scripts/new-package.ts",
+    "jsr:sync-versions": "node --import=@nothing-but/node-resolve-ts ./scripts/sync-jsr-versions.ts",
+    "jsr:sync-versions:check": "node --import=@nothing-but/node-resolve-ts ./scripts/sync-jsr-versions.ts --check",
+    "update-readme": "node --import=@nothing-but/node-resolve-ts ./scripts/update-readme.ts",
+    "measure": "node --import=@nothing-but/node-resolve-ts ./scripts/measure.ts",
+    "verify:manifests": "node --import=@nothing-but/node-resolve-ts ./scripts/verify-published-manifests.ts",
     "version": "changeset version && pnpm jsr:sync-versions && pnpm i --no-frozen-lockfile && git add .",
     "setup:trusted-publishing": "node --import=@nothing-but/node-resolve-ts ./scripts/setup-trusted-publishing.ts",
     "release": "pnpm build && pnpm run verify:manifests && changeset publish",
@@ -77,6 +77,6 @@
   },
   "packageManager": "pnpm@11.9.0+sha512.bd682d5d03fe525ef7c9fd6780c6884d1e756ac4c9c9fe00c538782824310dcf90e3ddc4f53835f06dfaebd5085e41855e0bcbb3b60de2ac5bbab89e5036f03b",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.18.0"
   }
 }
