@@ -1,5 +1,6 @@
 import "./setup.js";
-import { createRoot, createSignal, flush } from "solid-js";
+import { OBSERVE, createEffect, createRoot, createSignal, flush } from "solid-js";
+import { attribution } from "solid-js/attribution";
 import { describe, expect, test, afterEach } from "vitest";
 import { makeFavicon, createFavicon } from "../src/index.js";
 
@@ -108,5 +109,135 @@ describe("createFavicon", () => {
       expect(href()).toBe(new URL("/static.png", location.href).href);
       dispose();
     });
+  });
+});
+
+describe("createFavicon consistency", () => {
+  test("href is consistent with a sibling signal changed in the same write", () => {
+    const [label, setLabel] = createSignal("a");
+    const [src, setSrc] = createSignal("/a.png");
+    const seen: string[] = [];
+    const dispose = createRoot(dispose => {
+      const href = createFavicon(src);
+      createEffect(
+        () => [label(), href()] as const,
+        ([l, h]) => {
+          seen.push(`${l}:${h}`);
+        },
+      );
+      return dispose;
+    });
+    flush();
+    seen.length = 0;
+
+    setLabel("b");
+    setSrc("/b.png");
+    flush();
+    expect(seen).toEqual([`b:${new URL("/b.png", location.href).href}`]);
+    dispose();
+  });
+
+  test("the returned accessor is tracked: a consumer effect sees every change", () => {
+    const [src, setSrc] = createSignal("/a.png");
+    const seen: string[] = [];
+    const { dispose } = createRoot(dispose => {
+      const href = createFavicon(src);
+      createEffect(
+        () => href(),
+        value => {
+          seen.push(value);
+        },
+      );
+      return { dispose };
+    });
+    flush();
+    for (const next of ["/b.png", "/c.png", "/d.png"]) {
+      setSrc(next);
+      flush();
+    }
+    expect(seen).toEqual(
+      ["/a.png", "/b.png", "/c.png", "/d.png"].map(p => new URL(p, location.href).href),
+    );
+    dispose();
+  });
+
+  test("href() already reflects the new value before the <link> is written, in the same flush", () => {
+    const [src, setSrc] = createSignal("/a.png");
+    const seen: string[] = [];
+    const { dispose } = createRoot(dispose => {
+      const href = createFavicon(src);
+      const link = document.head.querySelector<HTMLLinkElement>('link[rel="icon"]')!;
+      // the compute phase runs before the favicon's apply phase writes the <link>
+      createEffect(
+        () => `${href()}|${link.getAttribute("href")}`,
+        value => {
+          seen.push(value);
+        },
+      );
+      return { dispose };
+    });
+    flush();
+    seen.length = 0;
+    setSrc("/b.png");
+    flush();
+    expect(seen).toEqual([`${new URL("/b.png", location.href).href}|/a.png`]);
+    dispose();
+  });
+
+  test("a <base href> change: static href follows it, a reactive href's memo does not until its source changes", () => {
+    const [src, setSrc] = createSignal("a.png");
+    const { fixed, reactive, dispose } = createRoot(dispose => ({
+      fixed: createFavicon("s.png"),
+      reactive: createFavicon(src),
+      dispose,
+    }));
+    flush();
+    const base = document.createElement("base");
+    base.href = "https://base.test/dir/";
+    document.head.appendChild(base);
+    flush();
+    expect(fixed()).toBe("https://base.test/dir/s.png");
+    expect(reactive()).toBe(new URL("a.png", location.href).href);
+    setSrc("c.png");
+    flush();
+    expect(reactive()).toBe("https://base.test/dir/c.png");
+    base.remove();
+    dispose();
+  });
+
+  test("resolves like the <link> element", () => {
+    const cases = ["/a.png", "a.png", "", "https://x.com/a b.png", "data:image/png;base64,AAA"];
+    const [src, setSrc] = createSignal(cases[0]!);
+    const { href, dispose } = createRoot(dispose => ({ href: createFavicon(src), dispose }));
+    const link = document.head.querySelector<HTMLLinkElement>('link[rel="icon"]')!;
+    for (const value of cases) {
+      setSrc(value);
+      flush();
+      expect(href()).toBe(link.href);
+    }
+    dispose();
+  });
+
+  test("raises no effect-feedback diagnostics over several changes", () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    const [src, setSrc] = createSignal("/a.png");
+    const dispose = createRoot(dispose => {
+      const href = createFavicon(src);
+      createEffect(
+        () => href(),
+        () => {},
+      );
+      return dispose;
+    });
+    flush();
+    for (let i = 0; i < 8; i++) {
+      setSrc(`/icon-${i}.png`);
+      flush();
+    }
+    dispose();
+    const codes = cap.stop().map(e => e.code);
+    release();
+    expect(codes.filter(c => c.startsWith("EFFECT_"))).toEqual([]);
   });
 });

@@ -259,15 +259,15 @@ describe("createWSData", () => {
         vi.advanceTimersByTime(20);
         const data = createWSData<string>(ws);
         // Collect values via effect; resolve after two distinct messages arrive
-        createEffect(
-          () => { try { return data(); } catch { return undefined; } },
-          val => {
-            if (val !== undefined && !received.includes(val)) {
-              received.push(val);
-              if (received.length === 2) { dispose(); done(); }
+        createEffect(data, val => {
+          if (val !== undefined && !received.includes(val)) {
+            received.push(val);
+            if (received.length === 2) {
+              dispose();
+              done();
             }
-          },
-        );
+          }
+        });
         // Send first message, then second after a microtask so the generator
         // has time to loop back into its await before the second arrives
         ws.dispatchEvent(new MessageEvent("message", { data: "first" }));

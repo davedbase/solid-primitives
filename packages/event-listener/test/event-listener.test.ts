@@ -1,7 +1,8 @@
 import { renderHydrationRoundTrip } from "../../../scripts/test-utils/hydration-harness.ts";
 import { dispatchFakeEvent, event_target } from "./setup.js";
 import { describe, test, expect } from "vitest";
-import { createRoot, createSignal, flush } from "solid-js";
+import { createRoot, createSignal, flush, OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
 import {
   createEventListener,
   createEventSignal,
@@ -76,6 +77,43 @@ describe("makeEventListenerStack", () => {
       expect(capturedEvent).toBe(undefined);
       dispose();
     }));
+});
+
+describe("makeEventListenerStack ownership", () => {
+  test("disposing the owner clears listeners added to the stack after setup (outside the owner)", () => {
+    // makeEventListener only registers its own cleanup under the owner active at listen() time,
+    // so a listener added later (e.g. from an event handler) is removed solely by the stack's own cleanup.
+    const target = new EventTarget();
+    let hits = 0;
+    let dispose!: VoidFunction;
+    let listen!: ReturnType<typeof makeEventListenerStack<{ test: Event }>>[0];
+    createRoot(d => {
+      dispose = d;
+      [listen] = makeEventListenerStack<{ test: Event }>(target);
+    });
+    listen("test", () => hits++);
+    target.dispatchEvent(new Event("test"));
+    expect(hits).toBe(1);
+    dispose();
+    target.dispatchEvent(new Event("test"));
+    expect(hits).toBe(1);
+  });
+
+  test("does not warn when called without an owner and clear() works", () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    let hits = 0;
+    const [listen, clear] = makeEventListenerStack<{ test: Event }>(event_target);
+    listen("test", () => hits++);
+    dispatchFakeEvent("test", new Event("test"));
+    expect(hits).toBe(1);
+    clear();
+    dispatchFakeEvent("test", new Event("test"));
+    expect(hits).toBe(1);
+    const codes = cap.stop().map(e => e.code);
+    release();
+    expect(codes).not.toContain("NO_OWNER_CLEANUP");
+  });
 });
 
 describe("createEventListener", () => {
