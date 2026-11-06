@@ -8,7 +8,7 @@ The internal effects used to feed back into themselves: the sync effect tracked 
 
 `isMounted`, `isVisible` and `hasEntered` are now derived from the source instead of being copied around by effects. Time-driven state (the exit finished, the next frame arrived) is only written from timer and animation-frame callbacks. The swap to a new item still happens after the exit transition, once `isMounted` has been `false` for a flush, so a `<Show when={isMounted()}>` still unmounts the old item and mounts a fresh one.
 
-The public API is unchanged and the settled state matches the previous implementation. Intermediate frames that used to be inconsistent (for example `isVisible` still `true` for a flush after the exit started) no longer occur, and `isMounted` turns `true` in the same flush as the mount. Transitions may therefore start up to one frame earlier.
+The public API is unchanged and the settled state matches the previous implementation. Intermediate frames that used to be inconsistent (for example `isVisible` still `true` for a flush after the exit started) no longer occur, and `isMounted` turns `true` in the same flush as the mount. The timing of the transitions themselves is unchanged: `isVisible` still turns `true` on the next animation frame and the exit still ends after the exit duration.
 
 Also fixes items that are functions (for example components): they were called instead of being kept, so `mountedItem()` returned the function's result. The item is now stored in a box, because a signal cannot hold a function value directly.
 

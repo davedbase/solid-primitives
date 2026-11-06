@@ -578,10 +578,11 @@ describe("createPresence", () => {
   });
 
   it("does not leave timers or animation frames behind when it is disposed", async () => {
-    for (const [initial, change] of [
-      [true, false], // mid exit
-      [false, true], // mid enter
-    ]) {
+    for (const [initial, change, elapsed] of [
+      [true, false, 5], // mid exit
+      [false, true, 5], // entering, the first frame is still pending
+      [false, true, 40], // entering, the frame has passed and the enter timer is running
+    ] as const) {
       const [shouldRender, setShouldRender] = createSignal(initial);
       const dispose = createRoot(d => {
         createPresence(shouldRender, { transitionDuration: 150 });
@@ -590,7 +591,7 @@ describe("createPresence", () => {
       flush();
       setShouldRender(change);
       flush();
-      await vi.advanceTimersByTimeAsync(5);
+      await vi.advanceTimersByTimeAsync(elapsed);
       dispose();
       expect(vi.getTimerCount()).toBe(0);
     }
