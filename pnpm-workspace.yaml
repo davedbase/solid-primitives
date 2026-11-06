@@ -24,7 +24,7 @@ onlyBuiltDependencies:
 
 catalog:
   tsdown: ^0.23.5
-  unplugin-solid: ^1.0.0
+  unplugin-solid: ^3.0.0
   solid-js: 2.0.0-rc.21
   '@solidjs/web': 2.0.0-rc.21
   '@solidjs/signals': 2.0.0-rc.21

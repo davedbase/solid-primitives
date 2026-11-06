@@ -28,8 +28,8 @@ catalogs:
       specifier: ^0.23.5
       version: 0.23.5
     unplugin-solid:
-      specifier: ^1.0.0
-      version: 1.0.0
+      specifier: ^3.0.0
+      version: 3.0.0
   peer:
     solid-js:
       specifier: 2.0.0-rc.21
@@ -144,7 +144,7 @@ importers:
         version: 7.0.2
       unplugin-solid:
         specifier: 'catalog:'
-        version: 1.0.0(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+        version: 3.0.0(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@22.20.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       vite:
         specifier: ^8.3.5
         version: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
@@ -650,7 +650,7 @@ importers:
         version: 0.23.5(@volar/typescript@2.4.30(typescript@7.0.2))(oxc-resolver@11.21.2)(tsx@4.23.15)(typescript@7.0.2)
       unplugin-solid:
         specifier: 'catalog:'
-        version: 1.0.0(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+        version: 3.0.0(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
 
   packages/idle:
     dependencies:
@@ -8479,11 +8479,6 @@ packages:
     peerDependencies:
       solid-js: ^1.3
 
-  solid-refresh@0.7.8:
-    resolution: {integrity: sha512-iG442T3HXJp5jEebCy8okETrWnmX7CnxNOKrJQVeufh6WXSn+xtLXaptUXXMHTWcRqTJOJwQ8UwzxrRtVFSIzA==}
-    peerDependencies:
-      solid-js: ^1.3
-
   solid-repl@1.0.1:
     resolution: {integrity: sha512-n09+4LWH69ybSxIcyv+uC+Y2oeuAaTj0/EtNadDC3pYqfvJdYLfFLE5zqCjInDV8JatEBsQN/hOcJdJUK+9WwQ==}
     peerDependencies:
@@ -9033,11 +9028,19 @@ packages:
       vue-template-es2015-compiler:
         optional: true
 
-  unplugin-solid@1.0.0:
-    resolution: {integrity: sha512-pv1CS3XMtf3WwX8Dq9Bvo4qH6mfjN2xOgbaPcnqW1dLhyP/JQCvueGEsN0dYIZ4JvxaD/G/Ot1JnBzNQGHkfeA==}
-    engines: {node: ^20.19.0 || >=22.12.0}
+  unplugin-solid@3.0.0:
+    resolution: {integrity: sha512-cVR6o72aoMrsTu00IU8gwst/cEjxZq3gGesDPTvnyAp45/SyQxrIFnho0lUvdXwU1GA3UnrHFFRGDUeOhckgcA==}
+    engines: {node: ^22.12.0 || ^24.0.0 || ^26.0.0}
     peerDependencies:
-      solid-js: ^1.9.9
+      '@solidjs/web': ^2.0.0-rc.9
+      '@testing-library/jest-dom': ^5.16.6 || ^5.17.0 || ^6.0.0 || ^7.0.0
+      solid-js: ^2.0.0-rc.9
+      vite: ^8.0.0 || ^9.0.0
+    peerDependenciesMeta:
+      '@testing-library/jest-dom':
+        optional: true
+      vite:
+        optional: true
 
   unplugin-utils@0.2.5:
     resolution: {integrity: sha512-gwXJnPRewT4rT7sBi/IvxKTjsms7jX7QIDLOClApuZwR49SXbrB1z2NLUZ+vDHyqCj/n58OzRRqaW+B8OZi8vg==}
@@ -17802,12 +17805,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  solid-refresh@0.7.8(solid-js@2.0.0-rc.21):
-    dependencies:
-      '@babel/generator': 7.29.8
-      '@babel/types': 7.29.8
-      solid-js: 2.0.0-rc.21
-
   solid-repl@1.0.1(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(solid-js@2.0.0-rc.21):
     dependencies:
       '@codemirror/autocomplete': 6.20.4
@@ -18445,35 +18442,59 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  unplugin-solid@1.0.0(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
+  unplugin-solid@3.0.0(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@22.20.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
+      '@ampproject/remapping': 2.3.0
       '@babel/core': 7.29.7
-      '@rollup/pluginutils': 5.4.0(rollup@4.64.2)
-      babel-preset-solid: 1.9.16(@babel/core@7.29.7)(solid-js@2.0.0-rc.21)
+      '@solidjs/babel-plugin': 2.0.0-rc.21(@babel/core@7.29.7)
+      '@solidjs/compiler': 2.0.0-rc.21
+      '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       merge-anything: 6.0.9
       solid-js: 2.0.0-rc.21
-      solid-refresh: 0.7.8(solid-js@2.0.0-rc.21)
-      unplugin: 2.3.11
+      unplugin: 3.4.0(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       vitefu: 1.1.3(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+    optionalDependencies:
+      '@testing-library/jest-dom': 7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@22.20.5)(jsdom@30.1.3)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))
+      vite: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
     transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@rsbuild/core'
+      - '@rspack/core'
+      - '@tsrx/core'
+      - bun-types-no-globals
+      - esbuild
+      - rolldown
       - rollup
       - supports-color
-      - vite
+      - unloader
+      - webpack
 
-  unplugin-solid@1.0.0(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
+  unplugin-solid@3.0.0(@solidjs/web@2.0.0-rc.21(solid-js@2.0.0-rc.21))(@testing-library/jest-dom@7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))))(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(solid-js@2.0.0-rc.21)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
+      '@ampproject/remapping': 2.3.0
       '@babel/core': 7.29.7
-      '@rollup/pluginutils': 5.4.0(rollup@4.64.2)
-      babel-preset-solid: 1.9.16(@babel/core@7.29.7)(solid-js@2.0.0-rc.21)
+      '@solidjs/babel-plugin': 2.0.0-rc.21(@babel/core@7.29.7)
+      '@solidjs/compiler': 2.0.0-rc.21
+      '@solidjs/web': 2.0.0-rc.21(solid-js@2.0.0-rc.21)
       merge-anything: 6.0.9
       solid-js: 2.0.0-rc.21
-      solid-refresh: 0.7.8(solid-js@2.0.0-rc.21)
-      unplugin: 2.3.11
+      unplugin: 3.4.0(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
       vitefu: 1.1.3(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))
+    optionalDependencies:
+      '@testing-library/jest-dom': 7.0.1(@testing-library/dom@10.4.2)(vitest@5.1.0(@types/node@26.6.4)(jsdom@30.1.3)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)))
+      vite: 8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
     transitivePeerDependencies:
+      - '@farmfe/core'
+      - '@rsbuild/core'
+      - '@rspack/core'
+      - '@tsrx/core'
+      - bun-types-no-globals
+      - esbuild
+      - rolldown
       - rollup
       - supports-color
-      - vite
+      - unloader
+      - webpack
 
   unplugin-utils@0.2.5:
     dependencies:
@@ -18502,6 +18523,17 @@ snapshots:
       rolldown: 1.2.16
       rollup: 4.64.2
       vite: 6.4.4(@types/node@26.6.4)(jiti@2.7.0)(lightningcss@1.33.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
+
+  unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(vite@8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
+    dependencies:
+      '@jridgewell/remapping': 2.3.5
+      picomatch: 4.0.7
+      webpack-virtual-modules: 0.6.2
+    optionalDependencies:
+      esbuild: 0.28.2
+      rolldown: 1.2.16
+      rollup: 4.64.2
+      vite: 8.3.5(@types/node@22.20.5)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
 
   unplugin@3.4.0(esbuild@0.28.2)(rolldown@1.2.16)(rollup@4.64.2)(vite@8.3.5(@types/node@26.6.4)(esbuild@0.28.2)(jiti@2.7.0)(sass@1.101.0)(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)):
     dependencies:
