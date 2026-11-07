@@ -161,6 +161,9 @@ export function createForm<C extends FieldsConfig>(config: FormConfig<C>): FormR
         if (probe instanceof Promise) {
           asyncFns.push(fn);
           initProms.push(probe);
+          // Probes may be discarded unawaited (changed or sync-invalid value); don't let a
+          // rejection surface as unhandled. Awaiting the original still observes it.
+          probe.catch(() => {});
         } else {
           syncFns.push(fn);
         }
@@ -204,7 +207,17 @@ export function createForm<C extends FieldsConfig>(config: FormConfig<C>): FormR
             setAp(true);
             void (async () => {
               for (const p of asyncProms) {
-                const err = await p;
+                let err: string | null;
+                try {
+                  err = await p;
+                } catch (e) {
+                  // A rejected validator means the value was not validated: surface it as an
+                  // error so pending settles and valid() stays false.
+                  if (s !== seq) return;
+                  setAe(e instanceof Error && e.message ? e.message : "Validation failed");
+                  setAp(false);
+                  return;
+                }
                 if (s !== seq) return;
                 if (err !== null) { setAe(err); setAp(false); return; }
               }
