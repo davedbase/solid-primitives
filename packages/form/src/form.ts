@@ -186,15 +186,21 @@ export function createForm<C extends FieldsConfig>(config: FormConfig<C>): FormR
         createEffect(
           () => ({ val: value(), syncError: syncMemo() }),
           ({ val, syncError }) => {
+            const first = isFirstRun;
+            isFirstRun = false;
+            const s = ++seq; // invalidates any in-flight result, including on sync-invalid values
+
+            // A sync-invalid value never reaches the async validators.
+            if (syncError !== null) { setAe(null); setAp(false); return; }
+
             // Reuse initProms when the value hasn't changed from initial — they're already
             // in flight and represent the correct result. If the value changed, those
             // promises validated a stale input and must be discarded.
-            const asyncProms = (isFirstRun && val === fc.initial)
-              ? (isFirstRun = false, initProms)
-              : (isFirstRun = false, asyncFns.map(fn => fn(val) as Promise<string | null>));
+            const asyncProms = (first && val === fc.initial)
+              ? initProms
+              : asyncFns.map(fn => fn(val) as Promise<string | null>);
 
-            if (syncError !== null || asyncProms.length === 0) { setAe(null); setAp(false); return; }
-            const s = ++seq;
+            if (asyncProms.length === 0) { setAe(null); setAp(false); return; }
             setAp(true);
             void (async () => {
               for (const p of asyncProms) {
