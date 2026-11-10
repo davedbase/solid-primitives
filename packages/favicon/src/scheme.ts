@@ -1,9 +1,16 @@
-import { type Accessor, createEffect, createSignal, onCleanup, untrack } from "solid-js";
+import {
+  type Accessor,
+  createEffect,
+  createMemo,
+  createSignal,
+  onCleanup,
+  untrack,
+} from "solid-js";
 import { isServer } from "@solidjs/web";
 import { access, INTERNAL_OPTIONS, type MaybeAccessor, noop } from "@solid-primitives/utils";
 import { makeEventListener } from "@solid-primitives/event-listener";
 import { makeFavicon } from "./favicon.ts";
-import type { FaviconController, FaviconOptions } from "./link.ts";
+import { resolveFaviconHref, type FaviconController, type FaviconOptions } from "./link.ts";
 
 export type FaviconColorScheme = "light" | "dark";
 
@@ -98,7 +105,10 @@ export function createFaviconScheme(
   // `STRICT_READ_UNTRACKED`.
   const initialIcons = untrack(() => access(icons));
   const favicon = makeFavicon(initialIcons[untrack(scheme)], options);
-  const [href, setHref] = createSignal(favicon.href, INTERNAL_OPTIONS);
+  // Derived, not mirrored: the applied href is a pure function of `icons` and `scheme`, so it is
+  // a memo and lands in the same flush as `scheme` (a mirror written from the effect would show
+  // the new scheme next to the previous href for one flush).
+  const href = createMemo(() => resolveFaviconHref(access(icons)[scheme()]));
 
   makeEventListener<{ change: MediaQueryListEvent }>(mql, "change", event => {
     setScheme(event.matches ? "dark" : "light");
@@ -109,7 +119,6 @@ export function createFaviconScheme(
     () => [access(icons), scheme()] as const,
     ([currentIcons, currentScheme]) => {
       favicon.setHref(currentIcons[currentScheme]);
-      setHref(favicon.href);
     },
     { defer: true },
   );

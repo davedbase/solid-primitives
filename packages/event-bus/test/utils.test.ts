@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
-import { createRoot, flush, getOwner } from "solid-js";
-import { createEventBus, once, toEffect, toPromise } from "../src/index.js";
+import { createRoot, flush, getOwner, OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
+import { createEventBus, once, toEffect, toPromise, type Emit } from "../src/index.js";
 
 describe("toPromise", () => {
   test("toPromise turns subscription into a promise", () =>
@@ -69,4 +70,79 @@ describe("toEffect", () => {
         }, 0);
       }),
     ));
+});
+
+describe("toEffect queue drain", () => {
+  test("emits in order, batched per flush, under the captured owner", () => {
+    const { listen, emit } = createEventBus<number>();
+    const batches: number[][] = [];
+    let current: number[] = [];
+    const owners: any[] = [];
+    let emitInEffect!: Emit<number>;
+    const dispose = createRoot(dispose => {
+      emitInEffect = toEffect(emit);
+      listen(n => {
+        current.push(n);
+        owners.push(getOwner());
+      });
+      return dispose;
+    });
+    flush();
+    emitInEffect(1);
+    emitInEffect(2);
+    emitInEffect(3);
+    expect(current).toEqual([]);
+    flush();
+    batches.push(current);
+    current = [];
+    expect(batches[0]).toEqual([1, 2, 3]);
+    expect(owners.every(o => o !== null)).toBe(true);
+    emitInEffect(4);
+    flush();
+    expect(current).toEqual([4]);
+    flush();
+    expect(current).toEqual([4]);
+    dispose();
+  });
+
+  test("no diagnostics over several emit/flush cycles", () => {
+    const { listen, emit } = createEventBus<number>();
+    const seen: number[] = [];
+    let emitInEffect!: Emit<number>;
+    const dispose = createRoot(dispose => {
+      emitInEffect = toEffect(emit);
+      listen(n => seen.push(n));
+      return dispose;
+    });
+    flush();
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    for (let i = 0; i < 8; i++) {
+      emitInEffect(i);
+      flush();
+    }
+    const codes = cap.stop().map(e => e.code);
+    release();
+    expect(seen).toEqual([0, 1, 2, 3, 4, 5, 6, 7]);
+    expect(codes).toEqual([]);
+    dispose();
+  });
+
+  test("nothing is emitted after dispose", () => {
+    const { listen, emit } = createEventBus<number>();
+    const seen: number[] = [];
+    let emitInEffect!: Emit<number>;
+    const dispose = createRoot(dispose => {
+      emitInEffect = toEffect(emit);
+      listen(n => seen.push(n));
+      return dispose;
+    });
+    flush();
+    emitInEffect(1);
+    dispose();
+    flush();
+    emitInEffect(2);
+    flush();
+    expect(seen).toEqual([]);
+  });
 });

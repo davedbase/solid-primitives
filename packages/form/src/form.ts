@@ -144,10 +144,16 @@ export function createForm<C extends FieldsConfig>(config: FormConfig<C>): FormR
     let _syncError: Accessor<string | null> = () => null;
 
     if (validators.length > 0) {
-      const [ae, setAe] = createSignal<string | null>(null, { ownedWrite: true });
-      const [ap, setAp] = createSignal(false, { ownedWrite: true });
-      asyncError = ae;
-      _asyncPending = ap;
+      // The async outcome is written only from the promise continuation, never from an effect.
+      // It is tagged with the run (the object identity of `inputs` below) it validated, and
+      // with that run's epoch (a stretch of consecutive runs without a sync error).
+      // `pending` is derived from the run tag: a run is pending until its own result arrived.
+      // `asyncError` is derived from the epoch tag: the previous async error stays visible
+      // while the next run is in flight (as before), but never survives a sync error.
+      type AsyncResult = { run: object; epoch: object; err: string | null };
+      const [asyncResult, setAsyncResult] = createSignal<AsyncResult | null>(null, {
+        ownedWrite: true,
+      });
 
       // Probe each validator with the initial value to classify it as sync or async.
       // The initial promises are saved so the first async run can reuse them rather than
@@ -182,28 +188,61 @@ export function createForm<C extends FieldsConfig>(config: FormConfig<C>): FormR
       if (asyncFns.length > 0) {
         let seq = 0;
         let isFirstRun = true;
+        // A new object per (value, syncError) change = one async "run". Pure function of the
+        // previous run: the epoch is carried over unless a sync error is or was in effect.
+        type Run = { val: any; syncError: string | null; epoch: object };
+        const inputs = createMemo<Run>(prev => {
+          const syncError = syncMemo();
+          const val = value();
+          const epoch = prev && prev.syncError === null && syncError === null ? prev.epoch : {};
+          return { val, syncError, epoch };
+        });
+
+        // Derived in the same flush as the value change, so valid()/pending() never show a
+        // frame where the new value looks settled while its async validators have not run.
+        asyncError = createMemo(() => {
+          const run = inputs();
+          const r = asyncResult();
+          return run.syncError === null && r !== null && r.epoch === run.epoch ? r.err : null;
+        });
+        _asyncPending = createMemo(() => {
+          const run = inputs();
+          if (run.syncError !== null) return false;
+          const r = asyncResult();
+          return !(r !== null && r.run === run);
+        });
+
+        onCleanup(() => {
+          seq = -1; // discard results still in flight after dispose
+        });
 
         createEffect(
-          () => ({ val: value(), syncError: syncMemo() }),
-          ({ val, syncError }) => {
+          () => inputs(),
+          run => {
+            const { val, syncError } = run;
             // Reuse initProms when the value hasn't changed from initial — they're already
             // in flight and represent the correct result. If the value changed, those
             // promises validated a stale input and must be discarded.
-            const asyncProms = (isFirstRun && val === fc.initial)
-              ? (isFirstRun = false, initProms)
-              : (isFirstRun = false, asyncFns.map(fn => fn(val) as Promise<string | null>));
+            const asyncProms =
+              isFirstRun && val === fc.initial
+                ? ((isFirstRun = false), initProms)
+                : ((isFirstRun = false), asyncFns.map(fn => fn(val) as Promise<string | null>));
 
-            if (syncError !== null || asyncProms.length === 0) { setAe(null); setAp(false); return; }
+            if (syncError !== null) {
+              seq++; // a sync error supersedes anything still in flight
+              return;
+            }
             const s = ++seq;
-            setAp(true);
             void (async () => {
               for (const p of asyncProms) {
                 const err = await p;
                 if (s !== seq) return;
-                if (err !== null) { setAe(err); setAp(false); return; }
+                if (err !== null) {
+                  setAsyncResult({ run, epoch: run.epoch, err });
+                  return;
+                }
               }
-              setAe(null);
-              setAp(false);
+              setAsyncResult({ run, epoch: run.epoch, err: null });
             })();
           },
         );

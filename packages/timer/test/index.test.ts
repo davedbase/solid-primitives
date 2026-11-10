@@ -1,4 +1,5 @@
-import { createRoot, createSignal, flush, onCleanup } from "solid-js";
+import { createRoot, createEffect, createSignal, flush, onCleanup, OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
 import { describe, test, expect, vi, beforeEach, afterAll, beforeAll } from "vitest";
 import {
   makeTimer,
@@ -425,5 +426,197 @@ describe("createIntervalCounter", () => {
     expect(count()).toBe(2);
 
     dispose();
+  });
+});
+
+// effect-feedback diagnostics and disposal
+describe("polled value delivery", () => {
+  test("createPolled does not mirror derived state through an effect", () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    try {
+      for (let i = 0; i < 6; i++) {
+        let n = 0;
+        const { polled, dispose } = createRoot(dispose => ({
+          polled: createPolled(() => ++n, 100),
+          dispose,
+        }));
+        flush();
+        for (let j = 0; j < 4; j++) {
+          vi.advanceTimersByTime(100);
+          flush();
+          expect(polled()).toBe(j + 2);
+        }
+        dispose();
+      }
+    } finally {
+      const codes = cap.stop().map(e => e.code);
+      release();
+      expect(codes.filter(c => c.startsWith("EFFECT_"))).toEqual([]);
+    }
+  });
+
+  test("createIntervalCounter does not mirror derived state through an effect", () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    try {
+      for (let i = 0; i < 6; i++) {
+        const { count, dispose } = createRoot(dispose => ({
+          count: createIntervalCounter(100),
+          dispose,
+        }));
+        flush();
+        for (let j = 0; j < 4; j++) {
+          vi.advanceTimersByTime(100);
+          flush();
+          expect(count()).toBe(j + 1);
+        }
+        dispose();
+      }
+    } finally {
+      const codes = cap.stop().map(e => e.code);
+      release();
+      expect(codes.filter(c => c.startsWith("EFFECT_"))).toEqual([]);
+    }
+  });
+
+  test("options.equals: false notifies on every tick even when the value is unchanged", () => {
+    const seen: number[] = [];
+    const { dispose } = createRoot(dispose => {
+      const polled = createPolled(() => 5, 100, undefined, { equals: false });
+      createEffect(polled, v => {
+        seen.push(v);
+      });
+      return { dispose };
+    });
+    flush();
+    for (let i = 0; i < 3; i++) {
+      vi.advanceTimersByTime(100);
+      flush();
+    }
+    expect(seen).toEqual([5, 5, 5, 5]);
+    dispose();
+  });
+
+  test("default equality does not notify when the polled value is unchanged", () => {
+    const seen: number[] = [];
+    const { dispose } = createRoot(dispose => {
+      const polled = createPolled(() => 5, 100);
+      createEffect(polled, v => {
+        seen.push(v);
+      });
+      return { dispose };
+    });
+    flush();
+    for (let i = 0; i < 3; i++) {
+      vi.advanceTimersByTime(100);
+      flush();
+    }
+    expect(seen).toEqual([5]);
+    dispose();
+  });
+
+  test("a custom options.equals decides which ticks notify", () => {
+    let n = 0;
+    const seen: number[] = [];
+    const { dispose } = createRoot(dispose => {
+      // values 1,2,3,4: treat values within the same pair as equal
+      const polled = createPolled(() => ++n, 100, undefined, {
+        equals: (a, b) => Math.ceil(a / 2) === Math.ceil(b / 2),
+      });
+      createEffect(polled, v => {
+        seen.push(v);
+      });
+      return { dispose };
+    });
+    flush();
+    for (let i = 0; i < 3; i++) {
+      vi.advanceTimersByTime(100);
+      flush();
+    }
+    expect(seen).toEqual([1, 3]);
+    dispose();
+  });
+
+  test("function results are returned as values, not invoked", () => {
+    let inner = 0;
+    const f1 = () => (inner++, "one");
+    const f2 = () => (inner++, "two");
+    let n = 0;
+    const seen: unknown[] = [];
+    const { polled, dispose } = createRoot(dispose => {
+      const polled = createPolled<any>(() => (n++ === 0 ? f1 : f2), 100);
+      createEffect(polled, v => {
+        seen.push(v);
+      });
+      return { polled, dispose };
+    });
+    flush();
+    expect(polled()).toBe(f1);
+    vi.advanceTimersByTime(100);
+    flush();
+    expect(polled()).toBe(f2);
+    expect(seen).toEqual([f1, f2]);
+    expect(inner).toBe(0);
+    dispose();
+  });
+
+  test("the value is settled after a single flush per tick", () => {
+    let n = 0;
+    const seen: number[] = [];
+    const { polled, dispose } = createRoot(dispose => {
+      const polled = createPolled(() => ++n, 100);
+      createEffect(polled, v => {
+        seen.push(v);
+      });
+      return { polled, dispose };
+    });
+    flush();
+    vi.advanceTimersByTime(100);
+    flush();
+    expect(polled()).toBe(2);
+    expect(seen).toEqual([1, 2]);
+    dispose();
+  });
+
+  test("reading after dispose returns the last value and never re-runs fn", () => {
+    let n = 0;
+    const { polled, dispose } = createRoot(dispose => ({
+      polled: createPolled(() => ++n, 100),
+      dispose,
+    }));
+    flush();
+    vi.advanceTimersByTime(100);
+    flush();
+    vi.advanceTimersByTime(50); // mid-interval
+    flush();
+    expect(polled()).toBe(2);
+    const calls = n;
+    dispose();
+    expect(vi.getTimerCount()).toBe(0);
+    expect(polled()).toBe(2);
+    vi.advanceTimersByTime(500);
+    flush();
+    expect(polled()).toBe(2);
+    expect(n).toBe(calls);
+  });
+
+  test("reading after dispose is stable for createIntervalCounter", () => {
+    const { count, dispose } = createRoot(dispose => ({
+      count: createIntervalCounter(100),
+      dispose,
+    }));
+    flush();
+    vi.advanceTimersByTime(100);
+    flush();
+    vi.advanceTimersByTime(150); // mid-interval
+    flush();
+    expect(count()).toBe(2);
+    dispose();
+    expect(vi.getTimerCount()).toBe(0);
+    expect(count()).toBe(2);
+    vi.advanceTimersByTime(300);
+    flush();
+    expect(count()).toBe(2);
   });
 });

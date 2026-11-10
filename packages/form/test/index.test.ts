@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { createRoot, createSignal, flush } from "solid-js";
+import { createEffect, createRoot, createSignal, flush, OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
 import { createForm, createFormResetListener, toFormData } from "../src/index.js";
 
 const isEmail = (v: string) =>
@@ -1860,5 +1861,232 @@ describe("createFormResetListener", () => {
 
     dispose();
     cleanup(form);
+  });
+});
+
+describe("async validation state is derived in the same flush", () => {
+  const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+  const slowOk = async (v: string) => {
+    await sleep(15);
+    return v === "taken@example.com" ? "Email already taken" : null;
+  };
+
+  it("never shows valid() while an async validator for the current value is outstanding", async () => {
+    const frames: { value: string; pending: boolean; valid: boolean }[] = [];
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: { email: { initial: "", validate: [isEmail, slowOk] } },
+      }) as any;
+      createEffect(
+        () => ({
+          value: form.fields.email.value() as string,
+          pending: form.fields.email.pending(),
+          valid: form.valid(),
+        }),
+        f => {
+          frames.push(f);
+        },
+      );
+      return d;
+    });
+    flush();
+    form.fields.email.setValue("ok@example.com");
+    flush();
+    // First committed frame for the new value: async validator not run yet, must be pending.
+    const first = frames.find(f => f.value === "ok@example.com")!;
+    expect(first.pending).toBe(true);
+    expect(first.valid).toBe(false);
+
+    await sleep(40);
+    flush();
+    expect(form.fields.email.pending()).toBe(false);
+    expect(form.valid()).toBe(true);
+
+    form.fields.email.setValue("taken@example.com");
+    flush();
+    const second = frames.filter(f => f.value === "taken@example.com")[0]!;
+    expect(second.pending).toBe(true);
+    expect(second.valid).toBe(false);
+    await sleep(40);
+    flush();
+    expect(form.errors().email).toBe("Email already taken");
+
+    // No frame ever claimed valid for a value whose async result was still outstanding.
+    for (const f of frames) {
+      if (f.valid) expect(f.pending).toBe(false);
+    }
+    expect(frames.filter(f => f.valid && f.value === "taken@example.com")).toEqual([]);
+    dispose();
+  });
+
+  it("pending is true from mount while the initial async validation is outstanding", async () => {
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: {
+          email: { initial: "a@b.co", validate: slowOk },
+          plain: { initial: "" },
+          syncOnly: { initial: "x", validate: minLength(1) },
+        },
+      }) as any;
+      return d;
+    });
+    expect(form.fields.email.pending()).toBe(true);
+    expect(form.fields.plain.pending()).toBe(false);
+    expect(form.fields.syncOnly.pending()).toBe(false);
+    expect(form.valid()).toBe(false);
+    flush();
+    await sleep(40);
+    flush();
+    expect(form.fields.email.pending()).toBe(false);
+    expect(form.valid()).toBe(true);
+    dispose();
+  });
+
+  it("keeps the previous async error visible while the next validation is in flight", async () => {
+    const frames: { value: string; error: string | null; pending: boolean; valid: boolean }[] = [];
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: { email: { initial: "", validate: [isEmail, slowOk] } },
+      }) as any;
+      createEffect(
+        () => ({
+          value: form.fields.email.value() as string,
+          error: form.fields.email.error() as string | null,
+          pending: form.fields.email.pending(),
+          valid: form.valid(),
+        }),
+        f => {
+          frames.push(f);
+        },
+      );
+      return d;
+    });
+    flush();
+    const edit = async (v: string) => {
+      form.fields.email.setValue(v);
+      flush();
+      await sleep(40);
+      flush();
+    };
+    await edit("taken@example.com");
+    expect(form.fields.email.error()).toBe("Email already taken");
+
+    // edit: previous async error stays until the new result arrives, but state is not torn
+    frames.length = 0;
+    form.fields.email.setValue("other@example.com");
+    flush();
+    expect(frames).toEqual([
+      { value: "other@example.com", error: "Email already taken", pending: true, valid: false },
+    ]);
+    await sleep(40);
+    flush();
+    expect(form.fields.email.error()).toBeNull();
+    expect(form.valid()).toBe(true);
+
+    // a sync error clears the async error and it does not resurface when the sync error clears
+    await edit("taken@example.com");
+    expect(form.fields.email.error()).toBe("Email already taken");
+    form.fields.email.setValue("bad");
+    flush();
+    expect(form.fields.email.error()).toBe("Invalid email");
+    form.fields.email.setValue("another@example.com");
+    flush();
+    expect(form.fields.email.error()).toBeNull();
+    expect(form.fields.email.pending()).toBe(true);
+    await sleep(40);
+    flush();
+    expect(form.valid()).toBe(true);
+    dispose();
+  });
+
+  it("a sync error discards an async result still in flight for the previous value", async () => {
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: {
+          email: { initial: "", validate: [isEmail, async () => (await sleep(15), "late error")] },
+        },
+      }) as any;
+      return d;
+    });
+    flush();
+    form.fields.email.setValue("ok@example.com");
+    flush();
+    expect(form.fields.email.pending()).toBe(true);
+    form.fields.email.setValue("bad");
+    flush();
+    expect(form.fields.email.pending()).toBe(false);
+    await sleep(40);
+    flush();
+    expect(form.errors().email).toBe("Invalid email");
+    // back to a valid-looking value: re-validated, not served from the old result
+    form.fields.email.setValue("ok@example.com");
+    flush();
+    expect(form.fields.email.pending()).toBe(true);
+    expect(form.valid()).toBe(false);
+    await sleep(40);
+    flush();
+    expect(form.errors().email).toBe("late error");
+    dispose();
+  });
+
+  it("a value change mid-flight discards the older result; disposing with a validator in flight is safe", async () => {
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: {
+          u: {
+            initial: "a",
+            validate: async (v: string) => (
+              await sleep(v === "a" ? 30 : 5),
+              v === "a" ? "old" : null
+            ),
+          },
+        },
+      }) as any;
+      return d;
+    });
+    flush();
+    form.fields.u.setValue("b");
+    flush();
+    await sleep(50);
+    flush();
+    expect(form.errors().u).toBeUndefined();
+    expect(form.fields.u.pending()).toBe(false);
+    form.fields.u.setValue("c");
+    flush();
+    dispose();
+    await sleep(30);
+    flush();
+  });
+
+  it("emits no effect-feedback diagnostics over several edits", async () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    let form!: ReturnType<typeof createForm<any>>;
+    const dispose = createRoot(d => {
+      form = createForm({
+        fields: { email: { initial: "", validate: [isEmail, slowOk] } },
+      }) as any;
+      createEffect(
+        () => [form.fields.email.pending(), form.valid(), form.fields.email.error()],
+        () => {},
+      );
+      return d;
+    });
+    flush();
+    for (const v of ["a@b.co", "bad", "c@d.co", "taken@example.com", "e@f.co", "", "g@h.co"]) {
+      form.fields.email.setValue(v);
+      flush();
+      await sleep(25);
+      flush();
+    }
+    const codes = cap.stop().map(e => e.code);
+    release();
+    dispose();
+    expect(codes.filter(c => c.startsWith("EFFECT_"))).toEqual([]);
   });
 });

@@ -1,7 +1,12 @@
-import { type Accessor, createEffect, createSignal, onCleanup, untrack } from "solid-js";
+import { type Accessor, createEffect, createMemo, onCleanup, untrack } from "solid-js";
 import { isServer } from "@solidjs/web";
-import { access, INTERNAL_OPTIONS, type MaybeAccessor, noop } from "@solid-primitives/utils";
-import { bindFaviconLink, type FaviconController, type FaviconOptions } from "./link.ts";
+import { access, type MaybeAccessor, noop } from "@solid-primitives/utils";
+import {
+  bindFaviconLink,
+  resolveFaviconHref,
+  type FaviconController,
+  type FaviconOptions,
+} from "./link.ts";
 
 /**
  * Sets the document's favicon to `href`, restoring whatever href (or absence of a link element)
@@ -48,9 +53,13 @@ export function createFavicon(
     untrack(() => access(href)),
     options,
   );
-  // A real signal, not just `() => favicon.href` — reading a plain DOM property from JSX
-  // registers no dependency, so it would never re-render when the href changes underneath it.
-  const [current, setCurrent] = createSignal(favicon.href, INTERNAL_OPTIONS);
+  // Derived from `href`, not mirrored out of the <link> after the effect writes it: a consumer
+  // reading this together with whatever changed `href` sees both in the same flush. A memo (not
+  // `() => favicon.href`) so JSX/effects that read it track changes.
+  const current =
+    typeof href === "function"
+      ? createMemo(() => resolveFaviconHref(href()))
+      : () => resolveFaviconHref(href);
 
   if (typeof href === "function") {
     // `defer: true` — the initial value was already applied synchronously above via `makeFavicon`.
@@ -58,7 +67,6 @@ export function createFavicon(
       () => href(),
       value => {
         favicon.setHref(value);
-        setCurrent(favicon.href);
       },
       { defer: true },
     );

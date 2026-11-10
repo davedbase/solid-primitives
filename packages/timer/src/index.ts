@@ -198,22 +198,15 @@ export function createPolled<T>(
     const v = fn(value);
     return () => v;
   }
-  // depSignal tracks `tick` (timer) and fn's own reactive deps. Using a plain
-  // signal for the public accessor avoids the REACTIVE_DISPOSED re-run issue
-  // that compute signals exhibit when read after their owner scope is disposed.
-  // TODO: Investigate other options, this feels wrong.
+  // A derived signal tracking `tick` (the timer) and fn's own reactive deps. It is returned
+  // directly: mirroring it into a second signal from an effect would deliver every value one
+  // flush late. Reading it after the owner is disposed returns the last value (the timer is
+  // cleaned up with the owner, so nothing can invalidate it again).
   const [tick, setTick] = createSignal(0);
-  const [depSignal] = createSignal<T>((prev: T | undefined) => {
+  const [polled] = createSignal<T>((prev: T | undefined) => {
     tick();
     return fn(prev !== undefined ? (prev as T) : value);
-  });
-  const [polled, setPolled] = createSignal<T>(depSignal() as Exclude<T, Function>, options);
-  createEffect(
-    () => depSignal(),
-    (newValue: T) => {
-      setPolled(() => newValue);
-    },
-  );
+  }, options);
   createTimer(() => setTick(t => t + 1), timeout, setInterval);
   return polled;
 }

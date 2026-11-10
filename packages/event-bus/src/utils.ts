@@ -1,4 +1,3 @@
-import { push } from "@solid-primitives/utils/immutable";
 import { type AnyFunction } from "@solid-primitives/utils";
 import { createEffect, createSignal, getOwner, runWithOwner } from "solid-js";
 import type { Listen, Listener, Emit } from "./eventBus.ts";
@@ -63,16 +62,22 @@ export function once<T>(subscribe: Listen<T>, listener: Listener<T>): VoidFuncti
  */
 export function toEffect<T>(emit: Emit<T>): Emit<T> {
   const owner = getOwner();
-  const [stack, setStack] = createSignal<T[]>([]);
+  let queue: T[] = [];
+  const [version, setVersion] = createSignal(0);
   createEffect(
-    () => stack(),
-    stack => {
-      if (!stack.length) return;
-      setStack([]);
-      runWithOwner(owner, () => stack.forEach(emit as Emit<any>));
+    () => version(),
+    () => {
+      if (!queue.length) return;
+      const batch = queue;
+      queue = [];
+      runWithOwner(owner, () => batch.forEach(emit as Emit<any>));
     },
   );
-  return (payload?: any) => void setStack(p => push(p, payload));
+  return (payload?: any) => {
+    // write the signal first: if it throws (e.g. called from an owned scope), nothing is left queued
+    setVersion(v => v + 1);
+    queue.push(payload);
+  };
 }
 
 /**

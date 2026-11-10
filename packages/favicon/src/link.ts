@@ -15,6 +15,19 @@ export type FaviconController = {
 };
 
 /**
+ * Resolves `href` the way a `<link>`'s `href` property reports it: against the document base URL,
+ * falling back to the raw string when it can't be parsed. Lets callers derive the applied href
+ * from their inputs instead of mirroring it back out of the DOM element after an effect.
+ */
+export function resolveFaviconHref(href: string): string {
+  try {
+    return new URL(href, document.baseURI).href;
+  } catch {
+    return href;
+  }
+}
+
+/**
  * Finds the document's favicon `<link>` for the given `rel`, creating and appending one if none
  * exists. Captures whatever href was present before this call so callers can restore it later —
  * each call snapshots independently, so sequential/nested callers compose like a stack as long as
