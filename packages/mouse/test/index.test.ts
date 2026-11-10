@@ -1,6 +1,7 @@
 import { createStaticStore } from "@solid-primitives/static-store";
-import { createRoot, flush } from "solid-js";
-import { describe, expect, it } from "vitest";
+import { createRoot, createSignal, flush, OBSERVE } from "solid-js";
+import { attribution } from "solid-js/attribution";
+import { describe, expect, it, vi } from "vitest";
 
 import { createMousePosition, createPositionToElement } from "../src/index.js";
 
@@ -30,6 +31,47 @@ describe("createMousePosition", () => {
       });
       dispose();
     }));
+});
+
+describe("createMousePosition listener lifecycle", () => {
+  it("swapping the target emits no NO_OWNER_CLEANUP and removes listeners on swap and dispose", () => {
+    const release = attribution.enable();
+    const cap = OBSERVE!.diagnostics.capture();
+    const a = document.createElement("div");
+    const b = document.createElement("div");
+    const spies = [a, b].map(el => ({
+      add: vi.spyOn(el, "addEventListener"),
+      remove: vi.spyOn(el, "removeEventListener"),
+    }));
+    const [target, setTarget] = createSignal<HTMLElement>(a);
+    let dispose!: VoidFunction;
+    createRoot(d => {
+      dispose = d;
+      createMousePosition(target);
+    });
+    flush();
+    const live = (i: number) =>
+      spies[i]!.add.mock.calls.length - spies[i]!.remove.mock.calls.length;
+    expect(spies[0]!.add.mock.calls.length).toBeGreaterThan(0);
+    expect(live(0)).toBe(spies[0]!.add.mock.calls.length);
+    for (let i = 0; i < 4; i++) {
+      setTarget(i % 2 === 0 ? b : a);
+      flush();
+      const cur = i % 2 === 0 ? 1 : 0;
+      expect(live(cur)).toBe(
+        spies[cur]!.add.mock.calls.length - spies[cur]!.remove.mock.calls.length,
+      );
+      expect(live(1 - cur)).toBe(0);
+      expect(live(cur)).toBeGreaterThan(0);
+    }
+    dispose();
+    flush();
+    expect(live(0)).toBe(0);
+    expect(live(1)).toBe(0);
+    const codes = cap.stop().map(e => e.code);
+    release();
+    expect(codes).not.toContain("NO_OWNER_CLEANUP");
+  });
 });
 
 describe("createMouseToElement", () => {

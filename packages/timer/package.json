@@ -27,7 +27,7 @@
       "createIntervalCounter"
     ],
     "category": "Browser APIs",
-    "gzip": 594
+    "gzip": 577
   },
   "private": false,
   "sideEffects": false,
