@@ -594,6 +594,46 @@ describe("createInteractOutside", () => {
       dispose();
       host.remove();
     });
+
+    it("resolves targets for elements from another realm (iframe document)", () => {
+      // Nodes created in an iframe have that window's `Element`/`ShadowRoot` constructors, so
+      // `instanceof` against this module's globals is always false for them.
+      const iframe = document.createElement("iframe");
+      document.body.appendChild(iframe);
+      const frameDoc = iframe.contentDocument!;
+      const FrameMouseEvent = iframe.contentWindow!.MouseEvent;
+      expect(frameDoc.createElement("div")).not.toBeInstanceOf(Element);
+
+      const host = frameDoc.createElement("div");
+      frameDoc.body.appendChild(host);
+      const inside = frameDoc.createElement("div");
+      const insideChild = frameDoc.createElement("button");
+      inside.appendChild(insideChild);
+      const sibling = frameDoc.createElement("div");
+      host.attachShadow({ mode: "open" }).append(inside, sibling);
+      const lightOutside = frameDoc.createElement("div");
+      frameDoc.body.appendChild(lightOutside);
+
+      const reported: (EventTarget | null)[] = [];
+      const dispose = createRoot(d => {
+        createInteractOutside({ onPointerDownOutside: e => reported.push(e.target) }, () => inside);
+        return d;
+      });
+      flush();
+      vi.runAllTimers();
+
+      const down = (target: Element) =>
+        target.dispatchEvent(new FrameMouseEvent("pointerdown", { bubbles: true, composed: true }));
+      down(insideChild);
+      down(sibling);
+      down(lightOutside);
+
+      expect(reported).toHaveLength(2);
+      expect(reported[0]).toBe(sibling);
+      expect(reported[1]).toBe(lightOutside);
+      dispose();
+      iframe.remove();
+    });
   });
 });
 

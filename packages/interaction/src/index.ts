@@ -282,6 +282,22 @@ export function createHideOutside(options: CreateHideOutsideOptions): void {
   );
 }
 
+// Realm-independent type checks. `instanceof Element` / `instanceof ShadowRoot` compare against this
+// module's window, so they are always false for nodes created in another realm (e.g. an iframe's
+// document), which would silently disable outside detection there.
+
+const isElement = (node: unknown): node is Element =>
+  !!node && (node as Node).nodeType === Node.ELEMENT_NODE;
+
+/** The host of `node`'s shadow root, or `null` when `node` is not in a shadow tree. */
+function getShadowHost(node: Node): Element | null {
+  const root = node.getRootNode();
+  // A ShadowRoot is the only DocumentFragment with a `host`.
+  return root.nodeType === Node.DOCUMENT_FRAGMENT_NODE && isElement((root as ShadowRoot).host)
+    ? (root as ShadowRoot).host
+    : null;
+}
+
 /** Where an event originated, captured while the event is still dispatching. */
 type EventOrigin = {
   /** The element the interaction actually happened on — inside any shadow trees it crossed. */
@@ -304,7 +320,7 @@ function getEventOrigin(event: Event): EventOrigin | null {
   const path = typeof event.composedPath === "function" ? event.composedPath() : [];
   const target = path[0] ?? event.target;
 
-  return target instanceof Element ? { target, path } : null;
+  return isElement(target) ? { target, path } : null;
 }
 
 /**
@@ -321,8 +337,7 @@ function containsComposed(parent: Node, child: Node | null): boolean {
   while (node) {
     if (parent === node || parent.contains(node)) return true;
 
-    const root = node.getRootNode();
-    node = root instanceof ShadowRoot ? root.host : null;
+    node = getShadowHost(node);
   }
 
   return false;
@@ -340,9 +355,9 @@ function retarget(target: Element, observer: Node): Element {
   let node = target;
 
   for (;;) {
-    const root = node.getRootNode();
-    if (!(root instanceof ShadowRoot) || containsComposed(root, observer)) return node;
-    node = root.host;
+    const host = getShadowHost(node);
+    if (!host || containsComposed(node.getRootNode(), observer)) return node;
+    node = host;
   }
 }
 
