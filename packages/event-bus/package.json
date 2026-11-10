@@ -19,7 +19,7 @@
       "createEventStack"
     ],
     "category": "Utilities",
-    "gzip": 1052
+    "gzip": 1059
   },
   "private": false,
   "sideEffects": false,
