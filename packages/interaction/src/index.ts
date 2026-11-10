@@ -282,6 +282,70 @@ export function createHideOutside(options: CreateHideOutsideOptions): void {
   );
 }
 
+/** Where an event originated, captured while the event is still dispatching. */
+type EventOrigin = {
+  /** The element the interaction actually happened on — inside any shadow trees it crossed. */
+  target: Element;
+  /** `composedPath()` at capture time; includes slot ancestry that a tree walk can't see. */
+  path: readonly EventTarget[];
+};
+
+/**
+ * Snapshot of where an event originated.
+ *
+ * `event.target` is retargeted at every shadow boundary the event crosses, so a listener on the
+ * document reports the outermost shadow *host* rather than the element that was interacted with.
+ * `composedPath()[0]` is that element; for an event that crosses no boundary the two are identical.
+ *
+ * Must be called synchronously during dispatch: `composedPath()` returns `[]` once dispatch ends,
+ * after which only the retargeted `event.target` remains.
+ */
+function getEventOrigin(event: Event): EventOrigin | null {
+  const path = typeof event.composedPath === "function" ? event.composedPath() : [];
+  const target = path[0] ?? event.target;
+
+  return target instanceof Element ? { target, path } : null;
+}
+
+/**
+ * `Node.prototype.contains`, but able to see through shadow boundaries.
+ *
+ * `contains` only walks the node tree it is called on, so it answers `false` for a `child` inside a
+ * shadow root — including `document.contains(elementInAShadowRoot)`. When this walk reaches the top
+ * of a shadow tree it continues from that tree's host. Slot assignment is not followed; callers that
+ * need flattened-tree containment should also consult the event's composed path.
+ */
+function containsComposed(parent: Node, child: Node | null): boolean {
+  let node: Node | null = child;
+
+  while (node) {
+    if (parent === node || parent.contains(node)) return true;
+
+    const root = node.getRootNode();
+    node = root instanceof ShadowRoot ? root.host : null;
+  }
+
+  return false;
+}
+
+/**
+ * `target` as seen from `observer`'s node tree — the DOM's own retargeting algorithm.
+ *
+ * Climbs out of every shadow tree that does not also enclose `observer`, so encapsulated internals of
+ * a foreign component are reported as that component's host. For an `observer` in the document this
+ * is exactly the `event.target` a document listener sees; for an `observer` inside a shadow root,
+ * siblings in that same root are reported as themselves rather than as the outer host.
+ */
+function retarget(target: Element, observer: Node): Element {
+  let node = target;
+
+  for (;;) {
+    const root = node.getRootNode();
+    if (!(root instanceof ShadowRoot) || containsComposed(root, observer)) return node;
+    node = root.host;
+  }
+}
+
 /** Detail payload carried by every outside-interaction `CustomEvent`. */
 export type EventDetails<T> = {
   /** The original DOM event that triggered the outside interaction. */
@@ -388,7 +452,11 @@ export function makeInteractOutside<T extends Element>(
   // setTimeout ensures we get the document after the element has been adopted into the real DOM.
   let ownerDoc: Document = el.ownerDocument;
 
-  const isEventOutside = (e: Event): boolean => {
+  /**
+   * The element to report an outside interaction on, or `null` when the interaction is not outside
+   * (or `shouldExcludeElement` exempts it).
+   */
+  const getOutsideTarget = (origin: EventOrigin | null): Element | null => {
     // `el` can be removed from the document by its owner (e.g. a `<Show>`
     // unmounting a dismissable layer) before this instance's reactive owner
     // gets around to calling the cleanup this function returns (listener
@@ -398,18 +466,31 @@ export function makeInteractOutside<T extends Element>(
     // "not contained" for every target — including ones legitimately inside
     // a *new* instance that opened in that same window — misreporting them
     // as outside interactions on this now-orphaned instance.
-    if (!el.isConnected) return false;
-    const target = e.target as Element | null;
-    if (!(target instanceof Element)) return false;
-    if (!ownerDoc.contains(target)) return false;
-    if (el.contains(target)) return false;
-    return !(options.shouldExcludeElement?.(target) ?? false);
+    if (!el.isConnected || !origin) return null;
+    // Resolved through `composedPath()`, not `e.target`: these listeners are on the document, so an
+    // interaction inside a shadow tree reports that tree's host instead. `el` rendered inside a
+    // shadow root would see every one of its own clicks as the host — an ancestor, not a descendant
+    // — and read them as outside interactions, dismissing itself on pointerdown.
+    const { target, path } = origin;
+    if (!containsComposed(ownerDoc, target)) return null;
+    // The composed path also covers content slotted into `el`, which a tree walk can't reach.
+    if (path.includes(el) || containsComposed(el, target)) return null;
+    // Report the target as `el`'s own tree sees it. A sibling in `el`'s shadow root is itself, but a
+    // click inside a *foreign* web component (e.g. a trigger with its own shadow root) stays its
+    // host — the same element consumers received before shadow-aware resolution, so checks such as
+    // `trigger.contains(element)` in `shouldExcludeElement` keep matching.
+    const reported = retarget(target, el);
+    return options.shouldExcludeElement?.(reported) ? null : reported;
   };
 
   const onPointerDown = (e: PointerEvent) => {
+    // Resolved now, not in `handler`: for touch, `handler` runs on the following `click`, by which
+    // time this event has finished dispatching and `composedPath()` is empty.
+    const origin = getEventOrigin(e);
+
     const handler = () => {
-      const target = e.target as Element | null;
-      if (!target || !isEventOutside(e)) return;
+      const target = getOutsideTarget(origin);
+      if (!target) return;
 
       target.addEventListener(
         POINTER_DOWN_OUTSIDE_EVENT,
@@ -438,8 +519,8 @@ export function makeInteractOutside<T extends Element>(
   };
 
   const onFocusIn = (e: FocusEvent) => {
-    const target = e.target as Element | null;
-    if (!target || !isEventOutside(e)) return;
+    const target = getOutsideTarget(getEventOrigin(e));
+    if (!target) return;
 
     target.addEventListener(
       FOCUS_OUTSIDE_EVENT,
