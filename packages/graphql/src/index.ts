@@ -103,10 +103,18 @@ export const createGraphQLClient =
       // a falsy url or variables skips the request
       if (!url || !variables) return undefined;
 
-      // abort the in-flight request when the inputs change or the owner is disposed
+      // abort the in-flight request when the inputs change or the owner is disposed,
+      // or when a signal passed in the client options aborts
       const controller = new AbortController();
-      onCleanup(() => controller.abort());
-      return request(url, query, { signal: controller.signal, ...options, variables });
+      const clientSignal = options.signal;
+      const abortFromClient = () => controller.abort(clientSignal?.reason);
+      if (clientSignal?.aborted) abortFromClient();
+      else clientSignal?.addEventListener("abort", abortFromClient, { once: true });
+      onCleanup(() => {
+        clientSignal?.removeEventListener("abort", abortFromClient);
+        controller.abort();
+      });
+      return request(url, query, { ...options, signal: controller.signal, variables });
     }, queryOptions as MemoOptions<any>);
   };
 

@@ -106,7 +106,7 @@ render(() => <Demo />, document.getElementById("app")!);
 
 - **Loading** - the initial request suspends the nearest `<Loading>`. While new variables load, the previous result stays on screen; use `isPending(() => data())` for a "refreshing" indicator. Render that indicator _inside_ the `<Loading>` boundary: reading a pending query outside any boundary defers the whole root mount (`ASYNC_OUTSIDE_LOADING_BOUNDARY`).
 - **Errors** - a failed request (or a GraphQL `errors` response, thrown as `GraphQLError`) is thrown when the accessor is read, so catch it with `<Errored>`.
-- **Aborting** - the request receives an `AbortSignal` that is aborted when the url, options or variables change, or when the owner is disposed. Pass your own `signal` in `options` to take over.
+- **Aborting** - the request receives an `AbortSignal` that is aborted when the url, options or variables change, or when the owner is disposed. A `signal` passed in `options` is combined with it, so aborting either one cancels the request.
 
 #### Refetching
 

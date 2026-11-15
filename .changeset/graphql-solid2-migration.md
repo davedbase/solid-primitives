@@ -8,7 +8,7 @@ Migrate to Solid 2.0. Queries are now async `createMemo`s and mutations are Soli
 
 - The query function returns a single refreshable accessor instead of a `createResource` tuple (`[data, { refetch, mutate }]`). Wrap reads in `<Loading>` and `<Errored>`, use `isPending(() => data())` for stale-while-revalidating, and `refresh(data)` to refetch.
 - The `resourceOptions` argument is replaced by query options (`name`, `loadingValue`, `ssrSource`, `deferStream`, `equals`). `initialValue` becomes `loadingValue`, `ssrLoadFrom` becomes `ssrSource`. The `GraphQLResourceSource` type is removed.
-- Requests are aborted (via `AbortSignal`) when the url, options or variables change or the owner is disposed. A `signal` passed in `options` takes precedence.
+- Requests are aborted (via `AbortSignal`) when the url, options or variables change or the owner is disposed. A `signal` passed in the client `options` is combined with it, so aborting either cancels the request.
 - Peer dependency is now `solid-js` 2.0.
 
 ### New

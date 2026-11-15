@@ -175,6 +175,66 @@ describe("createGraphQLClient", () => {
     expect(signals[1]!.aborted).toBe(true);
   });
 
+  test("a client signal is combined with the internal abort", async () => {
+    const signals: AbortSignal[] = [];
+    const fetcher = ((_url: string, init: RequestInit) => {
+      signals.push(init.signal!);
+      return new Promise<Response>(() => {});
+    }) as any;
+    const clientController = new AbortController();
+    const [code, setCode] = createSignal("a");
+    const query = createGraphQLClient("/api", { fetcher, signal: clientController.signal });
+    const dispose = createRoot(d => {
+      query("query { a }", () => ({ code: code() }));
+      return d;
+    });
+    flush();
+    expect(signals).toHaveLength(1);
+
+    // changing the inputs still aborts the superseded request
+    setCode("b");
+    flush();
+    expect(signals).toHaveLength(2);
+    expect(signals[0]!.aborted).toBe(true);
+    expect(signals[1]!.aborted).toBe(false);
+
+    // aborting the client signal aborts the current request
+    clientController.abort();
+    expect(signals[1]!.aborted).toBe(true);
+    dispose();
+  });
+
+  test("the client signal listener is removed on dispose", () => {
+    const fetcher = (() => new Promise<Response>(() => {})) as any;
+    const clientController = new AbortController();
+    const remove = vi.spyOn(clientController.signal, "removeEventListener");
+    const query = createGraphQLClient("/api", { fetcher, signal: clientController.signal });
+    const dispose = createRoot(d => {
+      query("query { a }");
+      return d;
+    });
+    flush();
+    expect(remove).not.toHaveBeenCalled();
+    dispose();
+    expect(remove).toHaveBeenCalledWith("abort", expect.any(Function));
+  });
+
+  test("an already aborted client signal aborts the request immediately", () => {
+    const signals: AbortSignal[] = [];
+    const fetcher = ((_url: string, init: RequestInit) => {
+      signals.push(init.signal!);
+      return new Promise<Response>(() => {});
+    }) as any;
+    const query = createGraphQLClient("/api", { fetcher, signal: AbortSignal.abort() });
+    const dispose = createRoot(d => {
+      query("query { a }");
+      return d;
+    });
+    flush();
+    expect(signals[0]!.aborted).toBe(true);
+    dispose();
+  });
+
   test("a failing request surfaces as a thrown GraphQLError", async () => {
     const fetcher = (async () => respond({ errors: [{ message: "nope" }] })) as any;
     const query = createGraphQLClient("/api", { fetcher });
