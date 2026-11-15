@@ -65,9 +65,6 @@ export default defineConfig(({ mode }) => {
           }),
     },
     resolve: {
-      alias: {
-        "solid-js/web": "@solidjs/web",
-      },
       conditions,
     },
     // inlined modules are evaluated through vite's SSR pipeline, which has its own conditions
