@@ -33,7 +33,7 @@ export const getCountdown = (difference: number): Countdown => ({
   hours: Math.floor((difference / HOUR) % 24),
   minutes: Math.floor((difference / MINUTE) % 60),
   seconds: Math.floor((difference / SECOND) % 60),
-  milliseconds: difference % 100,
+  milliseconds: difference % SECOND,
 });
 
 /**
@@ -60,6 +60,8 @@ export function formatDateRelative(
     ...messages,
   };
   const absDiff = Math.abs(difference);
+  // would be formatted as "0 seconds"
+  if (absDiff < SECOND / 2) return _messages.justNow;
 
   for (const unit of UNITS) {
     if (absDiff < unit.max) return format(unit);

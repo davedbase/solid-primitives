@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { getDate, getTime } from "../src/index.js";
+import { formatDateRelative, getCountdown, getDate, getTime } from "../src/index.js";
 
 describe("getDate", () => {
   it("transforms init values to a date", () => {
@@ -24,5 +24,38 @@ describe("getTime", () => {
     expect(typeof getTime(inputString)).toBe("number");
     expect(getTime(inputNumber)).toBe(1641408329089);
     expect(typeof getTime(inputDate)).toBe("number");
+  });
+});
+
+describe("getCountdown", () => {
+  it("returns the milliseconds left after the whole seconds", () => {
+    expect(getCountdown(999)).toEqual({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+      milliseconds: 999,
+    });
+    expect(getCountdown(61_250)).toEqual({
+      days: 0,
+      hours: 0,
+      minutes: 1,
+      seconds: 1,
+      milliseconds: 250,
+    });
+  });
+});
+
+describe("formatDateRelative", () => {
+  it("returns justNow for differences that round to 0 seconds", () => {
+    expect(formatDateRelative(0)).toBe("just now");
+    expect(formatDateRelative(400)).toBe("just now");
+    expect(formatDateRelative(-400)).toBe("just now");
+    expect(formatDateRelative(0, { justNow: "now" })).toBe("now");
+  });
+
+  it("still formats differences of half a second or more", () => {
+    expect(formatDateRelative(500)).toBe("in 1 second");
+    expect(formatDateRelative(-2000)).toBe("2 seconds ago");
   });
 });
