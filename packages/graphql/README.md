@@ -36,6 +36,8 @@ import {
 // request is an additional function to perform GraphQL requests imperatively
 ```
 
+<a id="creategraphqlclient"></a>
+
 #### Using the client
 
 `createGraphQLClient` takes 2 arguments:
@@ -191,6 +193,8 @@ const data = query(
   }),
 );
 ```
+
+<a id="creategraphqlmutation"></a>
 
 #### Mutations
 
