@@ -14,3 +14,7 @@ Migrate to Solid 2.0. Queries are now async `createMemo`s and mutations are Soli
 ### New
 
 - `createGraphQLMutation(url, options)` returns a `mutate` function built on `action()`. It supports optimistic writes (`optimistic`), marks the queries it changes as pending while in flight and refreshes them on success (`refresh`), reverts optimistic writes on failure, and can send `multipart/form-data` (`multipart`).
+
+### Fixes
+
+- `makeMultipartBody` / `multipartRequest` now emit the `map` field as arrays of paths (`{"0": ["variables.file"]}`), as required by the GraphQL multipart request spec. Previously each value was a bare string, which spec-compliant servers reject.
