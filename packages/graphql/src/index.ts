@@ -266,10 +266,9 @@ export async function multipartRequest<T = any, V extends object = {}>(
     ...options,
     method: "POST",
     body: makeMultipartBody(query_string, variables),
-    headers: {
-      "content-type": "multipart/form-data",
-      ...options.headers,
-    },
+    // no default `content-type`: `fetch` sets `multipart/form-data` together with the generated
+    // boundary for a FormData body. A caller-provided header (from `options.headers`) is preserved.
+    headers: options.headers,
   });
   const data = await res.json();
   if (data.errors && data.errors.length) {

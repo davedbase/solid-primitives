@@ -12,6 +12,7 @@ import {
   createGraphQLClient,
   createGraphQLMutation,
   GraphQLError,
+  multipartRequest,
   gql,
   makeMultipartBody,
   request,
@@ -46,6 +47,39 @@ describe("request", () => {
     expect(err).toBeInstanceOf(GraphQLError);
     expect(err.message).toBe("boom");
     expect(err.locations).toEqual([{ line: 1, column: 2 }]);
+  });
+});
+
+describe("multipartRequest", () => {
+  const record = () => {
+    const seen: RequestInit[] = [];
+    const fetcher = (async (_u: string, init: RequestInit) => {
+      seen.push(init);
+      return respond({ data: { ok: true } });
+    }) as any;
+    return { seen, fetcher };
+  };
+
+  test("does not set a content-type, so fetch can add the multipart boundary", async () => {
+    const { seen, fetcher } = record();
+    await multipartRequest("/api", "mutation { a }", {
+      fetcher,
+      variables: { f: new Blob(["x"]) },
+    });
+    expect(seen[0]!.body).toBeInstanceOf(FormData);
+    const headers = new Headers(seen[0]!.headers);
+    expect(headers.has("content-type")).toBe(false);
+  });
+
+  test("preserves caller-provided headers", async () => {
+    const { seen, fetcher } = record();
+    await multipartRequest("/api", "mutation { a }", {
+      fetcher,
+      headers: { authorization: "Bearer x", "content-type": "multipart/mixed" },
+    });
+    const headers = new Headers(seen[0]!.headers);
+    expect(headers.get("authorization")).toBe("Bearer x");
+    expect(headers.get("content-type")).toBe("multipart/mixed");
   });
 });
 

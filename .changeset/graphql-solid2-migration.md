@@ -18,3 +18,4 @@ Migrate to Solid 2.0. Queries are now async `createMemo`s and mutations are Soli
 ### Fixes
 
 - `makeMultipartBody` / `multipartRequest` now emit the `map` field as arrays of paths (`{"0": ["variables.file"]}`), as required by the GraphQL multipart request spec. Previously each value was a bare string, which spec-compliant servers reject.
+- `multipartRequest` no longer sets `content-type: multipart/form-data` itself. That header lacks the boundary parameter, so uploads were malformed; `fetch` now generates the full header for the `FormData` body. A `content-type` passed in `options.headers` is still honored.
