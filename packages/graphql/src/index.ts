@@ -1,9 +1,11 @@
 import {
-  createResource,
-  type InitializedResourceOptions,
-  type NoInfer,
-  type ResourceOptions,
-  type ResourceReturn,
+  action,
+  affects,
+  createMemo,
+  onCleanup,
+  refresh,
+  type MemoOptions,
+  type SourceAccessor,
 } from "solid-js";
 import { print, type DocumentNode } from "graphql";
 import type { TypedDocumentNode } from "@graphql-typed-document-node/core";
@@ -20,11 +22,6 @@ export type RequestOptions<V extends object = {}> = Modify<
   }
 >;
 
-export type GraphQLResourceSource<V extends object = {}> = {
-  url: string;
-  options: RequestOptions<V>;
-};
-
 /**
  A GraphQLError describes an Error found during the parse, validate,
  or execute phases of performing a GraphQL operation.
@@ -40,40 +37,50 @@ export class GraphQLError extends Error {
 }
 
 /**
+ * Options of a query created by {@link createGraphQLClient}. They are passed on to the underlying async `createMemo`.
+ *
+ * - `name` - debug name shown in diagnostics
+ * - `loadingValue` - value shown until the first response lands (nothing suspends, `isPending` stays `false`)
+ * - `ssrSource` / `deferStream` - control server rendering and hydration of the query
+ * - `equals` - custom equality of consecutive responses
+ */
+export type GraphQLQueryOptions<TResult> = Pick<
+  MemoOptions<TResult | undefined>,
+  "name" | "loadingValue" | "ssrSource" | "deferStream" | "equals"
+>;
+
+/**
  * A function returned by {@link createGraphQLClient}.
- * It wraps {@link createResource} and performs a GraphQL fetch to endpoint form the client.
+ * It runs a GraphQL query against the client's endpoint and returns an async, refreshable accessor:
+ * reading it suspends (`<Loading>`) while the request is in flight and throws
+ * (`<Errored>`) when the request fails.
  *
  * @param query GraphQL query string *(use {@link gql} function or `DocumentNode`/`TypedDocumentNode` type)*
- * @param variables variables for the GraphQL query
- * @param options options passed to {@link createResource}
+ * @param variables variables for the GraphQL query. Pass `false`, `null` or `undefined` to skip the request.
+ * @param options options passed to the underlying `createMemo`, see {@link GraphQLQueryOptions}
+ * @returns accessor of the query result, `undefined` while the request is skipped
  */
-export type GraphQLClientQuery = {
-  // initialized
-  <TResult = unknown, TVariables extends object = {}>(
-    query: string | DocumentNode | TypedDocumentNode<TResult, TVariables>,
-    variables: MaybeAccessor<TVariables | false | undefined | null> | undefined,
-    options: InitializedResourceOptions<NoInfer<TResult>, GraphQLResourceSource<TVariables>>,
-  ): ResourceReturn<TResult>;
-  // not initialized
-  <TResult = unknown, TVariables extends object = {}>(
-    query: string | DocumentNode | TypedDocumentNode<TResult, TVariables>,
-    variables?: MaybeAccessor<TVariables | false | undefined | null>,
-    options?: ResourceOptions<NoInfer<TResult>, GraphQLResourceSource<TVariables>>,
-  ): ResourceReturn<TResult | undefined>;
-};
+export type GraphQLClientQuery = <TResult = unknown, TVariables extends object = {}>(
+  query: string | DocumentNode | TypedDocumentNode<TResult, TVariables>,
+  variables?: MaybeAccessor<TVariables | false | undefined | null>,
+  options?: GraphQLQueryOptions<TResult>,
+) => SourceAccessor<TResult | undefined>;
 
 /**
  * Creates a reactive GraphQL query client.
  *
  * @param url URL as string or accessor
  * @param options Options that will be applied to all the subsequent requests
- * @returns Returns a query generator the produces Solid resources for queries
+ * @returns Returns a query function that produces async accessors for queries
  *
  * @see https://github.com/solidjs-community/solid-primitives/tree/main/packages/graphql#how-to-use-it
  *
  * @example
  * ```ts
- * const newQuery = createGraphQLClient("https://foobar.com/v1/api", { authorization: "Bearer mytoken" });
+ * const newQuery = createGraphQLClient("https://foobar.com/v1/api", { headers: { authorization: "Bearer mytoken" } });
+ * const countries = newQuery<{ countries: { name: string }[] }>(gql`query { countries { name } }`);
+ * // <Loading fallback="…">{countries()?.countries.length}</Loading>
+ * // refresh(countries) refetches
  * ```
  */
 export const createGraphQLClient =
@@ -81,21 +88,114 @@ export const createGraphQLClient =
     url: MaybeAccessor<string>,
     options: MaybeAccessor<Omit<RequestOptions, "variables">> = {},
   ): GraphQLClientQuery =>
-  (query, variables: any = {}, resourceOptions) => {
+  (query, variables: any = {}, queryOptions) => {
     const getUrl = asAccessor(url),
       getVariables = asAccessor(variables),
       getOptions = asAccessor(options);
-    return createResource(
-      () => {
-        const url = getUrl(),
-          variables = getVariables(),
-          options = getOptions();
-        return url && variables && { url, options: { ...options, variables } };
-      },
-      ({ url, options }) => request(url, query, options),
-      resourceOptions,
-    );
+    return createMemo(() => {
+      // every reactive read happens before the request starts, so all inputs are tracked
+      const url = getUrl(),
+        variables = getVariables(),
+        options = getOptions();
+      // a falsy url or variables skips the request
+      if (!url || !variables) return undefined;
+
+      // abort the in-flight request when the inputs change or the owner is disposed
+      const controller = new AbortController();
+      onCleanup(() => controller.abort());
+      return request(url, query, { signal: controller.signal, ...options, variables });
+    }, queryOptions as MemoOptions<any>);
   };
+
+/**
+ * Options of a single mutation call, see {@link createGraphQLMutation}.
+ */
+export type GraphQLMutationOptions<TVariables extends object = {}> = {
+  /**
+   * Runs first, synchronously, inside the mutation's transaction. Put optimistic writes here
+   * (`createOptimistic` / `createOptimisticStore` setters) - they are reverted automatically
+   * if the request fails, and replaced by the real data once the mutation settles.
+   */
+  optimistic?: (variables: TVariables) => void;
+  /**
+   * Queries (accessors returned by a {@link GraphQLClientQuery}) that this mutation changes.
+   * They are marked as pending (`isPending` is `true`) while the request is in flight
+   * and are refreshed once it succeeds.
+   */
+  refresh?: SourceAccessor<any>[];
+  /** Send the request as `multipart/form-data` (file uploads), see {@link multipartRequest}. */
+  multipart?: boolean;
+  /** Abort signal for the request. */
+  signal?: AbortSignal;
+};
+
+/**
+ * A function returned by {@link createGraphQLMutation}. It is a Solid `action`, so it must be called
+ * from an event handler or other imperative code, never from a component body or computation.
+ */
+export type GraphQLClientMutation = <TResult = unknown, TVariables extends object = {}>(
+  mutation: string | DocumentNode | TypedDocumentNode<TResult, TVariables>,
+  variables?: TVariables,
+  options?: GraphQLMutationOptions<TVariables>,
+) => Promise<TResult>;
+
+/**
+ * Creates a function that performs GraphQL mutations as Solid 2.0 {@link action}s.
+ *
+ * Every call runs as one transaction: optimistic writes made in `options.optimistic` are shown
+ * immediately, queries listed in `options.refresh` read as pending (`isPending`) while the request
+ * is in flight, and are refreshed when it succeeds. If the request fails the optimistic writes revert
+ * and the returned promise rejects with a {@link GraphQLError}.
+ *
+ * @param url URL as string or accessor
+ * @param options Options that will be applied to all the subsequent requests
+ * @returns a function that performs a mutation and resolves with its result
+ *
+ * @see https://github.com/solidjs-community/solid-primitives/tree/main/packages/graphql#mutations
+ *
+ * @example
+ * ```ts
+ * const mutate = createGraphQLMutation("https://foobar.com/v1/api");
+ * const data = newQuery(gql`query { todos { id text } }`);
+ *
+ * const onAdd = (text: string) =>
+ *   mutate(gql`mutation($text: String!) { addTodo(text: $text) { id } }`, { text }, {
+ *     refresh: [data], // `data` reads as pending, then refetches
+ *   });
+ * ```
+ */
+export const createGraphQLMutation = (
+  url: MaybeAccessor<string>,
+  options: MaybeAccessor<Omit<RequestOptions, "variables">> = {},
+): GraphQLClientMutation => {
+  const getUrl = asAccessor(url),
+    getOptions = asAccessor(options);
+
+  const run = action(function* (
+    mutation: string | DocumentNode | TypedDocumentNode<any, any>,
+    variables: object = {},
+    mutationOptions: GraphQLMutationOptions<any> = {},
+  ): Generator<Promise<any>, any, any> {
+    const { optimistic, refresh: targets = [], multipart, signal } = mutationOptions;
+
+    // up-front declarations about the mutation: what it changes...
+    for (const target of targets) affects(target);
+    // ...and what it optimistically shows
+    optimistic?.(variables);
+
+    // a per-call signal wins over one set on the client
+    const requestOptions = { ...getOptions(), ...(signal && { signal }), variables };
+    const result = yield multipart
+      ? multipartRequest(getUrl(), mutation, requestOptions)
+      : request(getUrl(), mutation, requestOptions);
+
+    // only reached on success - a throw above reverts the optimistic writes
+    for (const target of targets) refresh(target);
+    return result;
+  });
+
+  return run as GraphQLClientMutation;
+};
 
 /**
  * Performs a GraphQL fetch to provided endpoint.
