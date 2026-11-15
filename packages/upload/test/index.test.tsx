@@ -305,9 +305,15 @@ describe("createDropzone", () => {
     let enterArg: unknown, leaveArg: unknown, overArg: unknown;
     const { ref, dispose } = createRoot(dispose => ({
       ...createDropzone({
-        onDragEnter: e => { enterArg = e; },
-        onDragLeave: e => { leaveArg = e; },
-        onDragOver: e => { overArg = e; },
+        onDragEnter: e => {
+          enterArg = e;
+        },
+        onDragLeave: e => {
+          leaveArg = e;
+        },
+        onDragOver: e => {
+          overArg = e;
+        },
       }),
       dispose,
     }));
@@ -318,7 +324,10 @@ describe("createDropzone", () => {
 
     const withDataTransfer = (type: string) => {
       const event = new Event(type, { bubbles: true, cancelable: true });
-      Object.defineProperty(event, "dataTransfer", { value: { files: makeFileList() }, configurable: true });
+      Object.defineProperty(event, "dataTransfer", {
+        value: { files: makeFileList() },
+        configurable: true,
+      });
       return event;
     };
 
@@ -339,7 +348,9 @@ describe("createDropzone", () => {
 
   it("isLoading is true while onDrop callback is pending, false after it resolves", async () => {
     let resolve!: () => void;
-    const blocker = new Promise<void>(r => { resolve = r; });
+    const blocker = new Promise<void>(r => {
+      resolve = r;
+    });
 
     let getIsLoading!: () => boolean;
     const { ref, dispose } = createRoot(dispose => {
@@ -434,7 +445,11 @@ describe("createDropzone", () => {
   it("error() captures a thrown onDrop callback", async () => {
     const boom = new Error("drop failed");
     const { error, ref, dispose } = createRoot(dispose => ({
-      ...createDropzone({ onDrop: async () => { throw boom; } }),
+      ...createDropzone({
+        onDrop: async () => {
+          throw boom;
+        },
+      }),
       dispose,
     }));
 
@@ -928,7 +943,9 @@ describe("createFileUploader — XHR", () => {
     const { xhr, triggerLoad } = makeMockXhr();
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return xhr; }),
+      vi.fn(function () {
+        return xhr;
+      }),
     );
 
     const { upload, dispose } = createRoot(dispose => ({
@@ -948,7 +965,9 @@ describe("createFileUploader — XHR", () => {
     const mock = makeMockXhr();
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return mock.xhr; }),
+      vi.fn(function () {
+        return mock.xhr;
+      }),
     );
 
     const { upload, status, files, dispose } = createRoot(dispose => ({
@@ -972,7 +991,9 @@ describe("createFileUploader — XHR", () => {
     mock.xhr.statusText = "Payload Too Large";
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return mock.xhr; }),
+      vi.fn(function () {
+        return mock.xhr;
+      }),
     );
 
     const { upload, status, files, dispose } = createRoot(dispose => ({
@@ -994,7 +1015,9 @@ describe("createFileUploader — XHR", () => {
     const mock = makeMockXhr();
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return mock.xhr; }),
+      vi.fn(function () {
+        return mock.xhr;
+      }),
     );
 
     const { upload, status, files, dispose } = createRoot(dispose => ({
@@ -1016,7 +1039,9 @@ describe("createFileUploader — XHR", () => {
     const mock = makeMockXhr();
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return mock.xhr; }),
+      vi.fn(function () {
+        return mock.xhr;
+      }),
     );
 
     const { upload, progress, dispose } = createRoot(dispose => ({
@@ -1038,7 +1063,9 @@ describe("createFileUploader — XHR", () => {
     const { xhr, triggerLoad } = makeMockXhr();
     vi.stubGlobal(
       "XMLHttpRequest",
-      vi.fn(function () { return xhr; }),
+      vi.fn(function () {
+        return xhr;
+      }),
     );
 
     const { upload, dispose } = createRoot(dispose => ({

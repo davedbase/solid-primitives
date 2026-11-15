@@ -230,26 +230,24 @@ const drag = createDraggable("card-1", myData, {
   draggingStyle: { boxShadow: "0 8px 24px rgba(0,0,0,.2)" },
 });
 
-<div ref={drag.ref}>
-  {drag.isDragging() ? "dragging…" : drag.transform()?.x}
-</div>
+<div ref={drag.ref}>{drag.isDragging() ? "dragging…" : drag.transform()?.x}</div>;
 ```
 
-| Option | Type | Description |
-|---|---|---|
-| `style` | `Partial<CSSStyleDeclaration>` | Applied to the element on `ref` |
-| `class` | `string` | Added to the element on `ref` |
-| `draggingStyle` | `Partial<CSSStyleDeclaration>` | Applied while dragging, removed on drop |
-| `draggingClass` | `string` | Added while dragging, removed on drop |
-| `disabled` | `boolean \| Accessor<boolean>` | Prevents drag when true |
-| `keyboardStep` | `number` | Pixels moved per arrow-key press while picked up via keyboard. Defaults to 25 |
+| Option          | Type                           | Description                                                                   |
+| --------------- | ------------------------------ | ----------------------------------------------------------------------------- |
+| `style`         | `Partial<CSSStyleDeclaration>` | Applied to the element on `ref`                                               |
+| `class`         | `string`                       | Added to the element on `ref`                                                 |
+| `draggingStyle` | `Partial<CSSStyleDeclaration>` | Applied while dragging, removed on drop                                       |
+| `draggingClass` | `string`                       | Added while dragging, removed on drop                                         |
+| `disabled`      | `boolean \| Accessor<boolean>` | Prevents drag when true                                                       |
+| `keyboardStep`  | `number`                       | Pixels moved per arrow-key press while picked up via keyboard. Defaults to 25 |
 
-| Return | Description |
-|---|---|
-| `ref` | Attach to element's `ref` prop |
-| `isDragging` | Accessor — true while a drag is active |
-| `transform` | Accessor — `{ x, y }` delta from drag start, or `null` |
-| `id` | The id passed to the primitive |
+| Return       | Description                                            |
+| ------------ | ------------------------------------------------------ |
+| `ref`        | Attach to element's `ref` prop                         |
+| `isDragging` | Accessor — true while a drag is active                 |
+| `transform`  | Accessor — `{ x, y }` delta from drag start, or `null` |
+| `id`         | The id passed to the primitive                         |
 
 ### `createDroppable`
 
@@ -312,9 +310,7 @@ const drop = createDroppable("zone-1", zoneData, {
   overClass: "border-indigo-500 bg-indigo-50",
 });
 
-<div ref={drop.ref}>
-  {drop.isOver() ? `release to drop ${drop.active()?.id}` : "drop here"}
-</div>
+<div ref={drop.ref}>{drop.isOver() ? `release to drop ${drop.active()?.id}` : "drop here"}</div>;
 ```
 
 `accept` is called fresh on every collision check (not memoized), so reading a signal inside it gives you reactive accept logic for free:
@@ -365,7 +361,7 @@ const drop = createNativeDroppable({
 
 <div ref={drop.ref} class={drop.isOver() ? "ring-2 ring-indigo-500" : ""}>
   Drop files here
-</div>
+</div>;
 ```
 
 ### `createDragContext`
@@ -447,22 +443,22 @@ const ctx = createDragContext({
 <ctx.Provider>
   <DraggableItem />
   <DropZone />
-</ctx.Provider>
+</ctx.Provider>;
 ```
 
-| Option | Type | Description |
-|---|---|---|
-| `collisionDetection` | `CollisionDetector` | Defaults to `pointerWithin` |
-| `onDragStart` / `onDragMove` / `onDragEnd` / `onDragCancel` | callbacks | Drag lifecycle hooks |
-| `keyboardStep` | `number` | Pixels moved per arrow-key press while picked up via keyboard. Defaults to 25 |
-| `autoScroll` | `boolean \| { threshold?, speed? }` | Scrolls the window when the pointer nears a viewport edge during a drag. Off by default; ignored for keyboard-driven drags |
+| Option                                                      | Type                                | Description                                                                                                                |
+| ----------------------------------------------------------- | ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `collisionDetection`                                        | `CollisionDetector`                 | Defaults to `pointerWithin`                                                                                                |
+| `onDragStart` / `onDragMove` / `onDragEnd` / `onDragCancel` | callbacks                           | Drag lifecycle hooks                                                                                                       |
+| `keyboardStep`                                              | `number`                            | Pixels moved per arrow-key press while picked up via keyboard. Defaults to 25                                              |
+| `autoScroll`                                                | `boolean \| { threshold?, speed? }` | Scrolls the window when the pointer nears a viewport edge during a drag. Off by default; ignored for keyboard-driven drags |
 
-| Return | Description |
-|---|---|
-| `Provider` | Wrap your drag-and-drop tree in this component |
-| `active` | Accessor — the currently dragged `DragItem`, or `null` |
-| `over` | Accessor — the current `DroppableItem` under the draggable, or `null` |
-| `transform` | Accessor — `{ x, y }` delta from drag start, or `null` |
+| Return      | Description                                                           |
+| ----------- | --------------------------------------------------------------------- |
+| `Provider`  | Wrap your drag-and-drop tree in this component                        |
+| `active`    | Accessor — the currently dragged `DragItem`, or `null`                |
+| `over`      | Accessor — the current `DroppableItem` under the draggable, or `null` |
+| `transform` | Accessor — `{ x, y }` delta from drag start, or `null`                |
 
 > **Note:** `autoScroll` only scrolls the window — it doesn't track scrolling of an arbitrary nested overflow container.
 
@@ -532,12 +528,12 @@ Pair it with `arrayMove` in `onDragEnd` to reorder the backing array — see [`a
 
 All four are exported as pure functions — pass any of them as `collisionDetection` to `createDragContext`.
 
-| Strategy | Description |
-|---|---|
-| `closestCenter` | Nearest droppable by center-to-center distance |
-| `closestCorners` | Nearest droppable by minimum corner-to-pointer distance |
-| `rectIntersection` | Droppable with largest overlap area |
-| `pointerWithin` | Topmost droppable containing the pointer (default) |
+| Strategy           | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| `closestCenter`    | Nearest droppable by center-to-center distance          |
+| `closestCorners`   | Nearest droppable by minimum corner-to-pointer distance |
+| `rectIntersection` | Droppable with largest overlap area                     |
+| `pointerWithin`    | Topmost droppable containing the pointer (default)      |
 
 ```ts
 import { createDragContext, closestCenter } from "@solid-primitives/drag-drop";
@@ -722,11 +718,13 @@ import { arrayMove } from "@solid-primitives/drag-drop";
 const ctx = createDragContext({
   onDragEnd: (dragged, over) => {
     if (!over) return;
-    setItems(items => arrayMove(
-      items,
-      items.findIndex(i => i.id === dragged.id),
-      items.findIndex(i => i.id === over.id),
-    ));
+    setItems(items =>
+      arrayMove(
+        items,
+        items.findIndex(i => i.id === dragged.id),
+        items.findIndex(i => i.id === over.id),
+      ),
+    );
   },
 });
 ```
@@ -746,7 +744,7 @@ const { ref, files, isDragging } = createDropzone({
 
 <div ref={ref} class={isDragging() ? "ring-2" : ""}>
   Drop files here
-</div>
+</div>;
 ```
 
 If you need lower-level control (custom accept filter, access to the raw `DragEvent`, etc.), use `createNativeDroppable` directly:

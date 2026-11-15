@@ -48,7 +48,7 @@ describe("createPagination", () => {
     expect(paginationProps().findIndex(({ ["aria-current"]: current }) => current)).toBe(3);
     dispose();
   });
-  
+
   test("createPagination with ellipsis returns correct props", () => {
     const { paginationProps, page, setPage, dispose } = createRoot(dispose => {
       const [paginationProps, page, setPage] = createPagination({ pages: 100, showEllipsis: true });
@@ -217,33 +217,49 @@ describe("createPagination", () => {
     expect(page()).toBe(8);
     dispose();
   });
-  
+
   test("sets the focus after going to a new page", async () => {
     const originalFocus = HTMLElement.prototype.focus;
     let current = document.body;
-    HTMLElement.prototype.focus = function() { 
-      current = this; 
+    HTMLElement.prototype.focus = function () {
+      current = this;
       originalFocus.call(this);
     };
     let dispose;
     try {
-      const container = document.createElement('div');
+      const container = document.createElement("div");
       document.body.appendChild(container);
       const Pagination = () => {
         const [pagination] = createPagination({ pages: 10, maxPages: 5, initialPage: 1 });
-        return <nav>
-          <For each={pagination()}>
-            {(props) => <button type="button" {...props} />}
-          </For>
-        </nav>;
+        return (
+          <nav>
+            <For each={pagination()}>{props => <button type="button" {...props} />}</For>
+          </nav>
+        );
       };
       dispose = render(() => <Pagination />, container);
       const activeButton = container?.querySelector('nav button[aria-current="page"]');
       activeButton instanceof HTMLElement && activeButton.focus();
       for (var i = 0; i < 5; i++) {
         await new Promise(r => setTimeout(r, 15));
-        current?.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, charCode: 0, code: "ArrowRight", key: "ArrowRight", keyCode: 39 }));
-        current?.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, charCode: 0, code: "ArrowRight", key: "ArrowRight", keyCode: 39 }));
+        current?.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            bubbles: true,
+            charCode: 0,
+            code: "ArrowRight",
+            key: "ArrowRight",
+            keyCode: 39,
+          }),
+        );
+        current?.dispatchEvent(
+          new KeyboardEvent("keyup", {
+            bubbles: true,
+            charCode: 0,
+            code: "ArrowRight",
+            key: "ArrowRight",
+            keyCode: 39,
+          }),
+        );
         await new Promise(r => setTimeout(r, 45));
         expect(current.getAttribute("aria-current")).toBe("page");
       }

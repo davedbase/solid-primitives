@@ -84,7 +84,16 @@ export const CreatePaginationStory = meta.story({
     );
 
     return (
-      <Errored fallback={(err, reset) => <p>Error: {err} <button type="reset" onClick={reset}>Reset</button></p>}>
+      <Errored
+        fallback={(err, reset) => (
+          <p>
+            Error: {err}{" "}
+            <button type="reset" onClick={reset}>
+              Reset
+            </button>
+          </p>
+        )}
+      >
         <Container minWidth={400}>
           <StatRow label="Current page" value={page()} />
           <PaginationBar props={paginationProps} />
@@ -152,7 +161,16 @@ export const CreateEllipsisPaginationStory = meta.story({
     );
 
     return (
-      <Errored fallback={(err, reset) => <p>Error: {err} <button type="reset" onClick={reset}>Reset</button></p>}>
+      <Errored
+        fallback={(err, reset) => (
+          <p>
+            Error: {err}{" "}
+            <button type="reset" onClick={reset}>
+              Reset
+            </button>
+          </p>
+        )}
+      >
         <Container minWidth={400}>
           <StatRow label="Current page" value={page()} />
           <PaginationBar props={paginationProps} />
@@ -210,7 +228,7 @@ export const CreateSegmentStory = meta.story({
         pages: Math.ceil(ITEMS.length / limit()),
         maxPages: 5,
         showFirst: false,
-        showLast: false,        
+        showLast: false,
       })),
     );
     const segment = createSegment(ITEMS, limit, page);

@@ -252,13 +252,13 @@ toggle(); // isSelected() === true
 
 **Props:**
 
-| Prop                | Type                       | Description                                             |
-| ------------------- | -------------------------- | --------------------------------------------------------- |
+| Prop                | Type                             | Description                                                       |
+| ------------------- | -------------------------------- | ----------------------------------------------------------------- |
 | `isSelected`        | `Accessor<boolean \| undefined>` | Controlled selected state. When defined, enables controlled mode. |
-| `defaultIsSelected` | `Accessor<boolean \| undefined>` | Initial selected state for uncontrolled mode.        |
-| `isDisabled`        | `Accessor<boolean \| undefined>` | While `true`, `toggle()` and `setIsSelected()` are no-ops. |
-| `isReadOnly`        | `Accessor<boolean \| undefined>` | While `true`, `toggle()` and `setIsSelected()` are no-ops. |
-| `onSelectedChange`  | `(isSelected: boolean) => void`  | Called whenever the selected state would change.     |
+| `defaultIsSelected` | `Accessor<boolean \| undefined>` | Initial selected state for uncontrolled mode.                     |
+| `isDisabled`        | `Accessor<boolean \| undefined>` | While `true`, `toggle()` and `setIsSelected()` are no-ops.        |
+| `isReadOnly`        | `Accessor<boolean \| undefined>` | While `true`, `toggle()` and `setIsSelected()` are no-ops.        |
+| `onSelectedChange`  | `(isSelected: boolean) => void`  | Called whenever the selected state would change.                  |
 
 **Returns:** `{ isSelected: Accessor<boolean>, setIsSelected: (v: boolean) => void, toggle: () => void }`
 

@@ -664,8 +664,14 @@ describe("createFocusGroup", () => {
   test("focusNext defaults to the currently focused element", () => {
     createRoot(dispose => {
       const { container, buttons } = makeContainer(3);
-      const origActiveElement = Object.getOwnPropertyDescriptor(Document.prototype, "activeElement")!;
-      Object.defineProperty(document, "activeElement", { get: () => buttons[0], configurable: true });
+      const origActiveElement = Object.getOwnPropertyDescriptor(
+        Document.prototype,
+        "activeElement",
+      )!;
+      Object.defineProperty(document, "activeElement", {
+        get: () => buttons[0],
+        configurable: true,
+      });
 
       const group = createFocusGroup(() => container);
       expect(group.focusNext()).toBe(buttons[1]);

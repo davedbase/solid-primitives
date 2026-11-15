@@ -32,7 +32,11 @@ html[data-theme*="light"] {
     linear-gradient(180deg, transparent 0px, transparent 260px, var(--sb-background-color) 620px),
     repeating-linear-gradient(to right, var(--pl-grid-line) 0 1px, transparent 1px 48px),
     repeating-linear-gradient(to bottom, var(--pl-grid-line) 0 1px, transparent 1px 48px),
-    radial-gradient(1100px 640px at 12% -150px, color-mix(in hsl, var(--pl-primary) 20%, transparent), transparent 65%);
+    radial-gradient(
+      1100px 640px at 12% -150px,
+      color-mix(in hsl, var(--pl-primary) 20%, transparent),
+      transparent 65%
+    );
   --pl-bg-repeat: no-repeat, repeat, repeat, no-repeat;
   background-color: var(--sb-background-color);
   background-image: var(--pl-bg-image);
@@ -44,7 +48,11 @@ html[data-theme*="dark"] {
     linear-gradient(180deg, transparent 0px, transparent 260px, var(--sb-background-color) 620px),
     repeating-linear-gradient(to right, var(--pl-grid-line) 0 1px, transparent 1px 48px),
     repeating-linear-gradient(to bottom, var(--pl-grid-line) 0 1px, transparent 1px 48px),
-    radial-gradient(1100px 640px at 12% -150px, color-mix(in hsl, var(--pl-primary) 16%, transparent), transparent 65%);
+    radial-gradient(
+      1100px 640px at 12% -150px,
+      color-mix(in hsl, var(--pl-primary) 16%, transparent),
+      transparent 65%
+    );
   --pl-bg-repeat: no-repeat, repeat, repeat, no-repeat;
   background-color: var(--sb-background-color);
   background-image: var(--pl-bg-image);
@@ -294,7 +302,6 @@ html[data-theme*="dark"] {
   padding-bottom: 0.6rem;
   border-bottom: 1px solid color-mix(in hsl, var(--sb-decoration-color) 15%, transparent);
 }
-
 
 /* ---------------------------------------------------------------------- */
 /* Custom landing-page hero + category strip (src/routes/index.mdx).      */

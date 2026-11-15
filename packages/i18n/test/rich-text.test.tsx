@@ -4,9 +4,7 @@ import * as i18n from "../src/index.js";
 
 describe("resolveRichTemplate", () => {
   test("matches resolveTemplate when every value is a string", () => {
-    expect(i18n.resolveRichTemplate("hello {{ name }}!", { name: "Tester" })).toBe(
-      "hello Tester!",
-    );
+    expect(i18n.resolveRichTemplate("hello {{ name }}!", { name: "Tester" })).toBe("hello Tester!");
     expect(i18n.resolveRichTemplate("hello!")).toBe("hello!");
     expect(i18n.resolveRichTemplate("hello {{name}}!")).toBe("hello {{name}}!");
   });
@@ -60,11 +58,7 @@ describe("richText", () => {
       guidelines: text => <a href="/guidelines">{text}</a>,
     }) as unknown as unknown[];
 
-    expect(result).toEqual([
-      "See ",
-      <a href="/guidelines">the guidelines</a>,
-      " for details.",
-    ]);
+    expect(result).toEqual(["See ", <a href="/guidelines">the guidelines</a>, " for details."]);
   });
 
   test("plain string with no tags is passed through untouched", () => {

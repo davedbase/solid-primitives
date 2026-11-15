@@ -156,14 +156,7 @@ type NetworkInformationReturn = {
 
 type EffectiveConnectionType = "slow-2g" | "2g" | "3g" | "4g";
 type ConnectionType =
-  | "bluetooth"
-  | "cellular"
-  | "ethernet"
-  | "none"
-  | "wifi"
-  | "wimax"
-  | "other"
-  | "unknown";
+  "bluetooth" | "cellular" | "ethernet" | "none" | "wifi" | "wimax" | "other" | "unknown";
 ```
 
 ## `useNetworkInformation`

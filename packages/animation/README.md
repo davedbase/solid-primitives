@@ -20,23 +20,23 @@ pnpm add @solid-primitives/animation
 
 ## Primitives
 
-| Primitive | Description |
-|---|---|
-| [`makeAnimate`](#makeanimate--createanimate) | Imperative `element.animate()` wrapper |
-| [`createAnimate`](#makeanimate--createanimate) | Reactive `makeAnimate` |
-| [`makeScrollAnimation`](#makescrollanimation--createscrollanimation) | Scroll-driven animation via `ScrollTimeline` |
-| [`createScrollAnimation`](#makescrollanimation--createscrollanimation) | Reactive `makeScrollAnimation` |
-| [`makeViewAnimation`](#makeviewanimation--createviewanimation) | Viewport-driven animation via `ViewTimeline` |
-| [`createViewAnimation`](#makeviewanimation--createviewanimation) | Reactive `makeViewAnimation` |
-| [`makeFlip`](#makeflip) | FLIP layout animation |
-| [`makeStagger`](#makestagger--createstagger) | Staggered animations across a list of elements |
-| [`createStagger`](#makestagger--createstagger) | Reactive `makeStagger` |
-| [`makeAnimationGroup`](#makeanimationgroup--createanimationgroup) | Coordinate multiple animations as a unit |
-| [`createAnimationGroup`](#makeanimationgroup--createanimationgroup) | Reactive `makeAnimationGroup` |
-| [`makeMotionPath`](#makemotionpath--createmotionpath) | Animate an element along a CSS Motion Path |
-| [`createMotionPath`](#makemotionpath--createmotionpath) | Reactive `makeMotionPath` |
-| [`makeSequence`](#makesequence) | Chain animation factories into a sequential playlist |
-| [`createPresenceAnimation`](#createpresenceanimation) | Mount/unmount lifecycle with WAAPI enter/exit animations |
+| Primitive                                                              | Description                                              |
+| ---------------------------------------------------------------------- | -------------------------------------------------------- |
+| [`makeAnimate`](#makeanimate--createanimate)                           | Imperative `element.animate()` wrapper                   |
+| [`createAnimate`](#makeanimate--createanimate)                         | Reactive `makeAnimate`                                   |
+| [`makeScrollAnimation`](#makescrollanimation--createscrollanimation)   | Scroll-driven animation via `ScrollTimeline`             |
+| [`createScrollAnimation`](#makescrollanimation--createscrollanimation) | Reactive `makeScrollAnimation`                           |
+| [`makeViewAnimation`](#makeviewanimation--createviewanimation)         | Viewport-driven animation via `ViewTimeline`             |
+| [`createViewAnimation`](#makeviewanimation--createviewanimation)       | Reactive `makeViewAnimation`                             |
+| [`makeFlip`](#makeflip)                                                | FLIP layout animation                                    |
+| [`makeStagger`](#makestagger--createstagger)                           | Staggered animations across a list of elements           |
+| [`createStagger`](#makestagger--createstagger)                         | Reactive `makeStagger`                                   |
+| [`makeAnimationGroup`](#makeanimationgroup--createanimationgroup)      | Coordinate multiple animations as a unit                 |
+| [`createAnimationGroup`](#makeanimationgroup--createanimationgroup)    | Reactive `makeAnimationGroup`                            |
+| [`makeMotionPath`](#makemotionpath--createmotionpath)                  | Animate an element along a CSS Motion Path               |
+| [`createMotionPath`](#makemotionpath--createmotionpath)                | Reactive `makeMotionPath`                                |
+| [`makeSequence`](#makesequence)                                        | Chain animation factories into a sequential playlist     |
+| [`createPresenceAnimation`](#createpresenceanimation)                  | Mount/unmount lifecycle with WAAPI enter/exit animations |
 
 ---
 
@@ -105,11 +105,10 @@ const anim = makeAnimate(el, [{ opacity: 0 }, { opacity: 1 }], { duration: 300 }
 anim.pause();
 
 // Reactive
-const anim = createAnimate(
-  () => ref,
-  [{ opacity: 0 }, { opacity: 1 }],
-  { duration: 300, fill: "forwards" },
-);
+const anim = createAnimate(() => ref, [{ opacity: 0 }, { opacity: 1 }], {
+  duration: 300,
+  fill: "forwards",
+});
 // anim() is the current Animation instance, or undefined while ref is unset
 anim()?.pause();
 ```
@@ -119,13 +118,13 @@ function makeAnimate(
   el: Element,
   keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
   options?: KeyframeAnimationOptions,
-): Animation
+): Animation;
 
 function createAnimate(
   target: Accessor<Element | null | undefined>,
   keyframes: MaybeAccessor<Keyframe[] | PropertyIndexedKeyframes | null>,
   options?: MaybeAccessor<KeyframeAnimationOptions>,
-): Accessor<Animation | undefined>
+): Accessor<Animation | undefined>;
 ```
 
 ---
@@ -211,7 +210,10 @@ render(() => <Demo />, document.getElementById("app")!);
 // Fade + rise as the user scrolls down the page
 const anim = createScrollAnimation(
   () => ref,
-  [{ opacity: 0, transform: "translateY(20px)" }, { opacity: 1, transform: "none" }],
+  [
+    { opacity: 0, transform: "translateY(20px)" },
+    { opacity: 1, transform: "none" },
+  ],
   { fill: "both" },
 );
 
@@ -225,7 +227,7 @@ const anim = createScrollAnimation(() => ref, keyframes, {
 
 ```ts
 type ScrollAnimationOptions = Omit<KeyframeAnimationOptions, "timeline"> & {
-  source?: Element;    // scroll container — defaults to document root scroller
+  source?: Element; // scroll container — defaults to document root scroller
   axis?: "block" | "inline" | "x" | "y";
 };
 
@@ -233,13 +235,13 @@ function makeScrollAnimation(
   el: Element,
   keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
   options?: ScrollAnimationOptions,
-): Animation
+): Animation;
 
 function createScrollAnimation(
   target: Accessor<Element | null | undefined>,
   keyframes: MaybeAccessor<Keyframe[] | PropertyIndexedKeyframes | null>,
   options?: MaybeAccessor<ScrollAnimationOptions>,
-): Accessor<Animation | undefined>
+): Accessor<Animation | undefined>;
 ```
 
 ---
@@ -331,7 +333,10 @@ render(() => <Demo />, document.getElementById("app")!);
 // Animate the element itself as it enters the viewport
 const anim = createViewAnimation(
   () => ref,
-  [{ opacity: 0, transform: "translateY(16px)" }, { opacity: 1, transform: "none" }],
+  [
+    { opacity: 0, transform: "translateY(16px)" },
+    { opacity: 1, transform: "none" },
+  ],
   { fill: "both" },
 );
 
@@ -345,24 +350,24 @@ const anim = createViewAnimation(() => animatedEl, keyframes, {
 
 ```ts
 type ViewAnimationOptions = Omit<KeyframeAnimationOptions, "timeline"> & {
-  subject?: Element;             // element to observe — defaults to target
+  subject?: Element; // element to observe — defaults to target
   axis?: "block" | "inline" | "x" | "y";
-  inset?: string | string[];     // shrinks/expands the intersection root
-  rangeStart?: string;           // default: "entry 0%" — element starts entering the scroll port
-  rangeEnd?: string;             // default: "entry 100%" — element has fully entered the scroll port
+  inset?: string | string[]; // shrinks/expands the intersection root
+  rangeStart?: string; // default: "entry 0%" — element starts entering the scroll port
+  rangeEnd?: string; // default: "entry 100%" — element has fully entered the scroll port
 };
 
 function makeViewAnimation(
   el: Element,
   keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
   options?: ViewAnimationOptions,
-): Animation
+): Animation;
 
 function createViewAnimation(
   target: Accessor<Element | null | undefined>,
   keyframes: MaybeAccessor<Keyframe[] | PropertyIndexedKeyframes | null>,
   options?: MaybeAccessor<ViewAnimationOptions>,
-): Accessor<Animation | undefined>
+): Accessor<Animation | undefined>;
 ```
 
 ---
@@ -428,7 +433,7 @@ return <ul ref={el}>...</ul>;
 function makeFlip(
   el: Element,
   options?: KeyframeAnimationOptions,
-): { snapshot: () => void; flip: () => Animation | undefined }
+): { snapshot: () => void; flip: () => Animation | undefined };
 ```
 
 ---
@@ -524,7 +529,10 @@ const itemRefs: HTMLLIElement[] = [];
 
 const anims = createStagger(
   () => itemRefs,
-  [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }],
+  [
+    { opacity: 0, transform: "translateY(8px)" },
+    { opacity: 1, transform: "none" },
+  ],
   { duration: 400, stagger: 60, easing: "ease-out" },
 );
 ```
@@ -538,13 +546,13 @@ function makeStagger(
   els: Element[],
   keyframes: Keyframe[] | PropertyIndexedKeyframes | null,
   options?: StaggerOptions,
-): Animation[]
+): Animation[];
 
 function createStagger(
   targets: Accessor<(Element | null | undefined)[]>,
   keyframes: MaybeAccessor<Keyframe[] | PropertyIndexedKeyframes | null>,
   options?: MaybeAccessor<StaggerOptions>,
-): Accessor<Animation[]>
+): Accessor<Animation[]>;
 ```
 
 ---
@@ -635,7 +643,7 @@ render(() => <Demo />, document.getElementById("app")!);
 ```ts
 // Imperative — static list
 const header = makeAnimate(headerEl, fadeIn, { duration: 300 });
-const body   = makeAnimate(bodyEl,   fadeIn, { duration: 300, delay: 100 });
+const body = makeAnimate(bodyEl, fadeIn, { duration: 300, delay: 100 });
 const footer = makeAnimate(footerEl, fadeIn, { duration: 300, delay: 200 });
 
 const group = makeAnimationGroup([header, body, footer]);
@@ -678,13 +686,11 @@ type AnimationGroupControls = {
   finish: () => void;
 };
 
-function makeAnimationGroup(
-  animations: (Animation | null | undefined)[],
-): AnimationGroupControls
+function makeAnimationGroup(animations: (Animation | null | undefined)[]): AnimationGroupControls;
 
 function createAnimationGroup(
   animations: Accessor<(Animation | null | undefined)[]>,
-): AnimationGroupControls
+): AnimationGroupControls;
 ```
 
 ---
@@ -779,17 +785,13 @@ type MotionPathOptions = KeyframeAnimationOptions & {
   rotate?: string; // offset-rotate — "auto", "0deg", "reverse", etc. Default: "auto"
 };
 
-function makeMotionPath(
-  el: HTMLElement,
-  path: string,
-  options?: MotionPathOptions,
-): Animation
+function makeMotionPath(el: HTMLElement, path: string, options?: MotionPathOptions): Animation;
 
 function createMotionPath(
   target: Accessor<HTMLElement | null | undefined>,
   path: MaybeAccessor<string>,
   options?: MaybeAccessor<MotionPathOptions>,
-): Accessor<Animation | undefined>
+): Accessor<Animation | undefined>;
 ```
 
 ---
@@ -852,20 +854,20 @@ const seq = makeSequence([
   () => makeAnimate(footerEl, fadeIn, { duration: 300 }),
 ]);
 
-seq.play();   // header → body → footer, each starts after the last finishes
+seq.play(); // header → body → footer, each starts after the last finishes
 seq.cancel(); // stops immediately
-seq.play();   // restart from the beginning
+seq.play(); // restart from the beginning
 ```
 
 ```ts
 type AnimationFactory = () => Animation | null | undefined;
 
 type SequenceControls = {
-  play: () => void;   // starts from the first factory, discarding any in-progress run
+  play: () => void; // starts from the first factory, discarding any in-progress run
   cancel: () => void; // stops the sequence; the currently-playing animation is cancelled
 };
 
-function makeSequence(factories: AnimationFactory[]): SequenceControls
+function makeSequence(factories: AnimationFactory[]): SequenceControls;
 ```
 
 ---
@@ -933,27 +935,33 @@ return (
 ```tsx
 // Separate enter and exit keyframes + options
 const { isMounted } = createPresenceAnimation(() => el, show, {
-  enter: [{ opacity: 0, transform: "scale(0.95)" }, { opacity: 1, transform: "none" }],
-  exit:  [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "scale(0.95)" }],
+  enter: [
+    { opacity: 0, transform: "scale(0.95)" },
+    { opacity: 1, transform: "none" },
+  ],
+  exit: [
+    { opacity: 1, transform: "none" },
+    { opacity: 0, transform: "scale(0.95)" },
+  ],
   enterOptions: { duration: 200, easing: "ease-out" },
-  exitOptions:  { duration: 150, easing: "ease-in" },
+  exitOptions: { duration: 150, easing: "ease-in" },
 });
 ```
 
 ```ts
 type PresenceAnimationOptions = {
   enter: Keyframe[] | PropertyIndexedKeyframes | null;
-  exit?: Keyframe[] | PropertyIndexedKeyframes | null;  // defaults to reversed enter
+  exit?: Keyframe[] | PropertyIndexedKeyframes | null; // defaults to reversed enter
   enterOptions?: KeyframeAnimationOptions;
-  exitOptions?: KeyframeAnimationOptions;               // defaults to enterOptions
-  initialEnter?: boolean;                               // animate on first mount (default: false)
+  exitOptions?: KeyframeAnimationOptions; // defaults to enterOptions
+  initialEnter?: boolean; // animate on first mount (default: false)
 };
 
 function createPresenceAnimation(
   target: Accessor<HTMLElement | null | undefined>,
   show: MaybeAccessor<boolean>,
   options: PresenceAnimationOptions,
-): { isMounted: Accessor<boolean> }
+): { isMounted: Accessor<boolean> };
 ```
 
 ---

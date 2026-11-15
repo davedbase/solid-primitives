@@ -432,12 +432,12 @@ const { ref, files, isDragging, error } = createDropzone({
 
 **Options (all optional):**
 
-| Callback      | Signature                                            | Fires when…                                               |
-| ------------- | ----------------------------------------------------- | ---------------------------------------------------------- |
-| `onDrop`      | `(files: UploadFile[]) => void \| Promise<void>`      | Files are dropped; `isLoading` is `true` while it awaits    |
-| `onDragEnter` | `(event: DragEvent) => void \| Promise<void>`         | A dragged item enters the element                           |
-| `onDragLeave` | `(event: DragEvent) => void \| Promise<void>`         | A dragged item leaves the element                           |
-| `onDragOver`  | `(event: DragEvent) => void \| Promise<void>`         | An item is dragged continuously over the element             |
+| Callback      | Signature                                        | Fires when…                                              |
+| ------------- | ------------------------------------------------ | -------------------------------------------------------- |
+| `onDrop`      | `(files: UploadFile[]) => void \| Promise<void>` | Files are dropped; `isLoading` is `true` while it awaits |
+| `onDragEnter` | `(event: DragEvent) => void \| Promise<void>`    | A dragged item enters the element                        |
+| `onDragLeave` | `(event: DragEvent) => void \| Promise<void>`    | A dragged item leaves the element                        |
+| `onDragOver`  | `(event: DragEvent) => void \| Promise<void>`    | An item is dragged continuously over the element         |
 
 Only `onDrop` receives `UploadFile[]` — the browser only exposes real `File` objects on `dataTransfer.files` at drop time, so `onDragEnter`/`onDragLeave`/`onDragOver` receive the raw `DragEvent` instead (inspect `event.dataTransfer.items` / `.types` for metadata about what's being dragged). `isLoading` tracks only the `onDrop` callback — drag-movement callbacks are fire-and-forget.
 

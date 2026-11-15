@@ -381,7 +381,9 @@ describe("jsx-tokenizer", () => {
       const dispose = render(() => <ObjToken text="foo" />, container);
       flush();
       expect(container.innerHTML).toBe("");
-      expect(warn.mock.calls.some(args => String(args[0]).includes("UNRECOGNIZED_INSERT_VALUE"))).toBe(true);
+      expect(
+        warn.mock.calls.some(args => String(args[0]).includes("UNRECOGNIZED_INSERT_VALUE")),
+      ).toBe(true);
       dispose();
       warn.mockRestore();
     });

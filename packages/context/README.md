@@ -349,8 +349,9 @@ Note that this component solely serves as syntactic sugar and doesn't provide an
 ### How to use it
 
 `ContextConsumer` takes a `provider` prop that can be either one of the following:
-* A `use...()` function returned by `createContextProvider` or an inline function that returns the context's value: `() => useContext(MyContext)`.
-* A raw SolidJS context returned by `createContext()`.
+
+- A `use...()` function returned by `createContextProvider` or an inline function that returns the context's value: `() => useContext(MyContext)`.
+- A raw SolidJS context returned by `createContext()`.
 
 When an optional context's value is `undefined` (e.g. a `useContext` function from `createOptionalContextProvider`), a fallback element specified in the `fallback` prop is rendered instead. Without a `fallback`, nothing is rendered.
 
@@ -371,11 +372,14 @@ const [CounterProvider, useCounter] = createOptionalContextProvider(() => {
 // `fallback` renders if this subtree is ever used without `<CounterProvider>`
 return (
   <CounterProvider>
-    <ContextConsumer provider={useCounter} fallback={() => (
-      <div>
-        <p>Fallback</p>
-      </div>
-    )}>
+    <ContextConsumer
+      provider={useCounter}
+      fallback={() => (
+        <div>
+          <p>Fallback</p>
+        </div>
+      )}
+    >
       {({ count, increment }) => (
         <div>
           <p>Count: {count()}</p>
@@ -402,10 +406,10 @@ const CounterContext = createContext(/*...*/);
       <div>
         <p>Count: {count()}</p>
         <button onClick={increment}>Increment</button>
-      </div>
+      </div>;
     }}
   </ContextConsumer>
-</CounterContext>
+</CounterContext>;
 ```
 
 ## Changelog
