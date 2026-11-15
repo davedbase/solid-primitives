@@ -55,7 +55,8 @@ async function compile(source: string, generate: "ssr" | "dom"): Promise<string>
     babelrc: false,
     parserOpts: { plugins: ["jsx", "typescript"] },
   });
-  if (!result?.code) throw new Error("[hydration-harness] @solidjs/babel-plugin produced no output");
+  if (!result?.code)
+    throw new Error("[hydration-harness] @solidjs/babel-plugin produced no output");
   return result.code;
 }
 
@@ -135,7 +136,10 @@ export type HydrationRoundTripResult = {
 // mid-hydrate.
 let runQueue: Promise<unknown> = Promise.resolve();
 
-async function runHydrationRoundTrip(appSource: string, cwd: string): Promise<HydrationRoundTripResult> {
+async function runHydrationRoundTrip(
+  appSource: string,
+  cwd: string,
+): Promise<HydrationRoundTripResult> {
   const { html, domFile } = await prepareFixture(appSource, cwd);
 
   const container = document.createElement("div");
@@ -193,7 +197,10 @@ async function runHydrationRoundTrip(appSource: string, cwd: string): Promise<Hy
  * resolution walks up to the workspace's real `node_modules`, exactly as it would for an
  * installed consumer.
  */
-export function renderHydrationRoundTrip(appSource: string, cwd: string): Promise<HydrationRoundTripResult> {
+export function renderHydrationRoundTrip(
+  appSource: string,
+  cwd: string,
+): Promise<HydrationRoundTripResult> {
   const run = runQueue.then(() => runHydrationRoundTrip(appSource, cwd));
   // Keep the queue alive even if this run rejects, so a failing test doesn't wedge the ones after it.
   runQueue = run.then(

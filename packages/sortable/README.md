@@ -22,8 +22,8 @@ search/insert, and two flavors of granular per-item rank tracking built directly
 - **`createSorted`** — reactive sort, with a reactive comparator and an in-place `dirty` mode.
 - **`sortedIndex` / `sortedIndexBy`** — binary search for the insertion point in a sorted array.
 - **`insertSorted`** — immutable O(log n) insert into an already-sorted array.
-- **`createSortedIndex`** — per-item reactive rank; an item's accessor only updates when *that
-  item's* position actually changes, built on `mapArray` (the same primitive behind `<For>`).
+- **`createSortedIndex`** — per-item reactive rank; an item's accessor only updates when _that
+  item's_ position actually changes, built on `mapArray` (the same primitive behind `<For>`).
 - **`createSortedProjection`** — a store-shaped sorted view, reconciled by key via
   `createProjection`, so unrelated rows don't notify when one row changes.
 
@@ -177,7 +177,10 @@ function combine<T>(...comparators: Comparator<T>[]): Comparator<T>;
 // Example
 import { combine, by, descending } from "@solid-primitives/sortable";
 
-const cmp = combine(by((p: Product) => p.category), by((p: Product) => p.price, descending));
+const cmp = combine(
+  by((p: Product) => p.category),
+  by((p: Product) => p.price, descending),
+);
 products.sort(cmp);
 ```
 
@@ -484,7 +487,7 @@ const rank = indexOf(row); // only updates when `row`'s own position changes
 
 - Built on `mapArray` — the same primitive that powers `<For>`. `mapArray` keys by reference
   identity and reuses the same computation (and its `index` signal) for an item across reorders,
-  so an item's index accessor only updates when *that item's* position actually changes; unrelated
+  so an item's index accessor only updates when _that item's_ position actually changes; unrelated
   moves elsewhere in the list never notify it. This is Solid core's own keyed-diff algorithm, not a
   bespoke one.
 - Each call to the returned function does an O(n) scan (untracked) to find the item's stable

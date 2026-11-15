@@ -307,17 +307,20 @@ const richDicts = {
   en: {
     clickHere: "click here",
     info: "For more information, {{ clickHere }}.",
-    terms: "By continuing, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+    terms:
+      "By continuing, you agree to our <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
   },
   fr: {
     clickHere: "cliquez ici",
     info: "Pour plus d'informations, {{ clickHere }}.",
-    terms: "En continuant, vous acceptez nos <terms>Conditions d'utilisation</terms> et notre <privacy>Politique de confidentialité</privacy>.",
+    terms:
+      "En continuant, vous acceptez nos <terms>Conditions d'utilisation</terms> et notre <privacy>Politique de confidentialité</privacy>.",
   },
   es: {
     clickHere: "haga clic aquí",
     info: "Para más información, {{ clickHere }}.",
-    terms: "Al continuar, aceptas nuestros <terms>Términos de servicio</terms> y nuestra <privacy>Política de privacidad</privacy>.",
+    terms:
+      "Al continuar, aceptas nuestros <terms>Términos de servicio</terms> y nuestra <privacy>Política de privacidad</privacy>.",
   },
 } satisfies Record<Locale, Record<string, string>>;
 

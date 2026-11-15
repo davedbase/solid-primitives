@@ -81,7 +81,9 @@ export const StandaloneDrag = meta.story({
               transform: drag.transform()
                 ? `translate(${drag.transform()!.x}px, ${drag.transform()!.y}px)`
                 : undefined,
-              transition: drag.isDragging() ? "none" : "transform 0.2s cubic-bezier(.34,1.56,.64,1)",
+              transition: drag.isDragging()
+                ? "none"
+                : "transform 0.2s cubic-bezier(.34,1.56,.64,1)",
               background: drag.isDragging() ? "#4f46e5" : "#6366f1",
               color: "white",
               padding: "0.875rem 1.5rem",
@@ -336,9 +338,7 @@ export const SortableList = meta.story({
                         : `translateY(${shift()}px)`,
                       transition: s.isDragging() ? "none" : "transform 0.2s ease",
                       background: item.color,
-                      border: s.isActiveDropzone()
-                        ? "2px dashed #6366f1"
-                        : "2px solid transparent",
+                      border: s.isActiveDropzone() ? "2px dashed #6366f1" : "2px solid transparent",
                       "border-radius": "8px",
                       padding: "0.625rem 0.875rem",
                       "font-weight": "500",

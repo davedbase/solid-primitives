@@ -50,8 +50,14 @@ export const GranularRankTracking = meta.story({
     const [players, setPlayers] = createSignal<Player[]>(
       NAMES.map((name, id) => ({ id, name, score: randomScore() })),
     );
-    const sorted = createSorted(players, by((p: Player) => p.score, descending));
-    const indexOf = createSortedIndex(players, by((p: Player) => p.score, descending));
+    const sorted = createSorted(
+      players,
+      by((p: Player) => p.score, descending),
+    );
+    const indexOf = createSortedIndex(
+      players,
+      by((p: Player) => p.score, descending),
+    );
 
     const [flashed, setFlashed] = createSignal<ReadonlySet<number>>(new Set());
 
@@ -90,7 +96,9 @@ export const GranularRankTracking = meta.story({
 
                 return (
                   <div style={{ display: "flex", "align-items": "center", gap: "0.5rem" }}>
-                    <Badge variant={flashed().has(player.id) ? "success" : "default"}>#{rank() + 1}</Badge>
+                    <Badge variant={flashed().has(player.id) ? "success" : "default"}>
+                      #{rank() + 1}
+                    </Badge>
                     <span>{player.name}</span>
                     <span style={{ "margin-left": "auto", opacity: "0.6" }}>{player.score}</span>
                   </div>
@@ -129,7 +137,10 @@ export const MultiColumnSort = meta.story({
     const [priceDesc, setPriceDesc] = createSignal(false);
     const comparator = createMemo(() => {
       const byPrice = by((p: Product) => p.price);
-      return combine(by((p: Product) => p.category), priceDesc() ? reverse(byPrice) : byPrice);
+      return combine(
+        by((p: Product) => p.category),
+        priceDesc() ? reverse(byPrice) : byPrice,
+      );
     });
     const sorted = createSorted(() => PRODUCTS, comparator);
 
@@ -147,7 +158,9 @@ export const MultiColumnSort = meta.story({
                 <div style={{ display: "flex", "align-items": "center", gap: "0.5rem" }}>
                   <Badge>{p.category}</Badge>
                   <span>{p.name}</span>
-                  <span style={{ "margin-left": "auto", opacity: "0.6" }}>${p.price.toFixed(2)}</span>
+                  <span style={{ "margin-left": "auto", opacity: "0.6" }}>
+                    ${p.price.toFixed(2)}
+                  </span>
                 </div>
               )}
             </For>
@@ -176,7 +189,11 @@ export const DragToReorder = meta.story({
   },
   render: () => {
     const [tasks, setTasks] = createSignal<Task[]>(initialTasks());
-    const sorted = createSortedProjection(tasks, by((t: Task) => t.order), "id");
+    const sorted = createSortedProjection(
+      tasks,
+      by((t: Task) => t.order),
+      "id",
+    );
 
     let draggedId: number | null = null;
 

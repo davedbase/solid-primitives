@@ -503,14 +503,10 @@ describe("ContextConsumer", () => {
     const unmount = render(
       () => (
         <Context value="Actual">
-          <ContextConsumer provider={Context}>
-            {value => (
-              capture = value
-            )}
-          </ContextConsumer>
+          <ContextConsumer provider={Context}>{value => (capture = value)}</ContextConsumer>
         </Context>
       ),
-      document.createElement("div")
+      document.createElement("div"),
     );
 
     expect(capture).toBe("Actual");
@@ -526,13 +522,11 @@ describe("ContextConsumer", () => {
       () => (
         <Context value="Actual">
           <ContextConsumer provider={() => useContext(Context)}>
-            {value => (
-              capture = value
-            )}
+            {value => (capture = value)}
           </ContextConsumer>
         </Context>
       ),
-      document.createElement("div")
+      document.createElement("div"),
     );
 
     expect(capture).toBe("Actual");
@@ -543,20 +537,17 @@ describe("ContextConsumer", () => {
   test("consumes a context via its use-function from `createContextProvider`", () => {
     const [Provider, useContext] = createContextProvider(
       (props: { value: string }) => props.value,
-      "Default");
+      "Default",
+    );
 
     let capture;
     const unmount = render(
       () => (
         <Provider value="Actual">
-          <ContextConsumer provider={useContext}>
-            {value => (
-              capture = value
-            )}
-          </ContextConsumer>
+          <ContextConsumer provider={useContext}>{value => (capture = value)}</ContextConsumer>
         </Provider>
       ),
-      document.createElement("div")
+      document.createElement("div"),
     );
 
     expect(capture).toBe("Actual");
@@ -569,14 +560,8 @@ describe("ContextConsumer", () => {
 
     let capture;
     const unmount = render(
-      () => (
-        <ContextConsumer provider={Context}>
-          {value => (
-            capture = value
-          )}
-        </ContextConsumer>
-      ),
-      document.createElement("div")
+      () => <ContextConsumer provider={Context}>{value => (capture = value)}</ContextConsumer>,
+      document.createElement("div"),
     );
 
     expect(capture).toBe("Default");
@@ -587,19 +572,13 @@ describe("ContextConsumer", () => {
   test("consumes a context via its use-function from `createContextProvider` without provider (default value)", () => {
     const [, useContext] = createContextProvider(
       (props: { value: string }) => props.value,
-      "Default"
+      "Default",
     );
 
     let capture;
     const unmount2 = render(
-      () => (
-        <ContextConsumer provider={useContext}>
-          {value => (
-            capture = value
-          )}
-        </ContextConsumer>
-      ),
-      document.createElement("div")
+      () => <ContextConsumer provider={useContext}>{value => (capture = value)}</ContextConsumer>,
+      document.createElement("div"),
     );
 
     expect(capture).toBe("Default");
@@ -608,15 +587,15 @@ describe("ContextConsumer", () => {
   });
 
   test("renders fallback prop when context is undefined", () => {
-    const [, useOptional] = createOptionalContextProvider((props: { value?: string }) => props.value);
+    const [, useOptional] = createOptionalContextProvider(
+      (props: { value?: string }) => props.value,
+    );
     const container = document.createElement("div");
     document.body.appendChild(container);
     const unmount3 = render(
       () => (
         <ContextConsumer provider={useOptional} fallback={() => "Fallback"}>
-          {value => (
-            value as any
-          )}
+          {value => value as any}
         </ContextConsumer>
       ),
       container,
@@ -632,15 +611,9 @@ describe("ContextConsumer", () => {
     const [, useRequired] = createContextProvider(() => ({ value: 1 }));
     expect(() =>
       render(
-        () => (
-          <ContextConsumer provider={useRequired}>
-            {value => (
-              value as any
-            )}
-          </ContextConsumer>
-        ),
-        document.createElement("div")
-      )
+        () => <ContextConsumer provider={useRequired}>{value => value as any}</ContextConsumer>,
+        document.createElement("div"),
+      ),
     ).toThrow();
   });
 
@@ -674,7 +647,9 @@ describe("ContextConsumer", () => {
   });
 
   test("renders nothing when an optional context is undefined and no fallback is given", () => {
-    const [, useOptional] = createOptionalContextProvider((props: { value?: string }) => props.value);
+    const [, useOptional] = createOptionalContextProvider(
+      (props: { value?: string }) => props.value,
+    );
     const container = document.createElement("div");
     const unmount = render(
       () => <ContextConsumer provider={useOptional}>{value => value as any}</ContextConsumer>,

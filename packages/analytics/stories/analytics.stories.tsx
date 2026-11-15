@@ -134,11 +134,7 @@ export const BatchedDrainStory = meta.story({
         <StatRow label="drainInterval" value={`${DRAIN_INTERVAL / 1000} s`} />
         <StatRow label="drainSize" value={`max ${DRAIN_SIZE} / cycle`} />
         <ButtonRow>
-          <Button
-            onClick={() => analytics.track("click")}
-            variant="outline"
-            style={{ flex: "1" }}
-          >
+          <Button onClick={() => analytics.track("click")} variant="outline" style={{ flex: "1" }}>
             +1 event
           </Button>
           <Button
@@ -153,8 +149,8 @@ export const BatchedDrainStory = meta.story({
         </ButtonRow>
         <EventLog entries={log()} />
         <p style={{ margin: 0, "font-size": "0.78rem", color: colors.mutedFg }}>
-          Events flush up to {DRAIN_SIZE} at a time every {DRAIN_INTERVAL / 1000} s. The queue beyond
-          that carries forward to the next cycle.
+          Events flush up to {DRAIN_SIZE} at a time every {DRAIN_INTERVAL / 1000} s. The queue
+          beyond that carries forward to the next cycle.
         </p>
       </Container>
     );

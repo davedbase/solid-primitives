@@ -237,10 +237,7 @@ export const CustomTagField = meta.story({
 });
 
 type MediaEvent =
-  | { type: "play" }
-  | { type: "pause" }
-  | { type: "seek"; position: number }
-  | { type: "end" };
+  { type: "play" } | { type: "pause" } | { type: "seek"; position: number } | { type: "end" };
 
 const ALL_EVENTS: MediaEvent[] = [
   { type: "play" },

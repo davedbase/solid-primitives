@@ -89,7 +89,7 @@ export type PaginationOptions = {
   /** content for the last page element, e.g. an SVG icon, default is ">|" */
   lastContent?: JSX.Element;
   /** accessible name for the first page element, default is "First page" */
-  firstAriaLabel?: string;  
+  firstAriaLabel?: string;
   /** accessible name for the last page element, default is "Last page" */
   lastAriaLabel?: string;
   /** always show first and last page, with an adjacent ellipsis if there is a gap */
@@ -149,7 +149,6 @@ return (
 ### Ellipsis-style pagination
 
 Beyond the classic pagination pattern, this primitive now also supports an ellipsis-style pattern. The difference is best illustrated like this:
-
 
 #### Classic
 

@@ -1,7 +1,13 @@
 import { describe, test, expect } from "vitest";
 import { createContext, type FlowComponent, type Element, untrack, useContext } from "solid-js";
 import { renderToString } from "@solidjs/web";
-import { ContextConsumer, createContextProvider, createOptionalContextProvider, createLayeredContext, MultiProvider } from "../src/index.js";
+import {
+  ContextConsumer,
+  createContextProvider,
+  createOptionalContextProvider,
+  createLayeredContext,
+  MultiProvider,
+} from "../src/index.js";
 
 type TestContextValue = {
   message: string;
@@ -119,7 +125,6 @@ describe("createLayeredContext (SSR)", () => {
   });
 });
 
-
 describe("ContextConsumer (SSR)", () => {
   test("consumes a context directly", () => {
     const Context = createContext<string>("Default");
@@ -127,11 +132,7 @@ describe("ContextConsumer (SSR)", () => {
     let capture;
     renderToString(() => (
       <Context value="Actual">
-        <ContextConsumer provider={Context}>
-          {value => (
-            capture = value
-          )}
-        </ContextConsumer>
+        <ContextConsumer provider={Context}>{value => (capture = value)}</ContextConsumer>
       </Context>
     ));
 
@@ -145,9 +146,7 @@ describe("ContextConsumer (SSR)", () => {
     renderToString(() => (
       <Context value="Actual">
         <ContextConsumer provider={() => useContext(Context)}>
-          {value => (
-            capture = value
-          )}
+          {value => (capture = value)}
         </ContextConsumer>
       </Context>
     ));
@@ -158,16 +157,13 @@ describe("ContextConsumer (SSR)", () => {
   test("consumes a context via its use-function from `createContextProvider`", () => {
     const [Provider, useContext] = createContextProvider(
       (props: { value: string }) => props.value,
-      "Default");
+      "Default",
+    );
 
     let capture;
     renderToString(() => (
       <Provider value="Actual">
-        <ContextConsumer provider={useContext}>
-          {value => (
-            capture = value
-          )}
-        </ContextConsumer>
+        <ContextConsumer provider={useContext}>{value => (capture = value)}</ContextConsumer>
       </Provider>
     ));
 
@@ -179,11 +175,7 @@ describe("ContextConsumer (SSR)", () => {
 
     let capture;
     renderToString(() => (
-      <ContextConsumer provider={Context}>
-        {value => (
-          capture = value
-        )}
-      </ContextConsumer>
+      <ContextConsumer provider={Context}>{value => (capture = value)}</ContextConsumer>
     ));
 
     expect(capture).toBe("Default");
@@ -192,29 +184,26 @@ describe("ContextConsumer (SSR)", () => {
   test("consumes a context via its use-function from `createContextProvider` without provider (default value)", () => {
     const [, useContext] = createContextProvider(
       (props: { value: string }) => props.value,
-      "Default");
+      "Default",
+    );
 
     let capture;
     renderToString(() => (
-      <ContextConsumer provider={useContext}>
-        {value => (
-          capture = value
-        )}
-      </ContextConsumer>
+      <ContextConsumer provider={useContext}>{value => (capture = value)}</ContextConsumer>
     ));
 
     expect(capture).toBe("Default");
   });
 
   test("renders fallback prop when context is undefined", () => {
-    const [, useOptional] = createOptionalContextProvider((props: { value?: string }) => props.value);
+    const [, useOptional] = createOptionalContextProvider(
+      (props: { value?: string }) => props.value,
+    );
 
     let capture;
     renderToString(() => (
-      <ContextConsumer provider={useOptional} fallback={() => (capture = 'Fallback')}>
-        {value => (
-          value as any
-        )}
+      <ContextConsumer provider={useOptional} fallback={() => (capture = "Fallback")}>
+        {value => value as any}
       </ContextConsumer>
     ));
 
@@ -225,12 +214,8 @@ describe("ContextConsumer (SSR)", () => {
     const [, useRequired] = createContextProvider(() => ({ value: 1 }));
     expect(() =>
       renderToString(() => (
-        <ContextConsumer provider={useRequired}>
-          {value => (
-            value as any
-          )}
-        </ContextConsumer>
-      ))
+        <ContextConsumer provider={useRequired}>{value => value as any}</ContextConsumer>
+      )),
     ).toThrow();
   });
 });

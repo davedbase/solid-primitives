@@ -14,8 +14,14 @@ const App: Component = () => {
   const [players, setPlayers] = createSignal<Player[]>(
     NAMES.map((name, id) => ({ id, name, score: randomScore() })),
   );
-  const sorted = createSorted(players, by((p: Player) => p.score, descending));
-  const indexOf = createSortedIndex(players, by((p: Player) => p.score, descending));
+  const sorted = createSorted(
+    players,
+    by((p: Player) => p.score, descending),
+  );
+  const indexOf = createSortedIndex(
+    players,
+    by((p: Player) => p.score, descending),
+  );
 
   const shuffleOne = () => {
     const list = players();

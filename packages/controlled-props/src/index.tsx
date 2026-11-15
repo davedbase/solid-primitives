@@ -195,8 +195,7 @@ export function createControlledProp<T>(
         : (((options as TestPropOptions<T>).initialValue as T | undefined) ??
           (defaultInitialValues[
             ((options as TestPropOptions<T>).type as
-              | keyof typeof defaultInitialValues
-              | undefined) ?? "object"
+              keyof typeof defaultInitialValues | undefined) ?? "object"
           ] as T | undefined));
 
   if (initialValue == null) {

@@ -63,7 +63,7 @@ export const SearchHighlightStory = meta.story({
         </Show>
 
         <For each={PARAGRAPHS}>
-          {(para) => (
+          {para => (
             <p
               style={{
                 margin: 0,

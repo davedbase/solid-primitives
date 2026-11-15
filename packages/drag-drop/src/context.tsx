@@ -1,4 +1,12 @@
-import { createContext, createProjection, createSignal, onCleanup, useContext, untrack, type Element } from "solid-js";
+import {
+  createContext,
+  createProjection,
+  createSignal,
+  onCleanup,
+  useContext,
+  untrack,
+  type Element,
+} from "solid-js";
 import { isServer } from "@solidjs/web";
 import { INTERNAL_OPTIONS } from "@solid-primitives/utils";
 import { pointerWithin } from "./collision.ts";
@@ -34,7 +42,12 @@ export type DragContextValue = {
     accept?: AcceptPredicate,
   ) => void;
   _unregisterDroppable: (id: string | number) => void;
-  _startDrag: (id: string | number, element: HTMLElement, data: unknown, event: PointerEvent) => void;
+  _startDrag: (
+    id: string | number,
+    element: HTMLElement,
+    data: unknown,
+    event: PointerEvent,
+  ) => void;
   /** Starts a drag from a keyboard activation — anchors the synthetic pointer to the element's center. */
   _startKeyboardDrag: (id: string | number, element: HTMLElement, data: unknown) => void;
   /** Nudges the active keyboard-driven drag by a delta in viewport pixels. No-op if nothing is dragging. */
@@ -101,7 +114,10 @@ export function createDragContext(options: DragContextOptions = {}): DragContext
   // Droppable rects snapshotted at drag start — avoids getBoundingClientRect on every pointermove.
   // Re-snapshotted on scroll or when droppables are added/removed during a drag.
   const cachedRects: DroppableRect[] = [];
-  let dragStartLeft = 0, dragStartTop = 0, dragStartWidth = 0, dragStartHeight = 0;
+  let dragStartLeft = 0,
+    dragStartTop = 0,
+    dragStartWidth = 0,
+    dragStartHeight = 0;
 
   const snapshotRects = (activeId: string | number) => {
     cachedRects.length = 0;
@@ -126,7 +142,8 @@ export function createDragContext(options: DragContextOptions = {}): DragContext
   const maybeAutoScroll = () => {
     const cfg = options.autoScroll;
     if (!cfg) return;
-    const threshold = (typeof cfg === "object" ? cfg.threshold : undefined) ?? DEFAULT_AUTO_SCROLL_THRESHOLD;
+    const threshold =
+      (typeof cfg === "object" ? cfg.threshold : undefined) ?? DEFAULT_AUTO_SCROLL_THRESHOLD;
     const speed = (typeof cfg === "object" ? cfg.speed : undefined) ?? DEFAULT_AUTO_SCROLL_SPEED;
 
     let dx = 0;
@@ -208,7 +225,10 @@ export function createDragContext(options: DragContextOptions = {}): DragContext
   };
 
   const cancelPendingMove = () => {
-    if (rafPending) { cancelAnimationFrame(rafId); rafPending = false; }
+    if (rafPending) {
+      cancelAnimationFrame(rafId);
+      rafPending = false;
+    }
   };
 
   const finishDrag = () => {
@@ -299,7 +319,12 @@ export function createDragContext(options: DragContextOptions = {}): DragContext
     options.onDragStart?.(item);
   };
 
-  const _startDrag = (id: string | number, element: HTMLElement, data: unknown, event: PointerEvent) => {
+  const _startDrag = (
+    id: string | number,
+    element: HTMLElement,
+    data: unknown,
+    event: PointerEvent,
+  ) => {
     beginDrag(id, element, data, event.clientX, event.clientY);
   };
 

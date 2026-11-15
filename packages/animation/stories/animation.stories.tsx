@@ -1153,4 +1153,3 @@ export const PresenceTabs = meta.story({
     );
   },
 });
-

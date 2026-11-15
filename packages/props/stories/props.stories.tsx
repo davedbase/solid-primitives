@@ -1,10 +1,6 @@
 import { createSignal, For } from "solid-js";
 import preview from "../../../.storybook/preview.js";
-import {
-  combineProps,
-  combineHandlers,
-  partitionProps,
-} from "@solid-primitives/props";
+import { combineProps, combineHandlers, partitionProps } from "@solid-primitives/props";
 import readme from "../README.md?raw";
 import {
   Container,

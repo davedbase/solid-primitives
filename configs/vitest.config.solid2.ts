@@ -3,7 +3,7 @@ import type { Plugin } from "vite";
 import * as utils from "../scripts/utils/index.js";
 
 // Packages still on solid-js 1.x, not yet migrated to Solid 2.0.
-const UNMIGRATED_PACKAGES = ["fetch", "graphql", "resource"];
+const UNMIGRATED_PACKAGES = ["fetch", "resource"];
 
 function solidBabelPlugin(testSSR: boolean): Plugin {
   return {

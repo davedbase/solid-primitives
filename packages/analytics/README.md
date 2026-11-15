@@ -47,13 +47,13 @@ npm install @analytics/google-analytics
 
 The package follows the standard `make*` / `create*` pattern:
 
-| Primitive | Reactive? | Cleanup |
-|---|---|---|
-| `makeAnalytics` | No | manual `cleanup()` |
-| `createAnalytics` | Yes | auto on owner disposal |
-| `AnalyticsProvider` | Yes (via `createAnalytics`) | auto on unmount |
-| `makeAnalyticsGuard` | No | manual `cleanup()` |
-| `createAnalyticsGuard` | Yes | auto on owner disposal |
+| Primitive              | Reactive?                   | Cleanup                |
+| ---------------------- | --------------------------- | ---------------------- |
+| `makeAnalytics`        | No                          | manual `cleanup()`     |
+| `createAnalytics`      | Yes                         | auto on owner disposal |
+| `AnalyticsProvider`    | Yes (via `createAnalytics`) | auto on unmount        |
+| `makeAnalyticsGuard`   | No                          | manual `cleanup()`     |
+| `createAnalyticsGuard` | Yes                         | auto on owner disposal |
 
 `createAnalytics` is built on top of `makeAnalytics`. `AnalyticsProvider` creates a `createAnalytics` instance and shares it via context.
 
@@ -98,9 +98,7 @@ render(() => <Demo />, document.getElementById("app")!);
 import { makeAnalytics } from "@solid-primitives/analytics";
 import googleAnalytics from "@analytics/google-analytics";
 
-const [analytics, cleanup] = makeAnalytics([
-  googleAnalytics({ measurementId: "G-XXXXXXXXXX" }),
-]);
+const [analytics, cleanup] = makeAnalytics([googleAnalytics({ measurementId: "G-XXXXXXXXXX" })]);
 
 analytics.page({ title: "Home" });
 analytics.track("signup", { plan: "pro" });
@@ -154,9 +152,7 @@ import googleAnalytics from "@analytics/google-analytics";
 import { Show } from "solid-js";
 
 function Root() {
-  const analytics = createAnalytics([
-    googleAnalytics({ measurementId: "G-XXXXXXXXXX" }),
-  ]);
+  const analytics = createAnalytics([googleAnalytics({ measurementId: "G-XXXXXXXXXX" })]);
 
   return (
     <>
@@ -219,16 +215,12 @@ import googleAnalytics from "@analytics/google-analytics";
 // At the root
 <AnalyticsProvider plugins={[googleAnalytics({ measurementId: "G-XXXXXXXXXX" })]}>
   <App />
-</AnalyticsProvider>
+</AnalyticsProvider>;
 
 // Anywhere inside the tree
 function BuyButton() {
   const analytics = useAnalytics();
-  return (
-    <button onClick={() => analytics.track("purchase", { plan: "pro" })}>
-      Buy now
-    </button>
-  );
+  return <button onClick={() => analytics.track("purchase", { plan: "pro" })}>Buy now</button>;
 }
 ```
 
@@ -416,9 +408,9 @@ analytics.track("purchase", { orderId: "123" }); // → server → GA
 
 **Options:**
 
-| Option | Type | Description |
-|---|---|---|
-| `name` | `string` | Plugin name. Default: `"server"` |
+| Option   | Type                                     | Description                                             |
+| -------- | ---------------------------------------- | ------------------------------------------------------- |
+| `name`   | `string`                                 | Plugin name. Default: `"server"`                        |
 | `events` | `Array<"page" \| "track" \| "identify">` | Limit which event types are relayed. Omit to relay all. |
 
 ---
@@ -511,19 +503,19 @@ router.navigate("/checkout");
 
 `makeAnalytics`, `createAnalytics`, and `useAnalytics()` all return the same control surface:
 
-| Method | Description |
-|---|---|
-| `page(properties?)` | Track a page view. Auto-fills `path`, `url`, `title`, and `referrer` from `window.location` in the browser. |
-| `track(event, properties?)` | Track a named event with optional properties. |
-| `identify(userId, traits?)` | Associate subsequent events with a user identity. |
-| `use(plugin)` | Register an additional plugin at any time. |
-| `reset()` | Stop the poll timer and discard all queued events. |
-| `drain()` | `Promise<void>` — resolves when all in-flight dispatches have settled. |
+| Method                      | Description                                                                                                 |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| `page(properties?)`         | Track a page view. Auto-fills `path`, `url`, `title`, and `referrer` from `window.location` in the browser. |
+| `track(event, properties?)` | Track a named event with optional properties.                                                               |
+| `identify(userId, traits?)` | Associate subsequent events with a user identity.                                                           |
+| `use(plugin)`               | Register an additional plugin at any time.                                                                  |
+| `reset()`                   | Stop the poll timer and discard all queued events.                                                          |
+| `drain()`                   | `Promise<void>` — resolves when all in-flight dispatches have settled.                                      |
 
 `createAnalytics` and `useAnalytics()` additionally expose:
 
-| Property | Type | Description |
-|---|---|---|
+| Property       | Type               | Description                                                                |
+| -------------- | ------------------ | -------------------------------------------------------------------------- |
 | `pendingCount` | `Accessor<number>` | Events waiting in the queue; non-zero while plugins are still initializing |
 
 ---
@@ -555,9 +547,15 @@ const myPlugin: AnalyticsPlugin = {
   // polled until true before queued events are flushed
   loaded: () => typeof window.myService !== "undefined",
 
-  page:     ({ payload }) => { window.myService.page(payload.properties); },
-  track:    ({ payload }) => { window.myService.track(payload.event, payload.properties); },
-  identify: ({ payload }) => { window.myService.identify(payload.userId, payload.traits); },
+  page: ({ payload }) => {
+    window.myService.page(payload.properties);
+  },
+  track: ({ payload }) => {
+    window.myService.track(payload.event, payload.properties);
+  },
+  identify: ({ payload }) => {
+    window.myService.identify(payload.userId, payload.traits);
+  },
 };
 ```
 

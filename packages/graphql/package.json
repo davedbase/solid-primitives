@@ -17,7 +17,8 @@
     "name": "graphql",
     "stage": 3,
     "list": [
-      "createGraphQLClient"
+      "createGraphQLClient",
+      "createGraphQLMutation"
     ],
     "category": "Network",
     "gzip": 979
@@ -62,8 +63,9 @@
     "@graphql-codegen/typescript": "^4.0.1",
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-typed-document-node/core": "^3.2.0",
+    "@solidjs/web": "catalog:",
     "graphql": "^16.8.1",
-    "solid-js": "^1.9.19"
+    "solid-js": "catalog:peer"
   },
   "dependencies": {
     "@solid-primitives/utils": "workspace:^"
@@ -71,7 +73,7 @@
   "peerDependencies": {
     "@graphql-typed-document-node/core": "^3.2.0",
     "graphql": "^16.6.0",
-    "solid-js": "^1.6.12"
+    "solid-js": "catalog:peer"
   },
   "typesVersions": {}
 }

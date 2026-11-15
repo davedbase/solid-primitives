@@ -253,7 +253,10 @@ const FadingPanel = (props: { open: boolean }) => {
       if (!exiting) return;
       const finish = presence.bindDone();
       const animation = el.animate([{ opacity: 1 }, { opacity: 0 }], 300);
-      animation.finished.then(() => finish(), () => {});
+      animation.finished.then(
+        () => finish(),
+        () => {},
+      );
       return () => animation.cancel();
     },
   );
