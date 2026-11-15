@@ -88,7 +88,10 @@ export const createGraphQLClient =
     url: MaybeAccessor<string>,
     options: MaybeAccessor<Omit<RequestOptions, "variables">> = {},
   ): GraphQLClientQuery =>
-  (query, variables: any = {}, queryOptions) => {
+  (query, ...args) => {
+    // omitted variables mean "no variables" (`{}`), but an explicit `undefined`/`null`/`false` skips the request
+    const variables: any = args.length === 0 ? {} : args[0],
+      queryOptions = args[1];
     const getUrl = asAccessor(url),
       getVariables = asAccessor(variables),
       getOptions = asAccessor(options);

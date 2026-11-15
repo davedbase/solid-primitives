@@ -114,6 +114,25 @@ describe("createGraphQLClient", () => {
     dispose();
   });
 
+  test("omitted variables send the request, an explicit undefined or null skips it", async () => {
+    const { fetcher, calls } = makeFetcher();
+    const query = createGraphQLClient("/api", { fetcher });
+    let omitted!: ReturnType<typeof query>;
+    let explicitUndefined!: ReturnType<typeof query>;
+    let explicitNull!: ReturnType<typeof query>;
+    const dispose = createRoot(d => {
+      omitted = query("query { a }");
+      explicitUndefined = query("query { b }", undefined);
+      explicitNull = query("query { c }", null);
+      return d;
+    });
+    expect(await resolve(omitted)).toEqual({ echo: {} });
+    expect(await resolve(explicitUndefined)).toBeUndefined();
+    expect(await resolve(explicitNull)).toBeUndefined();
+    expect(calls).toHaveLength(1);
+    dispose();
+  });
+
   test("refresh() refetches with the same inputs", async () => {
     const { fetcher, calls } = makeFetcher();
     const query = createGraphQLClient("/api", { fetcher });

@@ -137,7 +137,7 @@ const countries = newQuery<{ countries: { name: string }[] }>(
       }
     }
   `,
-  undefined, // no variables
+  {}, // no variables (omitting the argument works too, but `undefined` would skip the request)
   { name: "countries", loadingValue: { countries: [] } },
 );
 countries(); // T: { countries: { name: string }[] }
