@@ -20,7 +20,7 @@ minimumReleaseAgeExclude:
   - '@solidjs/web@2.0.0-rc.21'
   - solid-js@2.0.0-rc.21
   - '@dom-expressions/babel-plugin-jsx@0.50.0-next.44'
-  - '@solidjs/vite-plugin@3.0.0-next.56'
+  - '@solidjs/vite-plugin@3.0.0-next.57'
   - '@solidjs/ogp@0.1.0'
 
 onlyBuiltDependencies:
@@ -28,13 +28,13 @@ onlyBuiltDependencies:
   - esbuild
 
 catalog:
-  tsdown: ^0.23.5
+  tsdown: ^0.23.7
   unplugin-solid: ^3.0.0
   solid-js: 2.0.0-rc.21
   '@solidjs/web': 2.0.0-rc.21
   '@solidjs/signals': 2.0.0-rc.21
   '@solidjs/babel-plugin': 2.0.0-rc.21
-  '@solidjs/vite-plugin': 3.0.0-next.56
+  '@solidjs/vite-plugin': 3.0.0-next.57
   '@babel/core': ^7.29.7
 
 catalogs:

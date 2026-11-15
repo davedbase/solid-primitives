@@ -56,7 +56,6 @@ const DISPLAY_NAME_OVERRIDES: Record<string, string> = {
   a11y: "a11y",
   i18n: "i18n",
   "jsx-tokenizer": "JSX Tokenizer",
-  "db-store": "DB Store",
   url: "URL",
   sse: "SSE",
   graphql: "GraphQL",

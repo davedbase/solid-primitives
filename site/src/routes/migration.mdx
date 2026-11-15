@@ -27,10 +27,10 @@ mediastream, clean up the old package") and its APIs reshaped for Solid 2.0's as
 the [async primitives section](#async-primitives-no-more-createresource) below). If you depend
 on `stream`, you'll need to switch packages, not just bump a version.
 
-**Five packages are still Solid 1.x only and haven't been migrated to Solid 2.0 in this
-release:** [`fetch`](/fetch), [`immutable`](/immutable), [`db-store`](/db-store),
-[`graphql`](/graphql), and [`resource`](/resource). If your app depends on any of these, you
-can't move it to Solid 2.0 yet without dropping or replacing that dependency — there's no
+**Three packages are still Solid 1.x only and haven't been migrated to Solid 2.0 in this
+release:** [`fetch`](/fetch), [`graphql`](/graphql), and [`resource`](/resource). (`immutable`
+and `db-store` were removed from the repo for now and may return once migrated.) If your app
+depends on any of these, you can't move it to Solid 2.0 yet without dropping or replacing that dependency — there's no
 Solid-2.0-compatible version to bump to.
 
 **A couple of packages lost functionality outright, not just a renamed API:**

@@ -19,7 +19,7 @@
     "@solidjs/web": "catalog:",
     "solid-js": "catalog:",
     "solid-repl": "^1.0.1",
-    "vite": "^8.3.5"
+    "vite": "^8.3.8"
   },
   "devDependencies": {
     "@iconify-json/ph": "^1.2.2",

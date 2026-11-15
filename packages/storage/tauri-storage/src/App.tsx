@@ -1,5 +1,4 @@
-import { createSignal, For, untrack } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createSignal, createStore, For, untrack } from "solid-js";
 // this would usually be imported from "@solid-primitives/storage":
 import { makePersisted } from "../../src/index.js";
 import { tauriStorage } from "../../src/tauri.js";
@@ -32,9 +31,21 @@ function App() {
               {key}:
               <input
                 value={untrack(() => store[key])}
-                onInput={ev => setStore(key, ev.currentTarget.value)}
+                onInput={ev => {
+                  const value = ev.currentTarget.value;
+                  setStore(s => {
+                    s[key] = value;
+                  });
+                }}
               />
-              <button onClick={() => setStore(key, undefined)} title="delete">
+              <button
+                onClick={() =>
+                  setStore(s => {
+                    delete s[key];
+                  })
+                }
+                title="delete"
+              >
                 ✕
               </button>
             </li>
@@ -48,7 +59,9 @@ function App() {
               const key = keyRef()?.value,
                 value = valueRef()?.value;
               if (key && value) {
-                setStore(key, value);
+                setStore(s => {
+                  s[key] = value;
+                });
                 (keyRef() || { value: 0 }).value = "";
                 (valueRef() || { value: 0 }).value = "";
               }
