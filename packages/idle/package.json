@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/idle",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "A primitive to observe the user's idle status and react to its changes.",
   "author": "Aylo Srd <aylo.srd@gmail.com>",
   "contributors": [],

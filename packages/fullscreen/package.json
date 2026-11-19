@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/fullscreen",
-  "version": "1.3.4",
+  "version": "1.3.5",
   "description": "Primitive that wraps the fullscreen API.",
   "author": "Alex Lohr <alex.lohr@logmein.com>",
   "license": "MIT",

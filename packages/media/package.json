@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/media",
-  "version": "2.3.5",
+  "version": "2.3.6",
   "description": "Primitives for media query and device features",
   "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [

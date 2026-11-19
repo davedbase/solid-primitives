@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/map",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "The Map & WeakMap data structures as a reactive signals.",
   "author": "Damian Tarnawski @thetarnav <gthetarnav@gmail.com>",
   "license": "MIT",

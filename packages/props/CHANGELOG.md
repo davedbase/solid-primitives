@@ -1,5 +1,22 @@
 # @solid-primitives/props
 
+## 3.2.4
+
+### Patch Changes
+
+- 59c9702: Fix named imports breaking under Rolldown (Vite 8+ / Storybook 10.4.6+) bundlers.
+
+  These packages re-export their public API via `export * from "./x.js"` barrels. Rollup resolves named imports through these at link time, but Rolldown's static analysis doesn't reliably follow `export *` for named-export resolution, causing errors like:
+
+  ```
+  "createEventListener" is not exported by "@solid-primitives/event-listener/dist/index.js"
+  ```
+
+  The build now also emits explicit `export { name } from "./x.js"` lines for every runtime export reachable through a barrel's `export *`, derived automatically from each submodule's compiled output — so `dist/` is bundler-agnostic regardless of how a given tool resolves star re-exports.
+
+- Updated dependencies [59c9702]
+  - @solid-primitives/utils@6.4.1
+
 ## 3.2.3
 
 ### Patch Changes

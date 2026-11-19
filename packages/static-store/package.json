@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/static-store",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Primitives for creating small reactive objects that doesn't change their shape over time - don't need a proxy wrapper.",
   "author": "Damian Tarnawski <gthetarnav@gmail.com>",
   "contributors": [],

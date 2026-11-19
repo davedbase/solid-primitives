@@ -1,5 +1,13 @@
 # @solid-primitives/virtual
 
+## 0.2.4
+
+### Patch Changes
+
+- fbc5ff0: Remove the `solid` export condition that pointed to a non-existent `dist/index.jsx`, which broke resolution in Vite with vite-plugin-solid.
+- Updated dependencies [59c9702]
+  - @solid-primitives/utils@6.4.1
+
 ## 0.2.3
 
 ### Patch Changes
