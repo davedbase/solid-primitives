@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/page-visibility",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "Primitive to track page visibility",
   "author": "David Di Biase <dave@solidjs.com>",
   "contributors": [

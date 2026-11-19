@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/masonry",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Primitives for creating a reactive masonry layout.",
   "author": "Damian Tarnawski <gthetarnav@gmail.com>",
   "contributors": [],

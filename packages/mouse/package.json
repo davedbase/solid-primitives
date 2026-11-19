@@ -1,6 +1,6 @@
 {
   "name": "@solid-primitives/mouse",
-  "version": "2.1.6",
+  "version": "2.1.7",
   "description": "A collection of Solid Primitives, that capture current mouse cursor position, and help to deal with common related usecases.",
   "author": "Damian Tarnawski <gthetarnav@gmail.com>",
   "license": "MIT",
